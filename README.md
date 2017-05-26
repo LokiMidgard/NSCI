@@ -1,11 +1,15 @@
-CLRCLI README
+NSCI README
 ===============
 
 About
 -----
+NSCI (Net Standard Console Interface) is fork of [CLRCLI](https://github.com/PhonicUK/CLRCLI).
+
 CLRCLI (Common-Language-Runtime Command-Line-Interface) is an event-driven
 windowing system using a line-art interface for use by command-line
 applications.
+
+NSCI has the primary goal to bring it to dot net core.
 
 ![example screenshot](https://i.imgur.com/yJjTSdD.png)
 

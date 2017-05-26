@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CLRCLI.Widgets
+namespace NSCI.Widgets
 {
     public class VerticalLine : Widget
     {
