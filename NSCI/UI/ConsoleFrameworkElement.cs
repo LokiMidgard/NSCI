@@ -23,12 +23,12 @@ namespace NSCI.UI
         //     Containergröße bestimmt und während des Layouts benötigt.
         protected virtual Size MeasureOverride(Size availableSize)
         {
-            var width = Width;
+            var width = Width ?? int.MaxValue;
             width = Math.Min(width, MaxWidth);
             width = Math.Max(width, MinWidth);
             width = Math.Min(width, availableSize.Width);
 
-            var height = Height;
+            var height = Height ?? int.MaxValue;
             height = Math.Min(height, MaxHeight);
             height = Math.Max(height, MinHeight);
             height = Math.Min(height, availableSize.Height);
@@ -56,10 +56,10 @@ namespace NSCI.UI
         //     Abgerufen oder die vorgeschlagene Höhe einer Windows.UI.Xaml festgelegt. FrameworkElement.
         //
         // Rückgabewerte:
-        //     Die Höhe des Objekts in Pixel. Der Standardwert ist [NaN](https://msdn.microsoft.com/library/System.double.nan.aspx).
-        //     Mit Ausnahme der speziellen [NaN](https://msdn.microsoft.com/library/System.double.nan.aspx)-Wert,
+        //     Die Höhe des Objekts in Pixel. Der Standardwert ist [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx).
+        //     Mit Ausnahme der speziellen [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx)-Wert,
         //     lautet der Wert muss gleich oder größer als 0.
-        public double Height { get; set; } = double.NaN;
+        public int? Height { get; set; } = null;
         //
         // Zusammenfassung:
         //     Ruft oder legt die Einschränkung für die Mindesthöhe des eine Windows.UI.Xaml.
@@ -67,9 +67,9 @@ namespace NSCI.UI
         //
         // Rückgabewerte:
         //     Die minimale Höhe des Objekts in Pixel. Der Standardwert ist 0. Dieser Wert kann
-        //     ein beliebiger Wert größer oder gleich 0 sein. Allerdings [PositiveInfinity](https://msdn.microsoft.com/library/System.double.positiveinfinity.aspx)
+        //     ein beliebiger Wert größer oder gleich 0 sein. Allerdings [PositiveInfinity](https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx)
         //     ist ungültig.
-        public double MinHeight { get; set; } = 0;
+        public int MinHeight { get; set; } = 0;
         //
         // Zusammenfassung:
         //     Ruft den identifizierenden Namen des Objekts ab oder legt diesen fest. Wenn ein
@@ -88,31 +88,31 @@ namespace NSCI.UI
         //
         // Rückgabewerte:
         //     Die minimale Breite des Objekts in Pixel. Der Standardwert ist 0. Dieser Wert
-        //     kann ein beliebiger Wert größer oder gleich 0 sein. Allerdings [PositiveInfinity](https://msdn.microsoft.com/library/System.double.positiveinfinity.aspx)
+        //     kann ein beliebiger Wert größer oder gleich 0 sein. Allerdings [PositiveInfinity](https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx)
         //     ist ungültig.
-        public double MinWidth { get; set; } = 0;
+        public int MinWidth { get; set; } = 0;
         //
         // Zusammenfassung:
         //     Ruft oder legt die Einschränkung für die maximale Breite des eine Windows.UI.Xaml.
         //     FrameworkElement.
         //
         // Rückgabewerte:
-        //     Die maximale Breite des Objekts in Pixel. Der Standardwert ist [PositiveInfinity](https://msdn.microsoft.com/library/System.double.positiveinfinity.aspx).
+        //     Die maximale Breite des Objekts in Pixel. Der Standardwert ist [PositiveInfinity](https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx).
         //     Dieser Wert kann ein beliebiger Wert größer oder gleich 0 sein. [PositiveInfinity]
-        //     (https://msdn.microsoft.com/library/System.double.positiveinfinity.aspx) ist
+        //     (https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx) ist
         //     ebenfalls zulässig.
-        public double MaxWidth { get; set; } = double.PositiveInfinity;
+        public int MaxWidth { get; set; } = int.MaxValue;
         //
         // Zusammenfassung:
         //     Ruft oder legt die Einschränkung für die maximale Höhe des eine Windows.UI.Xaml.
         //     FrameworkElement.
         //
         // Rückgabewerte:
-        //     Die maximale Höhe des Objekts in Pixel. Der Standardwert ist [PositiveInfinity](https://msdn.microsoft.com/library/System.double.positiveinfinity.aspx).
+        //     Die maximale Höhe des Objekts in Pixel. Der Standardwert ist [PositiveInfinity](https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx).
         //     Dieser Wert kann ein beliebiger Wert größer oder gleich 0 sein. [PositiveInfinity]
-        //     (https://msdn.microsoft.com/library/System.double.positiveinfinity.aspx) ist
+        //     (https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx) ist
         //     ebenfalls zulässig.
-        public double MaxHeight { get; set; } = double.PositiveInfinity;
+        public int MaxHeight { get; set; } = int.MaxValue;
         //
         // Zusammenfassung:
         //     Ruft oder legt den äußeren Rand einer Windows.UI.Xaml. FrameworkElement.
@@ -138,10 +138,10 @@ namespace NSCI.UI
         //     Ruft ab oder legt die Breite des eine Windows.UI.Xaml. FrameworkElement.
         //
         // Rückgabewerte:
-        //     Die Breite des Objekts in Pixel. Der Standardwert ist [NaN](https://msdn.microsoft.com/library/System.double.nan.aspx).
-        //     Mit Ausnahme der speziellen [NaN](https://msdn.microsoft.com/library/System.double.nan.aspx)-Wert,
+        //     Die Breite des Objekts in Pixel. Der Standardwert ist [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx).
+        //     Mit Ausnahme der speziellen [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx)-Wert,
         //     lautet der Wert muss gleich oder größer als 0.
-        public double Width { get; set; } = double.NaN;
+        public int? Width { get; set; } = null;
         //
         // Zusammenfassung:
         //     Ruft oder legt die vertikale Ausrichtung Merkmale, die auf eine Windows.UI.Xaml
@@ -170,7 +170,7 @@ namespace NSCI.UI
         //     Die Höhe des Objekts in Pixel. Der Standardwert ist 0. Der Standardwert wird
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
-        public double ActualHeight { get; }
+        public int ActualHeight { get; }
         //
         // Zusammenfassung:
         //     Ruft das übergeordnete Objekt dieses Windows.UI.Xaml ab. FrameworkElement in
@@ -187,7 +187,7 @@ namespace NSCI.UI
         //     Die Breite des Objekts in Pixel. Der Standardwert ist 0. Der Standardwert wird
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
-        public double ActualWidth { get; }
+        public int ActualWidth { get; }
 
 
         //

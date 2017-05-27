@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using NSCI.UI;
 
 namespace NSCI.Widgets
 {
@@ -152,7 +153,7 @@ namespace NSCI.Widgets
 
                 //ConsoleHelper.DrawBlockOutline(3, 3, 6, 6, ConsoleColor.Green);
 
-                g.DrawLine(UI.Pen.SingelLine, ConsoleColor.Red, ConsoleColor.Black, (3, 3), (3, 5), (2, 5), (2, 4), (1, 4), (1, 6), (6, 6), (6, 4), (8, 4), (8, 3), (7, 3));
+                g.GraphicsBuffer.DrawLine(UI.Pen.SingelLine, ConsoleColor.Red, ConsoleColor.DarkGreen, (3, 3), (3, 5), (2, 5), (2, 4), (1, 4), (1, 6), (6, 6), (6, 4), (8, 4), (8, 3), (7, 3));
                 g.Draw();
                 Console.ReadKey(true);
 
@@ -182,7 +183,7 @@ namespace NSCI.Widgets
                 {
                     while (queue.TryDequeue(out var k))
                     {
-                        g.DrawRect(xPos, yPos, 3, 3, ConsoleColor.Black, ConsoleColor.Black, UI.SpecialChars.Fill);
+                        g.GraphicsBuffer.DrawRect(xPos, yPos, 3, 3, ConsoleColor.Black, ConsoleColor.Black, UI.SpecialChars.Fill);
                         switch (k.Key)
                         {
                             case ConsoleKey.LeftArrow:
@@ -199,9 +200,11 @@ namespace NSCI.Widgets
                                 break;
 
                         }
-                        g.DrawRect(xPos, yPos, 3, 3, ConsoleColor.Black, ConsoleColor.Red, UI.SpecialChars.Shade);
+                        g.GraphicsBuffer.DrawRect(xPos, yPos, 3, 3, ConsoleColor.Black, ConsoleColor.Red, UI.SpecialChars.Shade);
 
                     }
+                    g.GraphicsBuffer.DrawLine(UI.Pen.SingelLine, ConsoleColor.Red, ConsoleColor.DarkGreen, (3, 3), (3, 5), (2, 5), (2, 4), (1, 4), (1, 6), (6, 6), (6, 4), (8, 4), (8, 3), (7, 3));
+
                     g.Draw();
                     await Task.Delay(50);
                 }

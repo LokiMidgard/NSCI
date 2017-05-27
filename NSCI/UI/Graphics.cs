@@ -13,16 +13,84 @@ namespace NSCI.UI
         private Buffer backBuffer;
         private Buffer forBuffer;
 
-        private class Buffer
+        internal Graphics(RootWindow rootwindow)
         {
-            public Buffer(int size)
+            this.rootwindow = rootwindow;
+            Width = Console.WindowWidth;
+            Height = Console.WindowHeight - 1;
+            this.backBuffer = new Buffer(Width, Height);
+            this.forBuffer = null;
+
+            Console.BufferHeight = Height + 1;
+            Console.BufferWidth = Width;
+
+        }
+        private class BufferWraper : IGraphicsBuffer
+        {
+            private readonly IGraphicsBuffer parent;
+            private readonly Rect translation;
+            private readonly Rect? clip;
+
+            public BufferWraper(IGraphicsBuffer parent, Rect? translation = default(Rect?), Rect? clip = default(Rect?))
             {
+                this.parent = parent;
+                this.translation = translation ?? new Rect(0, 0, parent.Width, parent.Height);
+                this.clip = clip;
+
+                if (this.translation.Right > parent.Width || this.translation.Bottom > parent.Height || this.translation.Left < 0 || this.translation.Top < 0)
+                    throw new ArgumentOutOfRangeException(nameof(translation), $"Translation must be insied the width and height of the parent. Width={parent.Width},Height={parent.Height}. Translation={this.translation}");
+            }
+
+            public ColoredKey this[int x, int y]
+            {
+                get
+                {
+                    if (x < 0 || x > this.translation.Width)
+                        throw new ArgumentOutOfRangeException(nameof(x));
+                    if (y < 0 || y > this.translation.Height)
+                        throw new ArgumentOutOfRangeException(nameof(y));
+
+                    x += this.translation.X;
+                    y += this.translation.Y;
+                    return this.parent[x, y];
+                }
+                set
+                {
+                    if (x < 0 || x > this.translation.Width)
+                        throw new ArgumentOutOfRangeException(nameof(x));
+                    if (y < 0 || y > this.translation.Height)
+                        throw new ArgumentOutOfRangeException(nameof(y));
+
+                    if (this.clip.HasValue && (x < this.clip.Value.Left || x > this.clip.Value.Right || y < this.clip.Value.Top || y > this.clip.Value.Bottom))
+                        return; // we doe nothing out of clipping
+
+                    x += this.translation.X;
+                    y += this.translation.Y;
+                    this.parent[x, y] = value;
+                }
+            }
+
+            public int Width => this.translation.Width;
+
+            public int Height => this.translation.Height;
+
+            public IGraphicsBuffer GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?)) => new BufferWraper(this, translation, clip);
+
+        }
+
+        private class Buffer : IGraphicsBuffer
+        {
+            public Buffer(int width, int height)
+            {
+                var size = width * height;
+                Width = width;
+                Height = height;
                 this.buffer = new char[size];
                 this.background = new ConsoleColor[size];
                 this.forground = new ConsoleColor[size];
-                for (int i = 0; i < forground.Length; i++)
+                for (int i = 0; i < this.forground.Length; i++)
                 {
-                    forground[i] = ConsoleColor.Red;
+                    this.forground[i] = ConsoleColor.Red;
                 }
             }
             public ColoredKey this[int index]
@@ -39,11 +107,20 @@ namespace NSCI.UI
             private readonly ConsoleColor[] background;
             private readonly ConsoleColor[] forground;
 
+
             public char[] CharacterBuffer => this.buffer;
             public ConsoleColor[] ForgroundBuffer => this.forground;
             public ConsoleColor[] BackgroundBuffer => this.background;
 
             public int Length => this.buffer.Length;
+
+            public int Width { get; }
+
+            public int Height { get; }
+
+            public ColoredKey this[int x, int y] { get => this[GetBufferIndex(x, y)]; set => this[GetBufferIndex(x, y)] = value; }
+
+            private int GetBufferIndex(int x, int y) => x + y * Width;
 
             internal void CopyFrom(Buffer backBuffer)
             {
@@ -51,172 +128,17 @@ namespace NSCI.UI
                 Array.Copy(backBuffer.forground, this.forground, this.buffer.Length);
                 Array.Copy(backBuffer.background, this.background, this.buffer.Length);
             }
-        }
-
-
-        private struct ColoredKey
-        {
-            public readonly ConsoleColor background;
-            public readonly ConsoleColor forground;
-            public readonly char Character;
-
-            public ColoredKey(char character, ConsoleColor forground, ConsoleColor background)
-            {
-                this.Character = character;
-                this.forground = forground;
-                this.background = background;
-            }
-
-            // override object.Equals
-            public override bool Equals(object obj)
-            {
-                if (obj is ColoredKey other)
-                    return Equals(other);
-                return false;
-            }
-
-            private bool Equals(ColoredKey other)
-            {
-                return other.Character == this.Character && other.forground == this.forground && other.background == this.background;
-            }
-
-            // override object.GetHashCode
-            public override int GetHashCode()
-            {
-                var hash = 13;
-                hash = (hash * 31) ^ (int)this.background;
-                hash = (hash * 31) ^ (int)this.forground;
-                hash = (hash * 31) ^ this.Character;
-                return hash;
-            }
-
-            public static bool operator ==(ColoredKey k1, ColoredKey k2) => k1.Equals(k2);
-            public static bool operator !=(ColoredKey k1, ColoredKey k2) => !k1.Equals(k2);
-        }
-
-        internal Graphics(RootWindow rootwindow)
-        {
-            this.rootwindow = rootwindow;
-            Width = Console.WindowWidth;
-            Height = Console.WindowHeight - 1;
-            this.backBuffer = new Buffer(Width * Height);
-            this.forBuffer = null;
-
-            Console.BufferHeight = Height + 1;
-            Console.BufferWidth = Width;
+            public IGraphicsBuffer GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?)) => new BufferWraper(this, translation, clip);
 
         }
+
+
+
 
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public void DrawRect(int xPos, int yPos, int width, int height, ConsoleColor forground, ConsoleColor background, SpecialChars c)
-        {
-
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++)
-                    this.backBuffer[GetBufferIndex(x + xPos, y + yPos)] = new ColoredKey((char)c, forground, background);
-        }
-
-        public void DrawLine(Pen pen, ConsoleColor forground, ConsoleColor background, IEnumerable<(int x, int y)> points)
-        {
-            IList<(int x, int y)> list;
-            if (points is IList<(int x, int y)>)
-                list = points as IList<(int x, int y)>;
-            else
-                list = points.ToArray();
-            bool lastWasHorizontal = false;
-            for (int i = 0; i < list.Count - 1; i++)
-            {
-
-                bool horisontal;
-                if (list[i].y == list[i + 1].y)
-                    horisontal = true;
-                else if (list[i].x == list[i + 1].x)
-                    horisontal = false;
-                else
-                    throw new ArgumentException("Lines mus be horizontal or vertical", "points");
-
-                if (horisontal)
-                {
-                    // check if we need to add a curve
-                    if (i > 0 && !lastWasHorizontal)
-                    {
-                        // we need to add a curve, up or down
-                        if (list[i].x < list[i + 1].x)
-                        {
-                            if (list[i - 1].y < list[i].y)
-                                this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.bottomLeft, forground, background);
-                            else
-                                this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.topLeft, forground, background);
-                        }
-                        else
-                        {
-                            if (list[i - 1].y < list[i].y)
-                                this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.bottemRight, forground, background);
-                            else
-                                this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.topRight, forground, background);
-                        }
-                    }
-                    else
-                        this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.horizontal, forground, background);
-
-                    // draw the line
-                    var min = Math.Min(list[i].x, list[i + 1].x) + 1;
-                    var max = Math.Max(list[i].x, list[i + 1].x);
-
-                    for (int x = min; x < max; x++)
-                        this.backBuffer[GetBufferIndex(x, list[i].y)] = new ColoredKey(pen.horizontal, forground, background);
-
-                    // check if we need to draw the last element or if there is a next segment that will draw this
-                    if (i == list.Count - 2)
-                        this.backBuffer[GetBufferIndex(list[i + 1].x, list[i + 1].y)] = new ColoredKey(pen.horizontal, forground, background);
-                }
-                else
-                {
-                    // check if we need to add a curve
-                    if (i > 0 && lastWasHorizontal)
-                    {
-                            // we need to add a curve, up or down
-                        if (list[i].y < list[i + 1].y)
-                        {
-                            if (list[i - 1].x < list[i].x)
-                                this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.topRight, forground, background);
-                            else
-                                this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.topLeft, forground, background);
-                        }
-                        else
-                        {
-                            if (list[i - 1].x < list[i].x)
-                            this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.bottemRight, forground, background);
-                        else
-                            this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.bottomLeft, forground, background);
-                        }
-                    }
-                    else
-                        this.backBuffer[GetBufferIndex(list[i].x, list[i].y)] = new ColoredKey(pen.vertical, forground, background);
-
-                    // draw the line
-                    var min = Math.Min(list[i].y, list[i + 1].y) + 1;
-                    var max = Math.Max(list[i].y, list[i + 1].y);
-
-                    for (int y = min; y < max; y++)
-                        this.backBuffer[GetBufferIndex(list[i].x, y)] = new ColoredKey(pen.vertical, forground, background);
-
-                    // check if we need to draw the last element or if there is a next segment that will draw this
-                    if (i == list.Count - 2)
-                        this.backBuffer[GetBufferIndex(list[i + 1].x, list[i + 1].y)] = new ColoredKey(pen.vertical, forground, background);
-                }
-                lastWasHorizontal = horisontal;
-            }
-        }
-        public void DrawLine(Pen pen, ConsoleColor forground, ConsoleColor background, params (int x, int y)[] points) => DrawLine(pen, forground, background, points as IEnumerable<(int x, int y)>);
-
-        private int GetBufferIndex(int x, int y)
-        {
-            return x + y * Width;
-        }
-
+        public IGraphicsBuffer GraphicsBuffer => this.backBuffer;
 
 
         internal void Draw()
@@ -231,8 +153,8 @@ namespace NSCI.UI
                     var (left, top) = GetXYFromIndex(i);
                     Console.SetCursorPosition(left, top);
 
-                    Console.ForegroundColor = this.backBuffer[i].forground;
-                    Console.BackgroundColor = this.backBuffer[i].background;
+                    Console.ForegroundColor = this.backBuffer.ForgroundBuffer[i];
+                    Console.BackgroundColor = this.backBuffer.BackgroundBuffer[i];
                     int j = 0;
                     while (true)
                     {
@@ -264,25 +186,25 @@ namespace NSCI.UI
             {
 
                 Console.SetCursorPosition(0, 0);
-                for (int i = 0; i < this.backBuffer.Length; i++)
+                for (int i = 0, j = 0; i < this.backBuffer.Length; i += j)
                 {
 
-                    Console.ForegroundColor = this.backBuffer[i].forground;
-                    Console.BackgroundColor = this.backBuffer[i].background;
-                    int j = 0;
+                    Console.ForegroundColor = this.backBuffer.ForgroundBuffer[i];
+                    Console.BackgroundColor = this.backBuffer.BackgroundBuffer[i];
+                    j = 1;
                     while (i + j < this.backBuffer.Length
                         && this.backBuffer.ForgroundBuffer[i + j] == this.backBuffer.ForgroundBuffer[i]
                         && this.backBuffer.BackgroundBuffer[i + j] == this.backBuffer.BackgroundBuffer[i])
                         ++j;
 
                     Console.Write(this.backBuffer.CharacterBuffer, i, j);
-                    i += j;
+                    ;
                 }
 
             }
 
             if (this.forBuffer == null)
-                this.forBuffer = new Buffer(this.backBuffer.Length);
+                this.forBuffer = new Buffer(this.backBuffer.Width, this.backBuffer.Height);
             this.forBuffer.CopyFrom(this.backBuffer);
         }
 

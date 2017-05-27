@@ -120,12 +120,15 @@
         //     Ein Hashcode für diese Instanz von Windows.UI.Xaml.Thickness.
         public override int GetHashCode()
         {
-            var hash = 13;
-            hash = (hash * 31) ^ Bottom.GetHashCode();
-            hash = (hash * 31) ^ Left.GetHashCode();
-            hash = (hash * 31) ^ Right.GetHashCode();
-            hash = (hash * 31) ^ Top.GetHashCode();
-            return hash;
+            unchecked
+            {
+                var hash = 13;
+                hash = (hash * 31) ^ Bottom.GetHashCode();
+                hash = (hash * 31) ^ Left.GetHashCode();
+                hash = (hash * 31) ^ Right.GetHashCode();
+                hash = (hash * 31) ^ Top.GetHashCode();
+                return hash;
+            }
         }
         //
         // Zusammenfassung:

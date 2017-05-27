@@ -37,10 +37,10 @@
 
         }
 
-        public void Render(RenderFrame g)
-        {
+        //public void Render(RenderFrame g)
+        //{
 
-        }
+        //}
 
         //
         // Zusammenfassung:
