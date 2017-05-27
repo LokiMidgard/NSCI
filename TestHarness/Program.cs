@@ -9,7 +9,6 @@ namespace TestHarness
     {
         static void Main(string[] args)
         {
-            Console.ReadKey(true);
             var root = new RootWindow();
 
             var dialog = new Dialog(root) { Text = "Hello World!", Width = 60, Height = 32, Top = 4, Left = 4, Border = BorderStyle.Thick };

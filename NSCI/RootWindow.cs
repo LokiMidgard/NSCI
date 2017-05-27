@@ -132,7 +132,10 @@ namespace NSCI.Widgets
             this.RootFocusableChildren = this.AllChildren.Where(c => c is IFocusable).OrderBy(c => c.TabStop).ToList();
             ActiveWidget = this.RootFocusableChildren.FirstOrDefault();
 
-            Draw();
+            //Draw();
+
+
+
 
 
             var queue = new System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo>();
@@ -141,11 +144,71 @@ namespace NSCI.Widgets
                 while (true)
                     queue.Enqueue(Console.ReadKey(true));
             }, TaskCreationOptions.LongRunning);
-
+            //g.DrawRect(3, 3, 3, 3, ConsoleColor.Red, ConsoleColor.Red, UI.SpecialChars.Shade);
             Nito.AsyncEx.AsyncContext.Run(async () =>
             {
-                
-                
+                var g = new UI.Graphics(RootWindow);
+                //Console.BackgroundColor = ConsoleColor.Magenta;
+
+                //ConsoleHelper.DrawBlockOutline(3, 3, 6, 6, ConsoleColor.Green);
+
+                g.DrawLine(UI.Pen.SingelLine, ConsoleColor.Red, ConsoleColor.Black, (3, 3), (3, 5), (2, 5), (2, 4), (1, 4), (1, 6), (6, 6), (6, 4), (8, 4), (8, 3), (7, 3));
+                g.Draw();
+                Console.ReadKey(true);
+
+                //Console.BackgroundColor = ConsoleColor.Black;
+                //Console.Clear();
+                //Console.BackgroundColor = ConsoleColor.Magenta;
+                //Console.ForegroundColor= ConsoleColor.White;
+                //for (char i = (char)0; i < char.MaxValue; i++)
+                //{
+                //    Console.Write((int)i);
+                //    Console.Write(i);
+                //    //Console.WriteLine();
+                //    if (i % 512 == 0)
+                //    {
+                //        Console.BackgroundColor = ConsoleColor.Black;
+                //        Console.Clear();
+                //        Console.BackgroundColor = ConsoleColor.Magenta;
+                //        Console.ForegroundColor = ConsoleColor.White;
+                //    }
+                //    await Task.Delay(200);
+                //}
+                //Console.ReadKey(false);
+
+                var xPos = 3;
+                var yPos = 3;
+                while (true)
+                {
+                    while (queue.TryDequeue(out var k))
+                    {
+                        g.DrawRect(xPos, yPos, 3, 3, ConsoleColor.Black, ConsoleColor.Black, UI.SpecialChars.Fill);
+                        switch (k.Key)
+                        {
+                            case ConsoleKey.LeftArrow:
+                                xPos--;
+                                break;
+                            case ConsoleKey.UpArrow:
+                                yPos--;
+                                break;
+                            case ConsoleKey.RightArrow:
+                                xPos++;
+                                break;
+                            case ConsoleKey.DownArrow:
+                                yPos++;
+                                break;
+
+                        }
+                        g.DrawRect(xPos, yPos, 3, 3, ConsoleColor.Black, ConsoleColor.Red, UI.SpecialChars.Shade);
+
+                    }
+                    g.Draw();
+                    await Task.Delay(50);
+                }
+
+
+
+
                 var childQueue = new Queue<Widget>(Children);
                 while (childQueue.Count != 0)
                 {
