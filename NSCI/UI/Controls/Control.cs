@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NSCI.UI.Controls
 {
-    public class Control : ConsoleFrameworkElement
+    public abstract class Control : FrameworkElement
     {
         //
         // Zusammenfassung:
@@ -57,6 +57,6 @@ namespace NSCI.UI.Controls
         //     Der Pinsel, der den Hintergrund des Steuerelements bereitstellt. Der Standardwert
         //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
         //     für das Rendern.
-        public Brush Background { get; set; }
+        public ConsoleColor Background { get; set; }
     }
 }

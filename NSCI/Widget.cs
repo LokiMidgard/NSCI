@@ -237,7 +237,7 @@ namespace NSCI
             if (parent != null)
             {
                 parent.Children.Add(this);
-                RootWindow.AllChildren.Add(this);
+                //RootWindow.AllChildren.Add(this);
             }
         }
 
@@ -250,7 +250,7 @@ namespace NSCI
         {
             Children.ForEach(c =>
             {
-                root.AllChildren.Add(c);
+                //root.AllChildren.Add(c);
                 c.Parent = this;
                 c.FixChildParents(root);
             });
@@ -270,11 +270,11 @@ namespace NSCI
 
         private RootWindow FindRootWindow()
         {
-            if (this.GetType() == typeof(RootWindow))
-            {
-                return (RootWindow)this;
-            }
-            else
+            //if (this.GetType() == typeof(RootWindow))
+            //{
+            //    return (RootWindow)this;
+            //}
+            //else
             {
                 return Parent.FindRootWindow();
             }
@@ -303,7 +303,7 @@ namespace NSCI
 
         internal void Draw()
         {
-            if (RootWindow.AllowDraw == false) { return; }
+            //if (RootWindow.AllowDraw == false) { return; }
             if (Visible && (Parent == null || Parent.Visible))
             {
                 lock (Console.Out)

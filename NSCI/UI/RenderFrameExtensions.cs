@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace NSCI.UI
 {
-    public static class RenderFrame
+    public static class RenderFrameExtensions
     {
 
-        public static void DrawRect(this IGraphicsBuffer buffer, int xPos, int yPos, int width, int height, ConsoleColor forground, ConsoleColor background, SpecialChars c)
+        public static void DrawRect(this IRenderFrame buffer, int xPos, int yPos, int width, int height, ConsoleColor forground, ConsoleColor background, SpecialChars c)
         {
 
             for (int y = 0; y < height; y++)
@@ -15,7 +15,7 @@ namespace NSCI.UI
                     buffer[x + xPos, y + yPos] = new ColoredKey((char)c, forground, background);
         }
 
-        public static void DrawLine(this IGraphicsBuffer buffer, Pen pen, ConsoleColor forground, ConsoleColor background, IEnumerable<(int x, int y)> points)
+        public static void DrawLine(this IRenderFrame buffer, Pen pen, ConsoleColor forground, ConsoleColor background, IEnumerable<(int x, int y)> points)
         {
             IList<(int x, int y)> list;
             if (points is IList<(int x, int y)>)
@@ -107,7 +107,7 @@ namespace NSCI.UI
                 lastWasHorizontal = horisontal;
             }
         }
-        public static void DrawLine(this IGraphicsBuffer buffer, Pen pen, ConsoleColor forground, ConsoleColor background, params (int x, int y)[] points) => DrawLine(buffer, pen, forground, background, points as IEnumerable<(int x, int y)>);
+        public static void DrawLine(this IRenderFrame buffer, Pen pen, ConsoleColor forground, ConsoleColor background, params (int x, int y)[] points) => DrawLine(buffer, pen, forground, background, points as IEnumerable<(int x, int y)>);
 
 
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NSCI.UI
 {
-    public class ConsoleFrameworkElement : UIElement
+    public abstract class FrameworkElement : UIElement
     {
         //
         // Zusammenfassung:
@@ -34,6 +34,17 @@ namespace NSCI.UI
             height = Math.Min(height, availableSize.Height);
             return new Size(width, height);
         }
+
+        public override sealed void Measure(Size availableSize)
+        {
+            if (!this.IsVisible)
+            {
+                this.DesiredSize = Size.Empty;
+                return;
+            }
+
+            DesiredSize = MeasureOverride(availableSize);
+        }
         //
         // Zusammenfassung:
         //     Stellt das Verhalten für die "Anordnungsübergabe" des Layouts. Klassen können
@@ -46,9 +57,16 @@ namespace NSCI.UI
         //
         // Rückgabewerte:
         //     Die tatsächliche verwendete Größe, nachdem das Element im Layout angeordnet wurde.
-        protected virtual Size ArrangeOverride(Size finalSize)
+        protected virtual void ArrangeOverride(Size finalSize)
         {
-            return finalSize;
+
+        }
+
+        public override sealed void Arrange(Size finalRect)
+        {
+            ArrangeOverride(finalRect);
+            ActualHeight = finalRect.Height;
+            ActualWidth = finalRect.Width;
         }
 
         //
@@ -170,7 +188,7 @@ namespace NSCI.UI
         //     Die Höhe des Objekts in Pixel. Der Standardwert ist 0. Der Standardwert wird
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
-        public int ActualHeight { get; }
+        public int ActualHeight { get; private set; }
         //
         // Zusammenfassung:
         //     Ruft das übergeordnete Objekt dieses Windows.UI.Xaml ab. FrameworkElement in
@@ -187,7 +205,7 @@ namespace NSCI.UI
         //     Die Breite des Objekts in Pixel. Der Standardwert ist 0. Der Standardwert wird
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
-        public int ActualWidth { get; }
+        public int ActualWidth { get; private set; }
 
 
         //

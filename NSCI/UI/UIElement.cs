@@ -1,6 +1,6 @@
 ﻿namespace NSCI.UI
 {
-    public class UIElement
+    public abstract class UIElement
     {
         //
         // Zusammenfassung:
@@ -17,10 +17,8 @@
         //     als verfügbar ist. Die angegebene Größe kann zugewiesen werden, wenn Bildlaufvorgänge
         //     oder anderes Größenänderungsverhalten in diesem speziellen Container möglich
         //     sind.
-        public void Measure(Size availableSize)
-        {
+        public abstract void Measure(Size availableSize);
 
-        }
         //
         // Zusammenfassung:
         //     Positioniert untergeordnete Objekte und bestimmt die Größe für ein Windows.UI.Xaml.
@@ -32,15 +30,9 @@
         //   finalRect:
         //     Die endgültige Größe, das übergeordnete Element für das untergeordnete Element
         //     im Layout, als Windows.Foundation.Rect Wert angegeben wird.
-        public void Arrange(Rect finalRect)
-        {
+        public abstract void Arrange(Size finalRect);
 
-        }
-
-        //public void Render(RenderFrame g)
-        //{
-
-        //}
+        public abstract void Render(IRenderFrame frame);
 
         //
         // Zusammenfassung:
@@ -50,9 +42,9 @@
         // Rückgabewerte:
         //     Die Größe, die diese Windows.UI.Xaml. UIElement berechnet, der während des messdurchlaufs
         //     des Layoutvorgangs.
-        public Size DesiredSize { get; }
+        public Size DesiredSize { get; protected set; }
 
-        public bool IsVisible { get; set; }
+        public bool IsVisible { get; set; } = true;
 
         //
         // Zusammenfassung:
@@ -64,6 +56,7 @@
         //     Nach dem Durchführen der Windows.UI.Xaml. UIElement haben das Layout aktualisiert,
         //     die asynchron ausgeführt wird.
         public void InvalidateArrange() { }
+        public void InvalidateRender() { }
         //
         // Zusammenfassung:
         //     Stellt sicher, dass alle untergeordneten Objekte von einer Windows.UI.Xaml positioniert.

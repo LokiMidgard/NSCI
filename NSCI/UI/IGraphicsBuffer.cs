@@ -3,14 +3,14 @@ using NSCI.Widgets;
 
 namespace NSCI.UI
 {
-    public interface IGraphicsBuffer
+    public interface IRenderFrame
     {
         ColoredKey this[int x, int y] { get; set; }
 
         int Width { get; }
         int Height { get; }
 
-        IGraphicsBuffer GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?));
+        IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?));
     }
     public struct ColoredKey
     {

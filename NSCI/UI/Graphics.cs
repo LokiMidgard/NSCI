@@ -25,13 +25,13 @@ namespace NSCI.UI
             Console.BufferWidth = Width;
 
         }
-        private class BufferWraper : IGraphicsBuffer
+        private class BufferWraper : IRenderFrame
         {
-            private readonly IGraphicsBuffer parent;
+            private readonly IRenderFrame parent;
             private readonly Rect translation;
             private readonly Rect? clip;
 
-            public BufferWraper(IGraphicsBuffer parent, Rect? translation = default(Rect?), Rect? clip = default(Rect?))
+            public BufferWraper(IRenderFrame parent, Rect? translation = default(Rect?), Rect? clip = default(Rect?))
             {
                 this.parent = parent;
                 this.translation = translation ?? new Rect(0, 0, parent.Width, parent.Height);
@@ -74,11 +74,11 @@ namespace NSCI.UI
 
             public int Height => this.translation.Height;
 
-            public IGraphicsBuffer GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?)) => new BufferWraper(this, translation, clip);
+            public IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?)) => new BufferWraper(this, translation, clip);
 
         }
 
-        private class Buffer : IGraphicsBuffer
+        private class Buffer : IRenderFrame
         {
             public Buffer(int width, int height)
             {
@@ -128,7 +128,7 @@ namespace NSCI.UI
                 Array.Copy(backBuffer.forground, this.forground, this.buffer.Length);
                 Array.Copy(backBuffer.background, this.background, this.buffer.Length);
             }
-            public IGraphicsBuffer GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?)) => new BufferWraper(this, translation, clip);
+            public IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?)) => new BufferWraper(this, translation, clip);
 
         }
 
@@ -138,7 +138,7 @@ namespace NSCI.UI
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public IGraphicsBuffer GraphicsBuffer => this.backBuffer;
+        public IRenderFrame GraphicsBuffer => this.backBuffer;
 
 
         internal void Draw()
@@ -209,11 +209,5 @@ namespace NSCI.UI
         }
 
         private (int x, int y) GetXYFromIndex(int i) => (i % Width, i / Width);
-    }
-
-    public enum SpecialChars : ushort
-    {
-        Shade = '▒',
-        Fill = ' '
     }
 }
