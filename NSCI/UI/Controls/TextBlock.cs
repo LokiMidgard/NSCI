@@ -18,8 +18,8 @@ namespace NSCI.UI.Controls
             }
         }
 
-        public ConsoleColor Background { get; private set; } = ConsoleColor.Black;
-        public ConsoleColor Forground { get; private set; } = ConsoleColor.White;
+        public ConsoleColor Background { get; set; } = ConsoleColor.Black;
+        public ConsoleColor Forground { get; set; } = ConsoleColor.White;
 
         private string[] renderLines = new string[0];
 
@@ -58,9 +58,9 @@ namespace NSCI.UI.Controls
 
         public override void Render(IRenderFrame frame)
         {
-            for (int y = 0; y < frame.Height && y < renderLines.Length; y++)
-                for (int x = 0; x < frame.Width && x < renderLines[y].Length; x++)
-                    frame[x, y] = new ColoredKey(renderLines[y][x], this.Forground, this.Background);
+            for (int y = 0; y < frame.Height; y++)
+                for (int x = 0; x < frame.Width; x++)
+                    frame[x, y] = new ColoredKey(y < renderLines.Length && x < renderLines[y].Length ? renderLines[y][x] : ' ', this.Forground, this.Background);
 
         }
     }

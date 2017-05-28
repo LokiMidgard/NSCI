@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NSCI.UI.Controls
 {
-    public class Page : UserControl
+    public class Page : ContentControl
     {
     }
 }

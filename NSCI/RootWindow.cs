@@ -10,7 +10,7 @@ using NSCI.UI;
 
 namespace NSCI.Widgets
 {
-    public class RootWindow : UI.Controls.UserControl
+    public class RootWindow : UI.Controls.ContentControl
     {
 
 
@@ -173,9 +173,9 @@ namespace NSCI.Widgets
                 //        childQueue.Enqueue(toEnqueue);
                 //}
 
-                this.Measure(new Size(this.Width.Value, this.Height.Value));
+                this.Measure(new Size(g.Width, g.Height));
 
-                this.Arrange(new Size(this.Width.Value, this.Height.Value));
+                this.Arrange(new Size(g.Width, g.Height));
                 this.Render(g.GraphicsBuffer);
 
                 g.Draw();

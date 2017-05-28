@@ -20,6 +20,8 @@ namespace NSCI.UI
 
         public ColoredKey(char character, ConsoleColor forground, ConsoleColor background)
         {
+            if (char.IsControl(character))
+                character = ' ';
             this.Character = character;
             this.forground = forground;
             this.background = background;

@@ -2,6 +2,7 @@
 using NSCI.Widgets;
 using System;
 using System.Text;
+using NSCI.UI.Controls.Layput;
 
 namespace TestHarness
 {
@@ -11,9 +12,15 @@ namespace TestHarness
         {
             var root = new RootWindow();
 
-            var text = new NSCI.UI.Controls.TextBlock() { Text = "\nHallo Welt!" };
+            var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!"  , Background = ConsoleColor.DarkYellow};
+            var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" , Background= ConsoleColor.Green};
 
-            root.Content = text;
+            var stack = new StackPanel();
+
+            stack.Items.Add(text);
+            stack.Items.Add(text2);
+
+            root.Content = stack;
 
             //var dialog = new Dialog(root) { Text = "Hello World!", Width = 60, Height = 32, Top = 4, Left = 4, Border = BorderStyle.Thick };
             //new Label(dialog) { Text = "This is a dialog!", Top = 2, Left = 2 };
