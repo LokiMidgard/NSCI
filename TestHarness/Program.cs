@@ -11,7 +11,7 @@ namespace TestHarness
         {
             var root = new RootWindow();
 
-            var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!" };
+            var text = new NSCI.UI.Controls.TextBlock() { Text = "\nHallo Welt!" };
 
             root.Content = text;
 

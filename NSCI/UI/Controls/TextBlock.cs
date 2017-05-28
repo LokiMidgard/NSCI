@@ -23,7 +23,7 @@ namespace NSCI.UI.Controls
 
         private string[] renderLines = new string[0];
 
-        
+
         protected override Size MeasureOverride(Size availableSize)
         {
             availableSize = base.MeasureOverride(availableSize);
@@ -49,11 +49,11 @@ namespace NSCI.UI.Controls
             var stringbuffer = new StringBuilder();
             for (int i = 0; i < text.Length; i++)
             {
-                if (i % finalSize.Width == 0 && text[i] != '\n')
+                if (i != 0 && i % finalSize.Width == 0 && text[i] != '\n')
                     stringbuffer.AppendLine();
                 stringbuffer.Append(text[i]);
             }
-            this.renderLines = stringbuffer.ToString().Split('\n');
+            this.renderLines = stringbuffer.ToString().Replace("\r", "").Split('\n');
         }
 
         public override void Render(IRenderFrame frame)
