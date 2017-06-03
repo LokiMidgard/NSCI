@@ -180,14 +180,7 @@ namespace NSCI.UI
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
         public int ActualHeight { get; private set; }
-        //
-        // Zusammenfassung:
-        //     Ruft das übergeordnete Objekt dieses Windows.UI.Xaml ab. FrameworkElement in
-        //     der Objektstruktur.
-        //
-        // Rückgabewerte:
-        //     Das übergeordnete Objekt dieses Objekts in der Objektstruktur.
-        public UIElement Parent { get; }
+
         //
         // Zusammenfassung:
         //     Ruft die gerenderte Breite ein Windows.UI.Xaml ab. FrameworkElement. Siehe Anmerkungen.

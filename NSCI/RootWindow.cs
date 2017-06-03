@@ -175,7 +175,7 @@ namespace NSCI.Widgets
 
                 this.Measure(new Size(g.Width, g.Height));
 
-                this.Arrange(new Size(g.Width, g.Height));
+                this.Arrange(new Rect(0,0,g.Width, g.Height));
                 this.Render(g.GraphicsBuffer);
 
                 g.Draw();

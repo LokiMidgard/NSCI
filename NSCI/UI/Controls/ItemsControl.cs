@@ -12,7 +12,16 @@ namespace NSCI.UI.Controls
 
         public ItemsControl()
         {
-            this.Items.CollectionChanged += (s, e) => this.InvalidateArrange();
+            this.Items.CollectionChanged += (s, e) =>
+            {
+                this.InvalidateArrange();
+                if (e.NewItems != null)
+                    foreach (UIElement uielement in e.NewItems)
+                        uielement.Parent = this;
+                if (e.OldItems != null)
+                    foreach (UIElement uielement in e.OldItems)
+                        uielement.Parent = null;
+            };
         }
 
         protected override Size MeasureOverride(Size availableSize)

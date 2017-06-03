@@ -7,10 +7,14 @@ namespace NSCI.UI.Controls.Layput
 {
     public class StackPanel : ItemsControl
     {
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            return base.MeasureOverride(availableSize);
+        }
 
         protected override void ArrangeOverride(Size finalSize)
         {
-            base.ArrangeOverride(finalSize);
+            //base.ArrangeOverride(finalSize);
 
             var elementHeights = this.Items.Select(x => x.DesiredSize.Height).ToArray();
             var sumHight = elementHeights.Sum();
@@ -36,7 +40,6 @@ namespace NSCI.UI.Controls.Layput
 
         protected override void RenderCore(IRenderFrame frame)
         {
-            base.Render(frame);
             for (int i = 0; i < Items.Count; i++)
                 Items[i].Render(frame.GetGraphicsBuffer(GetLocation(Items[i])));
         }

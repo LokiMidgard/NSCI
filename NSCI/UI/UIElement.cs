@@ -8,7 +8,7 @@ namespace NSCI.UI
 
         public RootWindow RootWindow { get; }
 
-        public UIElement Parent { get; private set; }
+        public UIElement Parent { get; internal set; }
         //
         // Zusammenfassung:
         //     Aktualisiert die Windows.UI.Xaml. UIElement.DesiredSize von einem Windows.UI.Xaml.
@@ -45,7 +45,7 @@ namespace NSCI.UI
 
                 // you can Arrange without measure but not measure without arrange
                 InvalidateArrange();
-                
+
                 var desiredSize = new Size(0, 0);
                 desiredSize = MeasureCore(availableSize);
                 MeasureDirty = false;
@@ -53,8 +53,9 @@ namespace NSCI.UI
                 //notify parent if our desired size changed
                 if (DesiredSize != desiredSize)
                 {
+                    DesiredSize = desiredSize;
                     var p = Parent;
-                    if (!p?.MeasureInProgress ?? false) 
+                    if (!p?.MeasureInProgress ?? false)
                         p.OnChildDesiredSizeChanged(this);
                 }
             }
@@ -160,7 +161,7 @@ namespace NSCI.UI
         /// </summary>
         /// <param name="uIElement"></param>
         /// <returns></returns>
-        public  Rect GetLocation(UIElement uIElement)
+        public Rect GetLocation(UIElement uIElement)
         {
             if (uIElement.Parent == this)
                 return uIElement.ArrangedPosition;

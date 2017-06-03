@@ -6,7 +6,23 @@ namespace NSCI.UI.Controls
 {
     public class ContentControl : Control
     {
-        public UIElement Content { get; set; }
+        private UIElement content;
+        public UIElement Content
+        {
+            get => content; set
+            {
+                if (content != value)
+                {
+                    if (value.Parent != null)
+                        throw new ArgumentException($"The Element is already Chiled of {value.Parent}");
+                    if (content != null)
+                        content.Parent = null;
+                    content = value;
+                    if (content != null)
+                        content.Parent = this;
+                }
+            }
+        }
 
         protected override Size MeasureOverride(Size availableSize)
         {
