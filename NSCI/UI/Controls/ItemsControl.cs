@@ -30,10 +30,10 @@ namespace NSCI.UI.Controls
         {
             base.ArrangeOverride(finalSize);
             foreach (var item in Items)
-                item.Arrange(finalSize);
+                item.Arrange(new Rect(Point.Empty, finalSize));
         }
 
-        public override void Render(IRenderFrame frame)
+        protected override void RenderCore(IRenderFrame frame)
         {
             foreach (var item in Items)
                 item.Render(frame);

@@ -1,7 +1,14 @@
-﻿namespace NSCI.UI
+﻿using System;
+using NSCI.Widgets;
+
+namespace NSCI.UI
 {
     public abstract class UIElement
     {
+
+        public RootWindow RootWindow { get; }
+
+        public UIElement Parent { get; private set; }
         //
         // Zusammenfassung:
         //     Aktualisiert die Windows.UI.Xaml. UIElement.DesiredSize von einem Windows.UI.Xaml.
@@ -17,7 +24,60 @@
         //     als verfügbar ist. Die angegebene Größe kann zugewiesen werden, wenn Bildlaufvorgänge
         //     oder anderes Größenänderungsverhalten in diesem speziellen Container möglich
         //     sind.
-        public abstract void Measure(Size availableSize);
+        public void Measure(Size availableSize)
+        {
+            try
+            {
+                MeasureInProgress = true;
+
+                //if hidden, we should not Measure, keep dirty
+                if (!IsVisible)
+                {
+                    DesiredSize = Size.Empty;
+                    return;
+                }
+
+
+                //No reason to calc the same thing.
+                if (!MeasureDirty)
+                    return;
+
+
+                // you can Arrange without measure but not measure without arrange
+                InvalidateArrange();
+                
+                var desiredSize = new Size(0, 0);
+                desiredSize = MeasureCore(availableSize);
+                MeasureDirty = false;
+
+                //notify parent if our desired size changed
+                if (DesiredSize != desiredSize)
+                {
+                    var p = Parent;
+                    if (!p?.MeasureInProgress ?? false) 
+                        p.OnChildDesiredSizeChanged(this);
+                }
+            }
+            finally
+            {
+                MeasureInProgress = false;
+            }
+        }
+
+        /// <summary>
+        /// Notification that is called by Measure of a child when
+        /// it ends up with different desired size then before.
+        /// </summary>
+        /// <remarks>
+        /// This method will only be called when Measure was not called by the Parent Measure.
+        /// </remarks>
+        protected virtual void OnChildDesiredSizeChanged(UIElement child)
+        {
+            if (!MeasureDirty)
+                InvalidateMeasure();
+        }
+
+        protected virtual Size MeasureCore(Size availableSize) => Size.Empty;
 
         //
         // Zusammenfassung:
@@ -30,9 +90,41 @@
         //   finalRect:
         //     Die endgültige Größe, das übergeordnete Element für das untergeordnete Element
         //     im Layout, als Windows.Foundation.Rect Wert angegeben wird.
-        public abstract void Arrange(Size finalRect);
+        public void Arrange(Rect finalRect)
+        {
+            try
+            {
+                ArrangeInProgress = true;
+                ArrangedPosition = finalRect;
+                ArrangeCore(finalRect.Size);
+            }
+            finally
+            {
+                ArrangeInProgress = false;
+            }
+        }
 
-        public abstract void Render(IRenderFrame frame);
+        protected virtual void ArrangeCore(Size size)
+        {
+        }
+
+        public void Render(IRenderFrame frame)
+        {
+            try
+            {
+                RenderInProgress = true;
+                RenderCore(frame);
+            }
+            finally
+            {
+                RenderInProgress = false;
+            }
+        }
+
+        protected virtual void RenderCore(IRenderFrame frame)
+        {
+
+        }
 
         //
         // Zusammenfassung:
@@ -42,9 +134,14 @@
         // Rückgabewerte:
         //     Die Größe, die diese Windows.UI.Xaml. UIElement berechnet, der während des messdurchlaufs
         //     des Layoutvorgangs.
-        public Size DesiredSize { get; protected set; }
+        public Size DesiredSize { get; private set; }
 
         public bool IsVisible { get; set; } = true;
+        public bool MeasureDirty { get; private set; } = true;
+        internal bool MeasureInProgress { get; private set; }
+        public bool ArrangeInProgress { get; private set; }
+        public bool RenderInProgress { get; private set; }
+        internal Rect ArrangedPosition { get; private set; }
 
         //
         // Zusammenfassung:
@@ -57,11 +154,18 @@
         //     die asynchron ausgeführt wird.
         public void InvalidateArrange() { }
         public void InvalidateRender() { }
-        //
-        // Zusammenfassung:
-        //     Stellt sicher, dass alle untergeordneten Objekte von einer Windows.UI.Xaml positioniert.
-        //     UIElement sind ordnungsgemäß für das Layout aktualisiert.
-        public void UpdateLayout() { }
+
+        /// <summary>
+        /// Returns the Position and Size of the Controle relative to this Controls left Upper point.
+        /// </summary>
+        /// <param name="uIElement"></param>
+        /// <returns></returns>
+        public  Rect GetLocation(UIElement uIElement)
+        {
+            if (uIElement.Parent == this)
+                return uIElement.ArrangedPosition;
+            throw new NotImplementedException();
+        }
 
     }
 }

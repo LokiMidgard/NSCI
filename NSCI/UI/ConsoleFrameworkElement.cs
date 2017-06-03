@@ -35,16 +35,7 @@ namespace NSCI.UI
             return new Size(width, height);
         }
 
-        public override sealed void Measure(Size availableSize)
-        {
-            if (!this.IsVisible)
-            {
-                this.DesiredSize = Size.Empty;
-                return;
-            }
-
-            DesiredSize = MeasureOverride(availableSize);
-        }
+        protected override sealed Size MeasureCore(Size availableSize) => MeasureOverride(availableSize);
         //
         // Zusammenfassung:
         //     Stellt das Verhalten für die "Anordnungsübergabe" des Layouts. Klassen können
@@ -62,11 +53,11 @@ namespace NSCI.UI
 
         }
 
-        public override sealed void Arrange(Size finalRect)
+        protected override sealed void ArrangeCore(Size finalRect)
         {
-            ArrangeOverride(finalRect);
             ActualHeight = finalRect.Height;
             ActualWidth = finalRect.Width;
+            ArrangeOverride(finalRect);
         }
 
         //

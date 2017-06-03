@@ -7,13 +7,12 @@ namespace NSCI.UI.Controls.Layput
 {
     public class StackPanel : ItemsControl
     {
-        private int[] elementHeights;
 
         protected override void ArrangeOverride(Size finalSize)
         {
             base.ArrangeOverride(finalSize);
 
-            elementHeights = this.Items.Select(x => x.DesiredSize.Height).ToArray();
+            var elementHeights = this.Items.Select(x => x.DesiredSize.Height).ToArray();
             var sumHight = elementHeights.Sum();
             if (sumHight > finalSize.Height)
             {
@@ -32,14 +31,15 @@ namespace NSCI.UI.Controls.Layput
 
 
             for (int i = 0; i < Items.Count; i++)
-                Items[i].Arrange(new Size(finalSize.Width, elementHeights[i]));
+                Items[i].Arrange(new Rect(0, i == 0 ? 0 : elementHeights.Take(i).Sum(), finalSize.Width, elementHeights[i]));
         }
 
-        public override void Render(IRenderFrame frame)
+        protected override void RenderCore(IRenderFrame frame)
         {
             base.Render(frame);
             for (int i = 0; i < Items.Count; i++)
-                Items[i].Render(frame.GetGraphicsBuffer(new Rect(0, i == 0 ? 0 : elementHeights.Take(i).Sum(), frame.Width, elementHeights[i])));
+                Items[i].Render(frame.GetGraphicsBuffer(GetLocation(Items[i])));
         }
+
     }
 }

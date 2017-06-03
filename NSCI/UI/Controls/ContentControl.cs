@@ -20,10 +20,10 @@ namespace NSCI.UI.Controls
         protected override void ArrangeOverride(Size finalSize)
         {
             base.ArrangeOverride(finalSize);
-            Content?.Arrange(finalSize);
+            Content?.Arrange(new Rect(Point.Empty, finalSize));
         }
 
-        public override void Render(IRenderFrame frame)
+        protected override void RenderCore(IRenderFrame frame)
         {
             Content?.Render(frame);
         }

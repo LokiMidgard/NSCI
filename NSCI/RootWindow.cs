@@ -253,6 +253,11 @@ namespace NSCI.Widgets
 
         }
 
+        internal ContentManager GetContentManager()
+        {
+            throw new NotImplementedException();
+        }
+
         private bool HandleWidgetInput(ConsoleKeyInfo k)
         {
             return (ActiveWidget as IAcceptInput).Keypress(k);
