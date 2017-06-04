@@ -10,7 +10,25 @@ namespace NSCI.UI
 
         public RootWindow RootWindow => this is RootWindow ? this as RootWindow : Parent?.RootWindow;
 
-        public UIElement Parent { get; internal set; }
+        public UIElement Parent
+        {
+            get => parent;
+            internal set
+            {
+                Depth = this.parent?.Depth + 1 ?? 0;
+                this.parent = value;
+            }
+        }
+        private UIElement parent;
+
+        /// <summary>
+        /// Gets the depth in the UI Tree.
+        /// </summary>
+        /// <remarks>
+        /// A direct Child of the RootWindow has depth 1. <para/>
+        /// The RootWindow has depth 0 and an UIElement with no parent has also depth 0.
+        /// </remarks>
+        public int Depth { get; private set; }
 
         //
         // Zusammenfassung:
@@ -112,10 +130,10 @@ namespace NSCI.UI
                 //}
 
                 //No reason to calc the same thing.
-                if (finalRect == this.ArrangedPosition)
+                if (finalRect == ArrangedPosition)
                     return;
 
-                this.InvalidateRender();
+                InvalidateRender();
 
                 ArrangedPosition = finalRect;
                 ArrangeCore(finalRect.Size);
@@ -132,7 +150,7 @@ namespace NSCI.UI
             {
                 RenderInProgress = true;
                 RootWindow.RequestDraw();
-                lastFrame = frame;
+                this.lastFrame = frame;
                 RenderCore(frame);
             }
             finally
@@ -146,7 +164,7 @@ namespace NSCI.UI
         //     Wird den Status der Messung (Layout) für eine Windows.UI.Xaml ungültig. UIElement.
         public void InvalidateMeasure()
         {
-            this.MeasureDirty = true;
+            MeasureDirty = true;
             RootWindow?.RegisterMeasureDirty(this);
         }
 
@@ -174,7 +192,47 @@ namespace NSCI.UI
         {
             if (uIElement.Parent == this)
                 return uIElement.ArrangedPosition;
-            throw new NotImplementedException();
+
+            var translation = GetTranslation(uIElement);
+
+            return uIElement.ArrangedPosition.Translate(translation);
+        }
+
+        public Point TranslateToOtherUICordinates(UIElement uIElement, Point p) => p + GetTranslation(uIElement);
+
+        private Size GetTranslation(UIElement uIElement)
+        {
+            var commoneAcestor = FindCommonAcestor(uIElement);
+
+            var negativeTranslation = Point.Empty;
+            for (var current = this; current != commoneAcestor; current = current.Parent)
+                negativeTranslation += (Size)current.ArrangedPosition.Location;
+            var positiveTranslation = Point.Empty;
+            for (var current = this; current != commoneAcestor; current = current.Parent)
+                positiveTranslation += (Size)current.ArrangedPosition.Location;
+
+            var translation = positiveTranslation - (Size)negativeTranslation;
+            return (Size)translation;
+        }
+
+        private UIElement FindCommonAcestor(UIElement uIElement)
+        {
+            var currentOther = uIElement;
+            var currentThis = this;
+
+            // first get to the same depth or it can't be working.
+            while (currentOther.Depth > currentThis.Depth)
+                currentOther = currentOther.Parent;
+            while (currentThis.Depth > currentOther.Depth)
+                currentThis = currentThis.Parent;
+
+            while (currentThis.Parent != currentOther.Parent)
+            {
+                currentThis = currentThis.Parent;
+                currentOther = currentOther.Parent;
+            }
+
+            return currentOther.Parent ?? throw new ArgumentException("No Common Acestor found.");
         }
 
         internal void MeasureWithLastAvailableSize()
@@ -188,7 +246,7 @@ namespace NSCI.UI
 
         internal void RenderWithLastAvailableSize()
         {
-            Render(lastFrame);
+            Render(this.lastFrame);
         }
 
         /// <summary>

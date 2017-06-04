@@ -112,6 +112,8 @@ namespace NSCI.UI
 
         public override string ToString() => $"{{X={X},Y={Y},Width={Width},Height={Height}}}";
 
+        internal Rect Translate(Size translation) => new Rect(Location + translation, Size);
+
     }
 
 }
