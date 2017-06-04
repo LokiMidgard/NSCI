@@ -12,13 +12,9 @@ namespace NSCI.UI
 
         public UIElement Parent { get; internal set; }
 
-        internal bool WasNeverrArranged { get; private set; } = true;
-        internal bool WasNeverrMeasured { get; private set; } = true;
-        internal bool WasNeverrRendered { get; private set; } = true;
-
         internal void MeasureWithLastAvailableSize()
         {
-            Measure(lastAvailableSize);
+            Measure(this.lastAvailableSize);
         }
 
         //
@@ -59,7 +55,6 @@ namespace NSCI.UI
                 var desiredSize = new Size(0, 0);
                 desiredSize = MeasureCore(availableSize);
                 MeasureDirty = false;
-                WasNeverrMeasured = false;
                 //notify parent if our desired size changed
                 if (DesiredSize != desiredSize)
                 {
@@ -128,7 +123,6 @@ namespace NSCI.UI
 
                 ArrangedPosition = finalRect;
                 ArrangeCore(finalRect.Size);
-                WasNeverrArranged = false;
             }
             finally
             {
@@ -153,7 +147,6 @@ namespace NSCI.UI
                 RootWindow.RequestDraw();
                 lastFrame = frame;
                 RenderCore(frame);
-                WasNeverrRendered = false;
             }
             finally
             {
@@ -188,10 +181,8 @@ namespace NSCI.UI
         //     Wird den Status der Messung (Layout) für eine Windows.UI.Xaml ungültig. UIElement.
         public void InvalidateMeasure()
         {
-            if (WasNeverrMeasured)
-                return;
             this.MeasureDirty = true;
-            RootWindow.RegisterMeasureDirty(this);
+            RootWindow?.RegisterMeasureDirty(this);
         }
         //
         // Zusammenfassung:
@@ -200,15 +191,11 @@ namespace NSCI.UI
         //     die asynchron ausgeführt wird.
         public void InvalidateArrange()
         {
-            if (WasNeverrArranged)
-                return;
-            RootWindow.RegisterArrangeDirty(this);
+            RootWindow?.RegisterArrangeDirty(this);
         }
         public void InvalidateRender()
         {
-            if (WasNeverrRendered)
-                return;
-            RootWindow.RegisterRenderDirty(this);
+            RootWindow?.RegisterRenderDirty(this);
         }
 
         /// <summary>
