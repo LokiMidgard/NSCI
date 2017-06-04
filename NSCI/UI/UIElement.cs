@@ -235,19 +235,10 @@ namespace NSCI.UI
             return currentOther.Parent ?? throw new ArgumentException("No Common Acestor found.");
         }
 
-        internal void MeasureWithLastAvailableSize()
-        {
-            Measure(this.lastAvailableSize);
-        }
-        internal void ArrangeWithLastAvailableSize()
-        {
-            Arrange(ArrangedPosition);
-        }
+        internal void MeasureWithLastAvailableSize() => Measure(this.lastAvailableSize);
+        internal void ArrangeWithLastAvailableSize() => Arrange(ArrangedPosition);
 
-        internal void RenderWithLastAvailableSize()
-        {
-            Render(this.lastFrame);
-        }
+        internal void RenderWithLastAvailableSize() => Render(this.lastFrame);
 
         /// <summary>
         /// Notification that is called by Measure of a child when

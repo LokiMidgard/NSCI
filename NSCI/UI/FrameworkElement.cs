@@ -172,6 +172,11 @@ namespace NSCI.UI
         //     Containergröße bestimmt und während des Layouts benötigt.
         protected virtual Size MeasureOverride(Size availableSize)
         {
+            return EnsureMinMaxWidthHeight(availableSize);
+        }
+
+        protected Size EnsureMinMaxWidthHeight(Size availableSize)
+        {
             var width = Width ?? int.MaxValue;
             width = Math.Min(width, MaxWidth);
             width = Math.Max(width, MinWidth);

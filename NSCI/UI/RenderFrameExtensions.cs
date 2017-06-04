@@ -7,12 +7,36 @@ namespace NSCI.UI
     public static class RenderFrameExtensions
     {
 
-        public static void DrawRect(this IRenderFrame buffer, int xPos, int yPos, int width, int height, ConsoleColor forground, ConsoleColor background, SpecialChars c)
+        public static void FillRect(this IRenderFrame buffer, int xPos, int yPos, int width, int height, ConsoleColor forground, ConsoleColor background, SpecialChars c)
         {
-
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
                     buffer[x + xPos, y + yPos] = new ColoredKey((char)c, forground, background);
+        }
+        public static void DrawRect(this IRenderFrame buffer, int xPos, int yPos, int width, int height, ConsoleColor forground, ConsoleColor background, RectPen p)
+        {
+
+            // Draw corners
+            buffer[xPos, 0] = new ColoredKey(p.topLeft, forground, background);
+            buffer[xPos, yPos + height - 1] = new ColoredKey(p.bottomLeft, forground, background);
+            buffer[xPos + width - 1, yPos] = new ColoredKey(p.topRight, forground, background);
+            buffer[xPos + width - 1, yPos + height - 1] = new ColoredKey(p.bottemRight, forground, background);
+
+            //Draw top Line
+            for (int x = xPos + 1; x < xPos + width - 1; x++)
+                buffer[x, yPos] = new ColoredKey(p.top, forground, background);
+
+            //Draw bottom Line
+            for (int x = xPos + 1; x < xPos + width - 1; x++)
+                buffer[x, yPos + height - 1] = new ColoredKey(p.bottom, forground, background);
+
+            //Draw left Line
+            for (int y = yPos + 1; y < yPos + height - 1; y++)
+                buffer[xPos, y] = new ColoredKey(p.left, forground, background);
+
+            //Draw right Line
+            for (int y = yPos + 1; y < yPos + height - 1; y++)
+                buffer[xPos + width - 1, y] = new ColoredKey(p.right, forground, background);
         }
 
         public static void DrawLine(this IRenderFrame buffer, Pen pen, ConsoleColor forground, ConsoleColor background, IEnumerable<(int x, int y)> points)

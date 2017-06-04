@@ -1,8 +1,8 @@
 ﻿using NSCI;
-using NSCI.Widgets;
 using System;
 using System.Text;
 using NSCI.UI.Controls.Layput;
+using NSCI.UI.Controls;
 
 namespace TestHarness
 {
@@ -10,14 +10,16 @@ namespace TestHarness
     {
         static void Main(string[] args)
         {
-            var root = new RootWindow();
+            var root = new NSCI.Widgets.RootWindow();
 
-            var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!"  , Background = ConsoleColor.DarkYellow};
-            var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" , Background= ConsoleColor.Green};
+            var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!", Background = ConsoleColor.DarkYellow, Height = 3 };
+            var border = new Border() { Style = NSCI.UI.Controls.BorderStyle.DropShadowMedium, Background = ConsoleColor.Green, Foreground = ConsoleColor.Black };
+            border.Content = text;
+            var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!", Background = ConsoleColor.Green };
 
             var stack = new StackPanel();
 
-            stack.Items.Add(text);
+            stack.Items.Add(border);
             stack.Items.Add(text2);
 
             root.Content = stack;
@@ -51,9 +53,9 @@ namespace TestHarness
 
             root.Run();
         }
-        static void button_Clicked(object sender, EventArgs e)
-        {
-            (sender as Button).RootWindow.Detach();
-        }
+        //static void button_Clicked(object sender, EventArgs e)
+        //{
+        //    (sender as Button).RootWindow.Detach();
+        //}
     }
 }

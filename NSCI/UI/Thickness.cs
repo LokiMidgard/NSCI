@@ -11,11 +11,11 @@
         //   uniformLength:
         //     Die einheitliche Länge, die auf alle vier Seiten des umgebenden Rechtecks angewendet
         //     wird.
-        public Thickness(double uniformLength) : this(uniformLength, uniformLength, uniformLength, uniformLength) { }
+        public Thickness(int uniformLength) : this(uniformLength, uniformLength, uniformLength, uniformLength) { }
         //
         // Zusammenfassung:
         //     Initialisiert eine Windows.UI.Xaml.Thickness-Struktur, bei der bestimmte Längen
-        //     (als System.double angegeben) auf alle Seiten des Rechtecks angewendet werden.
+        //     (als System.int angegeben) auf alle Seiten des Rechtecks angewendet werden.
         //
         // Parameter:
         //   left:
@@ -29,7 +29,7 @@
         //
         //   bottom:
         //     Die Stärke für den unteren Rand des Rechtecks.
-        public Thickness(double left, double top, double right, double bottom)
+        public Thickness(int left, int top, int right, int bottom)
         {
             Left = left;
             Right = right;
@@ -43,40 +43,40 @@
         //     legt sie fest.
         //
         // Rückgabewerte:
-        //     Ein System.double, der die Breite, in Pixeln, des unteren Rands des umgebenden
+        //     Ein System.int, der die Breite, in Pixeln, des unteren Rands des umgebenden
         //     Rechtecks für diese Instanz von Windows.UI.Xaml.Thickness darstellt.Der Standard
         //     ist 0.
-        public double Bottom { get; set; }
+        public int Bottom { get; set; }
         //
         // Zusammenfassung:
         //     Ruft die Breite, in Pixeln, des linken Rands des umgebenden Rechtecks ab oder
         //     legt sie fest.
         //
         // Rückgabewerte:
-        //     Ein System.double, das die Breite, in Pixeln, des linken Rands des umgebenden
+        //     Ein System.int, das die Breite, in Pixeln, des linken Rands des umgebenden
         //     Rechtecks für diese Instanz von Windows.UI.Xaml.Thickness darstellt.Der Standard
         //     ist 0.
-        public double Left { get; set; }
+        public int Left { get; set; }
         //
         // Zusammenfassung:
         //     Ruft die Breite, in Pixeln, des rechten Rands des umgebenden Rechtecks ab oder
         //     legt sie fest.
         //
         // Rückgabewerte:
-        //     Ein System.double, der die Breite, in Pixeln, des rechten Rands des umgebenden
+        //     Ein System.int, der die Breite, in Pixeln, des rechten Rands des umgebenden
         //     Rechtecks für diese Instanz von Windows.UI.Xaml.Thickness darstellt.Der Standard
         //     ist 0.
-        public double Right { get; set; }
+        public int Right { get; set; }
         //
         // Zusammenfassung:
         //     Ruft die Breite, in Pixeln, des oberen Rands des umgebenden Rechtecks ab oder
         //     legt sie fest.
         //
         // Rückgabewerte:
-        //     Ein System.double, der die Breite, in Pixeln, des oberen Rands des umgebenden
+        //     Ein System.int, der die Breite, in Pixeln, des oberen Rands des umgebenden
         //     Rechtecks für diese Instanz von Windows.UI.Xaml.Thickness darstellt.Der Standard
         //     ist 0.
-        public double Top { get; set; }
+        public int Top { get; set; }
 
         //
         // Zusammenfassung:

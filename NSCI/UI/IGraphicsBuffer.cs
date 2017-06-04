@@ -10,6 +10,8 @@ namespace NSCI.UI
         int Width { get; }
         int Height { get; }
 
+        Rect? Clip { get; }
+
         IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?));
     }
     public struct ColoredKey

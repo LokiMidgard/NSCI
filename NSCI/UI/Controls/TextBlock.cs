@@ -40,6 +40,14 @@ namespace NSCI.UI.Controls
                 lineheight = lines.Select(x => Math.Ceiling(x.Length / (double)maxLineLength)).Cast<int>().Sum();
             }
 
+            if (lineheight < (Height ?? 0))
+            {
+                if (Height <= availableSize.Height)
+                    lineheight = Height.Value;
+                
+
+            }
+
             return new Size(maxLineLength, lineheight);
         }
 

@@ -41,7 +41,15 @@ namespace NSCI.UI.Controls
 
         protected override void RenderCore(IRenderFrame frame)
         {
-            Content?.Render(frame);
+            if (Content == null)
+            {
+                var clip = frame.Clip ?? new Rect(0, 0, frame.Width, frame.Height);
+                frame.FillRect(clip.Left, clip.Right, clip.Width, clip.Height, this.Foreground, this.Background, SpecialChars.Fill);
+            }
+            else
+            {
+                Content.Render(frame);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NSCI.Widgets;
 using Console = System.Console;
 
@@ -10,18 +11,18 @@ namespace NSCI.UI
     {
         private readonly RootWindow rootwindow;
 
-        private readonly Buffer backBuffer;
-        private readonly Buffer forBuffer;
-        private bool forBufferValid;
+        private readonly Buffer currentBuffer;
+        private readonly Buffer previousBuffer;
+        private bool previousBufferValid;
 
         internal Graphics(RootWindow rootwindow)
         {
             this.rootwindow = rootwindow;
             Width = Console.WindowWidth;
             Height = Console.WindowHeight - 1;
-            this.backBuffer = new Buffer(Width, Height);
-            this.forBuffer = new Buffer(Width, Height);
-            forBufferValid = false;
+            this.currentBuffer = new Buffer(Width, Height);
+            this.previousBuffer = new Buffer(Width, Height);
+            this.previousBufferValid = false;
 
             Console.SetCursorPosition(0, 0); // Reset Curso so we can set buffer
             Console.BufferHeight = Height + 1;
@@ -32,13 +33,13 @@ namespace NSCI.UI
         {
             private readonly IRenderFrame parent;
             private readonly Rect translation;
-            private readonly Rect? clip;
+            public Rect? Clip { get; }
 
             public BufferWraper(IRenderFrame parent, Rect? translation = default(Rect?), Rect? clip = default(Rect?))
             {
                 this.parent = parent;
                 this.translation = translation ?? new Rect(0, 0, parent.Width, parent.Height);
-                this.clip = clip;
+                Clip = clip;
 
                 if (this.translation.Right > parent.Width || this.translation.Bottom > parent.Height || this.translation.Left < 0 || this.translation.Top < 0)
                     throw new ArgumentOutOfRangeException(nameof(translation), $"Translation must be insied the width and height of the parent. Width={parent.Width},Height={parent.Height}. Translation={this.translation}");
@@ -64,7 +65,7 @@ namespace NSCI.UI
                     if (y < 0 || y > this.translation.Height)
                         throw new ArgumentOutOfRangeException(nameof(y));
 
-                    if (this.clip.HasValue && (x < this.clip.Value.Left || x > this.clip.Value.Right || y < this.clip.Value.Top || y > this.clip.Value.Bottom))
+                    if (Clip.HasValue && (x < Clip.Value.Left || x > Clip.Value.Right || y < Clip.Value.Top || y > Clip.Value.Bottom))
                         return; // we doe nothing out of clipping
 
                     x += this.translation.X;
@@ -77,7 +78,19 @@ namespace NSCI.UI
 
             public int Height => this.translation.Height;
 
-            public IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?)) => new BufferWraper(this, translation, clip);
+
+            /// <summary>
+            /// Returns a Reduced Renderframe
+            /// </summary>
+            /// <param name="translation">the Translation in Parentscordiants.</param>
+            /// <param name="clip">The Clip in Parents coordinates</param>
+            /// <returns></returns>
+            public IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?))
+            {
+                if (clip.HasValue && translation.HasValue)
+                    clip = new Rect(clip.Value.Left + translation.Value.Left, clip.Value.Top + translation.Value.Top, clip.Value.Width - translation.Value.Left, clip.Value.Height - translation.Value.Top);
+                return new BufferWraper(this, translation, clip);
+            }
 
         }
 
@@ -121,6 +134,8 @@ namespace NSCI.UI
 
             public int Height { get; private set; }
 
+            public Rect? Clip => null;
+
             public ColoredKey this[int x, int y] { get => this[GetBufferIndex(x, y)]; set => this[GetBufferIndex(x, y)] = value; }
 
             private int GetBufferIndex(int x, int y) => x + y * Width;
@@ -145,62 +160,77 @@ namespace NSCI.UI
         }
 
 
-        internal void Resize()
+        internal async void Resize(int counter = 0)
         {
-            Width = Console.WindowWidth;
-            Height = Console.WindowHeight - 1;
-            backBuffer.Resize(Width, Height);
-            forBuffer.Resize(Width, Height);
+            try
+            {
+                Width = Console.WindowWidth;
+                Height = Console.WindowHeight - 1;
+                currentBuffer.Resize(Width, Height);
+                previousBuffer.Resize(Width, Height);
+                this.previousBufferValid = false;
 
-            Console.SetCursorPosition(0, 0); // Reset Curso so we can set buffer
-            Console.BufferHeight = Height + 1;
-            Console.BufferWidth = Width;
+                Console.SetCursorPosition(0, 0); // Reset Curso so we can set buffer
+                Console.BufferHeight = Height + 1;
+                Console.BufferWidth = Width;
+
+            }
+            catch (Exception)
+            {
+                if (counter < 3)
+                {
+                    await Task.Delay(200);
+                    Resize(counter + 1);
+                }
+                else
+                    throw;
+            }
         }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public IRenderFrame GraphicsBuffer => this.backBuffer;
+        public IRenderFrame GraphicsBuffer => this.currentBuffer;
 
 
         internal void Draw()
         {
-            if (this.forBufferValid)
+            if (this.previousBufferValid)
             {
 
-                for (int i = 0; i < this.backBuffer.Length; i++)
+                for (int i = 0; i < this.currentBuffer.Length; i++)
                 {
-                    if (this.backBuffer[i] == this.forBuffer[i])
+                    if (this.currentBuffer[i] == this.previousBuffer[i])
                         continue;
                     var (left, top) = GetXYFromIndex(i);
                     Console.SetCursorPosition(left, top);
 
-                    Console.ForegroundColor = this.backBuffer.ForgroundBuffer[i];
-                    Console.BackgroundColor = this.backBuffer.BackgroundBuffer[i];
+                    Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
+                    Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
                     int j = 0;
                     while (true)
                     {
                         int k = 0;
-                        while (i + j < this.backBuffer.Length
-                            && this.backBuffer.ForgroundBuffer[i + j] == this.backBuffer.ForgroundBuffer[i]
-                            && this.backBuffer.BackgroundBuffer[i + j] == this.backBuffer.BackgroundBuffer[i]
-                            && this.backBuffer[i + j] != this.forBuffer[i + j])
+                        while (i + j < this.currentBuffer.Length
+                            && this.currentBuffer.ForgroundBuffer[i + j] == this.currentBuffer.ForgroundBuffer[i]
+                            && this.currentBuffer.BackgroundBuffer[i + j] == this.currentBuffer.BackgroundBuffer[i]
+                            && this.currentBuffer[i + j] != this.previousBuffer[i + j])
                             ++j;
-                        while (i + j + k < this.backBuffer.Length
-                            && this.backBuffer.ForgroundBuffer[i + j + k] == this.backBuffer.ForgroundBuffer[i]
-                            && this.backBuffer.BackgroundBuffer[i + j + k] == this.backBuffer.BackgroundBuffer[i]
-                            && this.backBuffer[i + j + k] == this.forBuffer[i + j + k])
+                        while (i + j + k < this.currentBuffer.Length
+                            && this.currentBuffer.ForgroundBuffer[i + j + k] == this.currentBuffer.ForgroundBuffer[i]
+                            && this.currentBuffer.BackgroundBuffer[i + j + k] == this.currentBuffer.BackgroundBuffer[i]
+                            && this.currentBuffer[i + j + k] == this.previousBuffer[i + j + k])
                             ++k;
 
-                        if (i + j + k < this.backBuffer.Length
-                            && this.backBuffer.ForgroundBuffer[i + j + k] == this.backBuffer.ForgroundBuffer[i]
-                            && this.backBuffer.BackgroundBuffer[i + j + k] == this.backBuffer.BackgroundBuffer[i])
+                        if (i + j + k < this.currentBuffer.Length
+                            && this.currentBuffer.ForgroundBuffer[i + j + k] == this.currentBuffer.ForgroundBuffer[i]
+                            && this.currentBuffer.BackgroundBuffer[i + j + k] == this.currentBuffer.BackgroundBuffer[i])
                             j += k;
                         else
                             break;
                     }
 
-                    Console.Write(this.backBuffer.CharacterBuffer, i, j);
+                    Console.Write(this.currentBuffer.CharacterBuffer, i, j);
                     i += j;
                 }
             }
@@ -208,24 +238,24 @@ namespace NSCI.UI
             {
 
                 Console.SetCursorPosition(0, 0);
-                for (int i = 0, j = 0; i < this.backBuffer.Length; i += j)
+                for (int i = 0, j = 0; i < this.currentBuffer.Length; i += j)
                 {
 
-                    Console.ForegroundColor = this.backBuffer.ForgroundBuffer[i];
-                    Console.BackgroundColor = this.backBuffer.BackgroundBuffer[i];
+                    Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
+                    Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
                     j = 1;
-                    while (i + j < this.backBuffer.Length
-                        && this.backBuffer.ForgroundBuffer[i + j] == this.backBuffer.ForgroundBuffer[i]
-                        && this.backBuffer.BackgroundBuffer[i + j] == this.backBuffer.BackgroundBuffer[i])
+                    while (i + j < this.currentBuffer.Length
+                        && this.currentBuffer.ForgroundBuffer[i + j] == this.currentBuffer.ForgroundBuffer[i]
+                        && this.currentBuffer.BackgroundBuffer[i + j] == this.currentBuffer.BackgroundBuffer[i])
                         ++j;
 
-                    Console.Write(this.backBuffer.CharacterBuffer, i, j);
+                    Console.Write(this.currentBuffer.CharacterBuffer, i, j);
                     ;
                 }
 
             }
 
-            this.forBuffer.CopyFrom(this.backBuffer);
+            this.previousBuffer.CopyFrom(this.currentBuffer);
         }
 
         private (int x, int y) GetXYFromIndex(int i) => (i % Width, i / Width);
