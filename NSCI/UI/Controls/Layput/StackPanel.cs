@@ -32,8 +32,6 @@ namespace NSCI.UI.Controls.Layput
             if (sumHight < finalSize.Height)
                 elementHeights[elementHeights.Length - 1] += finalSize.Height - sumHight;
 
-
-
             for (int i = 0; i < Items.Count; i++)
                 Items[i].Arrange(new Rect(0, i == 0 ? 0 : elementHeights.Take(i).Sum(), finalSize.Width, elementHeights[i]));
         }

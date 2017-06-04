@@ -5,10 +5,22 @@ namespace NSCI.UI
 {
     public abstract class UIElement
     {
+        private Size lastAvailableSize;
+        private IRenderFrame lastFrame;
 
-        public RootWindow RootWindow { get; }
+        public RootWindow RootWindow => this is RootWindow ? this as RootWindow : Parent?.RootWindow;
 
         public UIElement Parent { get; internal set; }
+
+        internal bool WasNeverrArranged { get; private set; } = true;
+        internal bool WasNeverrMeasured { get; private set; } = true;
+        internal bool WasNeverrRendered { get; private set; } = true;
+
+        internal void MeasureWithLastAvailableSize()
+        {
+            Measure(lastAvailableSize);
+        }
+
         //
         // Zusammenfassung:
         //     Aktualisiert die Windows.UI.Xaml. UIElement.DesiredSize von einem Windows.UI.Xaml.
@@ -29,6 +41,10 @@ namespace NSCI.UI
             try
             {
                 MeasureInProgress = true;
+                this.lastAvailableSize = availableSize;
+                //No reason to calc the same thing.
+                if (!MeasureDirty)
+                    return;
 
                 //if hidden, we should not Measure, keep dirty
                 if (!IsVisible)
@@ -37,19 +53,13 @@ namespace NSCI.UI
                     return;
                 }
 
-
-                //No reason to calc the same thing.
-                if (!MeasureDirty)
-                    return;
-
-
                 // you can Arrange without measure but not measure without arrange
                 InvalidateArrange();
 
                 var desiredSize = new Size(0, 0);
                 desiredSize = MeasureCore(availableSize);
                 MeasureDirty = false;
-
+                WasNeverrMeasured = false;
                 //notify parent if our desired size changed
                 if (DesiredSize != desiredSize)
                 {
@@ -80,6 +90,12 @@ namespace NSCI.UI
 
         protected virtual Size MeasureCore(Size availableSize) => Size.Empty;
 
+
+        internal void ArrangeWithLastAvailableSize()
+        {
+            Arrange(ArrangedPosition);
+        }
+
         //
         // Zusammenfassung:
         //     Positioniert untergeordnete Objekte und bestimmt die Größe für ein Windows.UI.Xaml.
@@ -96,8 +112,23 @@ namespace NSCI.UI
             try
             {
                 ArrangeInProgress = true;
+
+                // Should not happen, Should we ignore it or throw an exception
+                //if (!IsVisible)
+                //{
+                //    DesiredSize = Size.Empty;
+                //    return;
+                //}
+
+                //No reason to calc the same thing.
+                if (finalRect == this.ArrangedPosition)
+                    return;
+
+                this.InvalidateRender();
+
                 ArrangedPosition = finalRect;
                 ArrangeCore(finalRect.Size);
+                WasNeverrArranged = false;
             }
             finally
             {
@@ -109,12 +140,20 @@ namespace NSCI.UI
         {
         }
 
+        internal void RenderWithLastAvailableSize()
+        {
+            Render(lastFrame);
+        }
+
         public void Render(IRenderFrame frame)
         {
             try
             {
                 RenderInProgress = true;
+                RootWindow.RequestDraw();
+                lastFrame = frame;
                 RenderCore(frame);
+                WasNeverrRendered = false;
             }
             finally
             {
@@ -147,14 +186,30 @@ namespace NSCI.UI
         //
         // Zusammenfassung:
         //     Wird den Status der Messung (Layout) für eine Windows.UI.Xaml ungültig. UIElement.
-        public void InvalidateMeasure() { }
+        public void InvalidateMeasure()
+        {
+            if (WasNeverrMeasured)
+                return;
+            this.MeasureDirty = true;
+            RootWindow.RegisterMeasureDirty(this);
+        }
         //
         // Zusammenfassung:
         //     Wird den Anordnungszustand (Layout) für eine Windows.UI.Xaml ungültig. UIElement.
         //     Nach dem Durchführen der Windows.UI.Xaml. UIElement haben das Layout aktualisiert,
         //     die asynchron ausgeführt wird.
-        public void InvalidateArrange() { }
-        public void InvalidateRender() { }
+        public void InvalidateArrange()
+        {
+            if (WasNeverrArranged)
+                return;
+            RootWindow.RegisterArrangeDirty(this);
+        }
+        public void InvalidateRender()
+        {
+            if (WasNeverrRendered)
+                return;
+            RootWindow.RegisterRenderDirty(this);
+        }
 
         /// <summary>
         /// Returns the Position and Size of the Controle relative to this Controls left Upper point.

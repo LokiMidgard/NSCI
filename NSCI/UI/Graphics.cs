@@ -10,8 +10,9 @@ namespace NSCI.UI
     {
         private readonly RootWindow rootwindow;
 
-        private Buffer backBuffer;
-        private Buffer forBuffer;
+        private readonly Buffer backBuffer;
+        private readonly Buffer forBuffer;
+        private bool forBufferValid;
 
         internal Graphics(RootWindow rootwindow)
         {
@@ -19,8 +20,10 @@ namespace NSCI.UI
             Width = Console.WindowWidth;
             Height = Console.WindowHeight - 1;
             this.backBuffer = new Buffer(Width, Height);
-            this.forBuffer = null;
+            this.forBuffer = new Buffer(Width, Height);
+            forBufferValid = false;
 
+            Console.SetCursorPosition(0, 0); // Reset Curso so we can set buffer
             Console.BufferHeight = Height + 1;
             Console.BufferWidth = Width;
 
@@ -103,9 +106,9 @@ namespace NSCI.UI
                     this.forground[index] = value.forground;
                 }
             }
-            private readonly char[] buffer;
-            private readonly ConsoleColor[] background;
-            private readonly ConsoleColor[] forground;
+            private char[] buffer;
+            private ConsoleColor[] background;
+            private ConsoleColor[] forground;
 
 
             public char[] CharacterBuffer => this.buffer;
@@ -114,9 +117,9 @@ namespace NSCI.UI
 
             public int Length => this.buffer.Length;
 
-            public int Width { get; }
+            public int Width { get; private set; }
 
-            public int Height { get; }
+            public int Height { get; private set; }
 
             public ColoredKey this[int x, int y] { get => this[GetBufferIndex(x, y)]; set => this[GetBufferIndex(x, y)] = value; }
 
@@ -130,10 +133,29 @@ namespace NSCI.UI
             }
             public IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?)) => new BufferWraper(this, translation, clip);
 
+            internal void Resize(int width, int height)
+            {
+                var size = width * height;
+                Width = width;
+                Height = height;
+                Array.Resize(ref buffer, size);
+                Array.Resize(ref background, size);
+                Array.Resize(ref forground, size);
+            }
         }
 
 
+        internal void Resize()
+        {
+            Width = Console.WindowWidth;
+            Height = Console.WindowHeight - 1;
+            backBuffer.Resize(Width, Height);
+            forBuffer.Resize(Width, Height);
 
+            Console.SetCursorPosition(0, 0); // Reset Curso so we can set buffer
+            Console.BufferHeight = Height + 1;
+            Console.BufferWidth = Width;
+        }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -143,7 +165,7 @@ namespace NSCI.UI
 
         internal void Draw()
         {
-            if (this.forBuffer != null)
+            if (this.forBufferValid)
             {
 
                 for (int i = 0; i < this.backBuffer.Length; i++)
@@ -203,8 +225,6 @@ namespace NSCI.UI
 
             }
 
-            if (this.forBuffer == null)
-                this.forBuffer = new Buffer(this.backBuffer.Width, this.backBuffer.Height);
             this.forBuffer.CopyFrom(this.backBuffer);
         }
 

@@ -8,6 +8,17 @@ namespace NSCI
 {
     internal static class ConsoleHelper
     {
+        public static IEnumerable<T> ConsumableEnumerator<T>(this Queue<T> queue)
+        {
+            while (queue.Count != 0)
+                yield return queue.Dequeue();
+        }
+        public static IEnumerable<T> ConsumableEnumerator<T>(this Stack<T> queue)
+        {
+            while (queue.Count != 0)
+                yield return queue.Pop();
+        }
+
         internal static void ResetConsoleWindow()
         {
             Console.SetWindowPosition(0, 0);
@@ -49,7 +60,7 @@ namespace NSCI
 
         internal delegate void DrawBoxMethod(int x, int y, int w, int h, ConsoleColor c);
 
-        internal static void DrawNothing(int x, int y, int w, int h, ConsoleColor c){ }
+        internal static void DrawNothing(int x, int y, int w, int h, ConsoleColor c) { }
 
         internal static void DrawRectSolid(int x, int y, int w, int h, ConsoleColor c)
         {

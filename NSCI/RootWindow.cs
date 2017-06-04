@@ -99,83 +99,9 @@ namespace NSCI.Widgets
             Nito.AsyncEx.AsyncContext.Run(async () =>
             {
                 var g = new UI.Graphics(this);
-                //Console.BackgroundColor = ConsoleColor.Magenta;
-
-                //ConsoleHelper.DrawBlockOutline(3, 3, 6, 6, ConsoleColor.Green);
-
-                //g.GraphicsBuffer.DrawLine(UI.Pen.SingelLine, ConsoleColor.Red, ConsoleColor.DarkGreen, (3, 3), (3, 5), (2, 5), (2, 4), (1, 4), (1, 6), (6, 6), (6, 4), (8, 4), (8, 3), (7, 3));
-                //g.Draw();
-                //Console.ReadKey(true);
-
-                //Console.BackgroundColor = ConsoleColor.Black;
-                //Console.Clear();
-                //Console.BackgroundColor = ConsoleColor.Magenta;
-                //Console.ForegroundColor= ConsoleColor.White;
-                //for (char i = (char)0; i < char.MaxValue; i++)
-                //{
-                //    Console.Write((int)i);
-                //    Console.Write(i);
-                //    //Console.WriteLine();
-                //    if (i % 512 == 0)
-                //    {
-                //        Console.BackgroundColor = ConsoleColor.Black;
-                //        Console.Clear();
-                //        Console.BackgroundColor = ConsoleColor.Magenta;
-                //        Console.ForegroundColor = ConsoleColor.White;
-                //    }
-                //    await Task.Delay(200);
-                //}
-                //Console.ReadKey(false);
-
-                //var xPos = 3;
-                //var yPos = 3;
-                //while (true)
-                //{
-                //    while (queue.TryDequeue(out var k))
-                //    {
-                //        g.GraphicsBuffer.DrawRect(xPos, yPos, 3, 3, ConsoleColor.Black, ConsoleColor.Black, UI.SpecialChars.Fill);
-                //        switch (k.Key)
-                //        {
-                //            case ConsoleKey.LeftArrow:
-                //                xPos--;
-                //                break;
-                //            case ConsoleKey.UpArrow:
-                //                yPos--;
-                //                break;
-                //            case ConsoleKey.RightArrow:
-                //                xPos++;
-                //                break;
-                //            case ConsoleKey.DownArrow:
-                //                yPos++;
-                //                break;
-
-                //        }
-                //        g.GraphicsBuffer.DrawRect(xPos, yPos, 3, 3, ConsoleColor.Black, ConsoleColor.Red, UI.SpecialChars.Shade);
-
-                //    }
-                //    g.GraphicsBuffer.DrawLine(UI.Pen.SingelLine, ConsoleColor.Red, ConsoleColor.DarkGreen, (3, 3), (3, 5), (2, 5), (2, 4), (1, 4), (1, 6), (6, 6), (6, 4), (8, 4), (8, 3), (7, 3));
-
-                //    g.Draw();
-                //    await Task.Delay(50);
-                //}
-
-
-
-
-                //var childQueue = new Queue<UIElement>();
-                //childQueue.Enqueue(this.Content);
-                //while (childQueue.Count != 0)
-                //{
-                //    var item = childQueue.Dequeue();
-                //    item.InitilizeAsync();
-
-                //    foreach (var toEnqueue in item.Children)
-                //        childQueue.Enqueue(toEnqueue);
-                //}
-
                 this.Measure(new Size(g.Width, g.Height));
 
-                this.Arrange(new Rect(0,0,g.Width, g.Height));
+                this.Arrange(new Rect(0, 0, g.Width, g.Height));
                 this.Render(g.GraphicsBuffer);
 
                 g.Draw();
@@ -188,12 +114,32 @@ namespace NSCI.Widgets
                     {
                         Width = Console.WindowWidth;
                         Height = Console.WindowHeight;
+                        g.Resize();
 
-                        this.InvalidateMeasure();
+                        //this.InvalidateMeasure();
+                        // We ned to render evything new. :(
+                        this.Measure(new Size(g.Width, g.Height));
+                        this.Arrange(new Rect(0, 0, g.Width, g.Height));
+                        this.Render(g.GraphicsBuffer);
+
                         //Draw();
                     }
 
 
+
+
+                    foreach (var item in elementsMeasureDirty.ConsumableEnumerator())
+                        item.MeasureWithLastAvailableSize();
+
+                    foreach (var item in elementsArrangeDirty.ConsumableEnumerator())
+                        item.ArrangeWithLastAvailableSize();
+
+                    foreach (var item in elementsRenderDirty.ConsumableEnumerator())
+                        item.RenderWithLastAvailableSize();
+
+                    if (needToDraw)
+                        g.Draw();
+                    needToDraw = false;
                     await Task.Delay(100);
                     while (this.running && queue.TryDequeue(out var k))
                     {
@@ -250,12 +196,32 @@ namespace NSCI.Widgets
 
                 }
             });
-
+            Console.ResetColor();
         }
 
-        internal ContentManager GetContentManager()
+        internal void RequestDraw()
         {
-            throw new NotImplementedException();
+            this.needToDraw = true;
+        }
+
+        private readonly Queue<UIElement> elementsRenderDirty = new Queue<UIElement>();
+        private readonly Queue<UIElement> elementsMeasureDirty = new Queue<UIElement>();
+        private readonly Queue<UIElement> elementsArrangeDirty = new Queue<UIElement>();
+        private bool needToDraw;
+
+        internal void RegisterRenderDirty(UIElement uIElement)
+        {
+            elementsRenderDirty.Enqueue(uIElement);
+        }
+
+        internal void RegisterArrangeDirty(UIElement uIElement)
+        {
+            elementsArrangeDirty.Enqueue(uIElement);
+        }
+
+        internal void RegisterMeasureDirty(UIElement uIElement)
+        {
+            elementsMeasureDirty.Enqueue(uIElement);
         }
 
         private bool HandleWidgetInput(ConsoleKeyInfo k)
