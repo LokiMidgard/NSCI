@@ -125,9 +125,6 @@ namespace NSCI.Widgets
                         //Draw();
                     }
 
-
-
-
                     foreach (var item in elementsMeasureDirty.ConsumableEnumerator())
                         item.MeasureWithLastAvailableSize();
 
@@ -163,40 +160,40 @@ namespace NSCI.Widgets
                         //    }
                         //}
 
-                        //if (ProcessKey)
-                        //{
-                        //    switch (k.Key)
-                        //    {
-                        //        case ConsoleKey.Tab:
-                        //            CycleFocus((k.Modifiers == ConsoleModifiers.Shift) ? -1 : 1);
-                        //            break;
-                        //        case ConsoleKey.RightArrow:
-                        //            MoveRight();
-                        //            break;
-                        //        case ConsoleKey.LeftArrow:
-                        //            MoveLeft();
-                        //            break;
-                        //        case ConsoleKey.UpArrow:
-                        //            MoveUp();
-                        //            break;
-                        //        case ConsoleKey.DownArrow:
-                        //            MoveDown();
-                        //            break;
-                        //        case ConsoleKey.Spacebar:
-                        //        case ConsoleKey.Enter:
-                        //            EnterPressed();
-                        //            break;
-                        //        case ConsoleKey.Escape:
-                        //            this.running = false;
-                        //            break;
-                        //    }
-                        //}
+                        if (ProcessKey)
+                        {
+                            switch (k.Key)
+                            {
+                                //case ConsoleKey.Tab:
+                                //    CycleFocus((k.Modifiers == ConsoleModifiers.Shift) ? -1 : 1);
+                                //    break;
+                                //case ConsoleKey.RightArrow:
+                                //    MoveRight();
+                                //    break;
+                                //case ConsoleKey.LeftArrow:
+                                //    MoveLeft();
+                                //    break;
+                                //case ConsoleKey.UpArrow:
+                                //    MoveUp();
+                                //    break;
+                                //case ConsoleKey.DownArrow:
+                                //    MoveDown();
+                                //    break;
+                                //case ConsoleKey.Spacebar:
+                                //case ConsoleKey.Enter:
+                                //    EnterPressed();
+                                //    break;
+                                case ConsoleKey.Escape:
+                                    this.running = false;
+                                    break;
+                            }
+                        }
                     }
 
 
                 }
             });
-            Console.ResetColor();
+            Console.ResetColor(); // We do not want to have spooky colors
         }
 
         internal void RequestDraw()
