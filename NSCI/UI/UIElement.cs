@@ -12,10 +12,27 @@ namespace NSCI.UI
 
         public UIElement Parent { get; internal set; }
 
-        internal void MeasureWithLastAvailableSize()
-        {
-            Measure(this.lastAvailableSize);
-        }
+        //
+        // Zusammenfassung:
+        //     Ruft die Größe ab, die diese Windows.UI.Xaml. UIElement berechnet, der während
+        //     des messdurchlaufs des Layoutvorgangs.
+        //
+        // Rückgabewerte:
+        //     Die Größe, die diese Windows.UI.Xaml. UIElement berechnet, der während des messdurchlaufs
+        //     des Layoutvorgangs.
+        public Size DesiredSize { get; private set; }
+
+        public bool IsVisible { get; set; } = true;
+
+        public bool MeasureDirty { get; private set; } = true;
+
+        public bool ArrangeInProgress { get; private set; }
+
+        public bool RenderInProgress { get; private set; }
+
+        internal bool MeasureInProgress { get; private set; }
+
+        internal Rect ArrangedPosition { get; private set; }
 
         //
         // Zusammenfassung:
@@ -70,27 +87,6 @@ namespace NSCI.UI
             }
         }
 
-        /// <summary>
-        /// Notification that is called by Measure of a child when
-        /// it ends up with different desired size then before.
-        /// </summary>
-        /// <remarks>
-        /// This method will only be called when Measure was not called by the Parent Measure.
-        /// </remarks>
-        protected virtual void OnChildDesiredSizeChanged(UIElement child)
-        {
-            if (!MeasureDirty)
-                InvalidateMeasure();
-        }
-
-        protected virtual Size MeasureCore(Size availableSize) => Size.Empty;
-
-
-        internal void ArrangeWithLastAvailableSize()
-        {
-            Arrange(ArrangedPosition);
-        }
-
         //
         // Zusammenfassung:
         //     Positioniert untergeordnete Objekte und bestimmt die Größe für ein Windows.UI.Xaml.
@@ -130,15 +126,6 @@ namespace NSCI.UI
             }
         }
 
-        protected virtual void ArrangeCore(Size size)
-        {
-        }
-
-        internal void RenderWithLastAvailableSize()
-        {
-            Render(lastFrame);
-        }
-
         public void Render(IRenderFrame frame)
         {
             try
@@ -154,28 +141,6 @@ namespace NSCI.UI
             }
         }
 
-        protected virtual void RenderCore(IRenderFrame frame)
-        {
-
-        }
-
-        //
-        // Zusammenfassung:
-        //     Ruft die Größe ab, die diese Windows.UI.Xaml. UIElement berechnet, der während
-        //     des messdurchlaufs des Layoutvorgangs.
-        //
-        // Rückgabewerte:
-        //     Die Größe, die diese Windows.UI.Xaml. UIElement berechnet, der während des messdurchlaufs
-        //     des Layoutvorgangs.
-        public Size DesiredSize { get; private set; }
-
-        public bool IsVisible { get; set; } = true;
-        public bool MeasureDirty { get; private set; } = true;
-        internal bool MeasureInProgress { get; private set; }
-        public bool ArrangeInProgress { get; private set; }
-        public bool RenderInProgress { get; private set; }
-        internal Rect ArrangedPosition { get; private set; }
-
         //
         // Zusammenfassung:
         //     Wird den Status der Messung (Layout) für eine Windows.UI.Xaml ungültig. UIElement.
@@ -184,6 +149,7 @@ namespace NSCI.UI
             this.MeasureDirty = true;
             RootWindow?.RegisterMeasureDirty(this);
         }
+
         //
         // Zusammenfassung:
         //     Wird den Anordnungszustand (Layout) für eine Windows.UI.Xaml ungültig. UIElement.
@@ -193,6 +159,7 @@ namespace NSCI.UI
         {
             RootWindow?.RegisterArrangeDirty(this);
         }
+
         public void InvalidateRender()
         {
             RootWindow?.RegisterRenderDirty(this);
@@ -210,5 +177,40 @@ namespace NSCI.UI
             throw new NotImplementedException();
         }
 
+        internal void MeasureWithLastAvailableSize()
+        {
+            Measure(this.lastAvailableSize);
+        }
+        internal void ArrangeWithLastAvailableSize()
+        {
+            Arrange(ArrangedPosition);
+        }
+
+        internal void RenderWithLastAvailableSize()
+        {
+            Render(lastFrame);
+        }
+
+        /// <summary>
+        /// Notification that is called by Measure of a child when
+        /// it ends up with different desired size then before.
+        /// </summary>
+        /// <remarks>
+        /// This method will only be called when Measure was not called by the Parent Measure.
+        /// </remarks>
+        protected virtual void OnChildDesiredSizeChanged(UIElement child)
+        {
+            if (!MeasureDirty)
+                InvalidateMeasure();
+        }
+
+        protected virtual Size MeasureCore(Size availableSize) => Size.Empty;
+        protected virtual void ArrangeCore(Size size)
+        {
+        }
+        protected virtual void RenderCore(IRenderFrame frame)
+        {
+
+        }
     }
 }
