@@ -3,6 +3,7 @@ using System;
 using System.Text;
 using NSCI.UI.Controls.Layput;
 using NSCI.UI.Controls;
+using System.Threading.Tasks;
 
 namespace TestHarness
 {
@@ -23,6 +24,21 @@ namespace TestHarness
             stack.Items.Add(text2);
 
             root.Content = stack;
+
+            root.BeforeStart += async () =>
+              {
+                  var styles = (NSCI.UI.Controls.BorderStyle[])Enum.GetValues(typeof(NSCI.UI.Controls.BorderStyle));
+                  while (root.Running) // this endless loop would prevent the App from quitting :/ Need to handle on framework level.
+                  {
+                      foreach (var s in styles)
+                      {
+                          if (!root.Running)
+                              break;
+                          await Task.Delay(1000);
+                          border.Style = s;
+                      }
+                  }
+              };
 
             //var dialog = new Dialog(root) { Text = "Hello World!", Width = 60, Height = 32, Top = 4, Left = 4, Border = BorderStyle.Thick };
             //new Label(dialog) { Text = "This is a dialog!", Top = 2, Left = 2 };

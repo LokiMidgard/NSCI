@@ -129,12 +129,8 @@ namespace NSCI.UI
                 //    return;
                 //}
 
-                //No reason to calc the same thing.
-                if (finalRect == ArrangedPosition)
-                    return;
-
                 InvalidateRender();
-
+                RootWindow.UnRegisterArrangeDirty(this);
                 ArrangedPosition = finalRect;
                 ArrangeCore(finalRect.Size);
             }

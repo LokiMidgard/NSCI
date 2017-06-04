@@ -8,7 +8,20 @@ namespace NSCI.UI.Controls
     {
         private BorderStyle style;
 
-        public BorderStyle Style { get => this.style; set => this.style = value; }
+        public BorderStyle Style
+        {
+            get => this.style; set
+            {
+                var oldThickness = BorderThikness;
+                this.style = value;
+                var newThickness = BorderThikness;
+                if (oldThickness != newThickness)
+                    InvalidateMeasure();
+
+                // InvalidateMeasure not always results in invalidate Render!
+                InvalidateRender();
+            }
+        }
 
         public Thickness BorderThikness
         {

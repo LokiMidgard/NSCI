@@ -30,6 +30,7 @@ namespace NSCI.Widgets
             //this.AllChildren = new List<Widget>();
         }
 
+        public event Action BeforeStart;
 
 
         private Widget _activeWidget;
@@ -98,6 +99,9 @@ namespace NSCI.Widgets
             //g.DrawRect(3, 3, 3, 3, ConsoleColor.Red, ConsoleColor.Red, UI.SpecialChars.Shade);
             Nito.AsyncEx.AsyncContext.Run(async () =>
             {
+
+                BeforeStart?.Invoke();
+
                 var g = new UI.Graphics(this);
                 this.Measure(new Size(g.Width, g.Height));
 
@@ -196,29 +200,35 @@ namespace NSCI.Widgets
             Console.ResetColor(); // We do not want to have spooky colors
         }
 
+        internal void UnRegisterArrangeDirty(UIElement uIElement)
+        {
+            elementsArrangeDirty.Remove(uIElement);
+        }
+
         internal void RequestDraw()
         {
             this.needToDraw = true;
         }
 
-        private readonly Queue<UIElement> elementsRenderDirty = new Queue<UIElement>();
-        private readonly Queue<UIElement> elementsMeasureDirty = new Queue<UIElement>();
-        private readonly Queue<UIElement> elementsArrangeDirty = new Queue<UIElement>();
+        private readonly OrderedList<UIElement> elementsRenderDirty = new OrderedList<UIElement>(DepthComparer.Instance);
+        private readonly OrderedList<UIElement> elementsMeasureDirty = new OrderedList<UIElement>(DepthComparer.Instance);
+        private readonly OrderedList<UIElement> elementsArrangeDirty = new OrderedList<UIElement>(DepthComparer.Instance);
         private bool needToDraw;
 
         internal void RegisterRenderDirty(UIElement uIElement)
         {
-            elementsRenderDirty.Enqueue(uIElement);
+
+            elementsRenderDirty.Add(uIElement);
         }
 
         internal void RegisterArrangeDirty(UIElement uIElement)
         {
-            elementsArrangeDirty.Enqueue(uIElement);
+            elementsArrangeDirty.Add(uIElement);
         }
 
         internal void RegisterMeasureDirty(UIElement uIElement)
         {
-            elementsMeasureDirty.Enqueue(uIElement);
+            elementsMeasureDirty.Add(uIElement);
         }
 
         private bool HandleWidgetInput(ConsoleKeyInfo k)
@@ -424,5 +434,14 @@ namespace NSCI.Widgets
         //        return obj;
         //    }
         //}
+        private class DepthComparer : IComparer<UIElement>
+        {
+            private DepthComparer()
+            {
+
+            }
+            public static readonly DepthComparer Instance = new DepthComparer();
+            public int Compare(UIElement x, UIElement y) => x.Depth.CompareTo(y.Depth);
+        }
     }
 }

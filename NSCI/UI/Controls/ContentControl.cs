@@ -20,6 +20,7 @@ namespace NSCI.UI.Controls
                     content = value;
                     if (content != null)
                         content.Parent = this;
+                    InvalidateMeasure();
                 }
             }
         }
