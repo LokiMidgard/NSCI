@@ -29,7 +29,7 @@ namespace NSCI
         public new bool Remove(T item)
         {
             var foundIndex = GetInsertIndex(item);
-            if (foundIndex < 0) // No element found
+            if (foundIndex < 0 || Count == 0) // No element found
                 return false;
 
             //we found one Item that has the same Size, but this must not be the equals to the searched object.
