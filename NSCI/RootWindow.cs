@@ -98,8 +98,13 @@ namespace NSCI.Widgets
             }, TaskCreationOptions.LongRunning);
             //g.DrawRect(3, 3, 3, 3, ConsoleColor.Red, ConsoleColor.Red, UI.SpecialChars.Shade);
             Nito.AsyncEx.AsyncContext.Run(() => Loop(queue));
+            var uiThread = new Nito.AsyncEx.AsyncContextThread();
+            uiThread.Factory.StartNew(Loop, queue, TaskCreationOptions.LongRunning);
+            uiThread.Join();
             Console.ResetColor(); // We do not want to have spooky colors
         }
+
+        private Task Loop(object inputQueue) => Loop((System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo>)inputQueue);
 
         private async Task Loop(System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo> inputQueue)
         {
