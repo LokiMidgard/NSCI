@@ -84,7 +84,7 @@ namespace NSCI.UI.Controls
                 var borderThikness = BorderThikness;
                 var borderWith = borderThikness.Left + borderThikness.Right;
                 var borderHeight = borderThikness.Top + borderThikness.Bottom;
-                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, Foreground, Background, SpecialChars.Fill);
+                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, ActualForeground, ActuellBackground, SpecialChars.Fill);
             }
         }
 
@@ -114,7 +114,7 @@ namespace NSCI.UI.Controls
                     throw new NotImplementedException($"BoarderStyle {Style} not implemented.");
             }
 
-            frame.DrawRect(0, 0, frame.Width, frame.Height, Foreground, Background, borderPen);
+            frame.DrawRect(0, 0, frame.Width, frame.Height, ActualForeground, ActuellBackground, borderPen);
         }
 
         private void RenderDropShadow(IRenderFrame frame)
@@ -134,12 +134,12 @@ namespace NSCI.UI.Controls
                 default:
                     throw new NotImplementedException($"BoarderStyle {Style} is not a shadow.");
             }
-            frame[frame.Width - 1, 0] = new ColoredKey(' ', Foreground, Background);
-            frame[0, frame.Height - 1] = new ColoredKey(' ', Foreground, Background);
+            frame[frame.Width - 1, 0] = new ColoredKey(' ', ActualForeground, ActuellBackground);
+            frame[0, frame.Height - 1] = new ColoredKey(' ', ActualForeground, ActuellBackground);
             for (int y = 1; y < frame.Height - 1; y++)
-                frame[frame.Width - 1, y] = new ColoredKey(shadowChar, Foreground, Background);
+                frame[frame.Width - 1, y] = new ColoredKey(shadowChar, ActualForeground, ActuellBackground);
             for (int x = 1; x < frame.Width; x++)
-                frame[x, frame.Height - 1] = new ColoredKey(shadowChar, Foreground, Background);
+                frame[x, frame.Height - 1] = new ColoredKey(shadowChar, ActualForeground, ActuellBackground);
         }
     }
 

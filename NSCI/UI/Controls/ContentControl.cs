@@ -45,7 +45,7 @@ namespace NSCI.UI.Controls
             if (Content == null)
             {
                 var clip = frame.Clip ?? new Rect(0, 0, frame.Width, frame.Height);
-                frame.FillRect(clip.Left, clip.Right, clip.Width, clip.Height, this.Foreground, this.Background, SpecialChars.Fill);
+                frame.FillRect(clip.Left, clip.Right, clip.Width, clip.Height, this.ActualForeground, this.ActuellBackground, SpecialChars.Fill);
             }
             else
             {

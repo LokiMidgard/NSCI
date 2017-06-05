@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using NSCI.UI;
+using NSCI.UI.Controls;
 
 namespace NSCI.Widgets
 {
@@ -21,8 +22,8 @@ namespace NSCI.Widgets
         {
             Width = Console.WindowWidth;
             Height = Console.WindowHeight;
-            Background = ConsoleColor.DarkBlue;
-            Foreground = ConsoleColor.White;
+            Background = Color.DarkBlue;
+            Foreground = Color.White;
             //SelectedBackground = ConsoleColor.Magenta;
             //ActiveBackground = ConsoleColor.DarkMagenta;
             //ActiveWidget = null;
@@ -148,7 +149,7 @@ namespace NSCI.Widgets
                     item.RenderWithLastAvailableSize();
 
                 if (needToDraw)
-                    g.Draw();
+                                    g.Draw();
                 needToDraw = false;
                 await Task.Delay(100);
                 while (this.running && inputQueue.TryDequeue(out var k))

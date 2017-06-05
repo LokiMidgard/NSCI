@@ -166,8 +166,8 @@ namespace NSCI.UI
             {
                 Width = Console.WindowWidth;
                 Height = Console.WindowHeight - 1;
-                currentBuffer.Resize(Width, Height);
-                previousBuffer.Resize(Width, Height);
+                this.currentBuffer.Resize(Width, Height);
+                this.previousBuffer.Resize(Width, Height);
                 this.previousBufferValid = false;
 
                 Console.SetCursorPosition(0, 0); // Reset Curso so we can set buffer
@@ -204,7 +204,7 @@ namespace NSCI.UI
                         continue;
                     var (left, top) = GetXYFromIndex(i);
                     Console.SetCursorPosition(left, top);
-
+                                        
                     Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
                     Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
                     int j = 0;
@@ -255,6 +255,7 @@ namespace NSCI.UI
 
             }
 
+            Console.ResetColor(); // We do not want to have spooky colors
             this.previousBuffer.CopyFrom(this.currentBuffer);
         }
 

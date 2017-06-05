@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NSCI.UI.Controls
 {
-    public class TextBlock : FrameworkElement
+    public class TextBlock : Control
     {
         private string text;
 
@@ -17,9 +17,6 @@ namespace NSCI.UI.Controls
 
             }
         }
-
-        public ConsoleColor Background { get; set; } = ConsoleColor.Black;
-        public ConsoleColor Forground { get; set; } = ConsoleColor.White;
 
         private string[] renderLines = new string[0];
 
@@ -68,7 +65,7 @@ namespace NSCI.UI.Controls
         {
             for (int y = 0; y < frame.Height; y++)
                 for (int x = 0; x < frame.Width; x++)
-                    frame[x, y] = new ColoredKey(y < renderLines.Length && x < renderLines[y].Length ? renderLines[y][x] : ' ', this.Forground, this.Background);
+                    frame[x, y] = new ColoredKey(y < renderLines.Length && x < renderLines[y].Length ? renderLines[y][x] : ' ', this.ActualForeground, this.ActuellBackground);
 
         }
     }

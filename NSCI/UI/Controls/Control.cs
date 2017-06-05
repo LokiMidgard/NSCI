@@ -46,7 +46,25 @@ namespace NSCI.UI.Controls
         //     Der Pinsel, der den Vordergrund des Steuerelements zeichnet. Der Standardwert
         //     ist eine Windows.UI.Xaml. Media.SolidColorBrush mit der Farbe des Windows.UI.
         //     Colors.Black.
-        public ConsoleColor Foreground { get; set; } = ConsoleColor.White;
+        public Color Foreground { get; set; } = Color.Inherited;
+        public ConsoleColor ActualForeground
+        {
+            get
+            {
+                if (Foreground == Color.Inherited)
+                {
+                    var p = Parent;
+                    while (p != null)
+                    {
+                        if (p is Control c)
+                            return c.ActualForeground;
+                        p = p.Parent;
+                    }
+                    return ConsoleColor.Black;
+                }
+                return (ConsoleColor)Foreground;
+            }
+        }
 
         //
         // Zusammenfassung:
@@ -57,6 +75,26 @@ namespace NSCI.UI.Controls
         //     Der Pinsel, der den Hintergrund des Steuerelements bereitstellt. Der Standardwert
         //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
         //     für das Rendern.
-        public ConsoleColor Background { get; set; } = ConsoleColor.Black;
+        public Color Background { get; set; } = Color.Inherited;
+
+        public ConsoleColor ActuellBackground
+        {
+            get
+            {
+                if (Background == Color.Inherited)
+                {
+                    var p = Parent;
+                    while (p != null)
+                    {
+                        if (p is Control c)
+                            return c.ActuellBackground;
+                        p = p.Parent;
+                    }
+                    return ConsoleColor.Black;
+                }
+                return (ConsoleColor)Background;
+            }
+        }
+
     }
 }
