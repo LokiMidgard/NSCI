@@ -97,107 +97,109 @@ namespace NSCI.Widgets
                     queue.Enqueue(Console.ReadKey(true));
             }, TaskCreationOptions.LongRunning);
             //g.DrawRect(3, 3, 3, 3, ConsoleColor.Red, ConsoleColor.Red, UI.SpecialChars.Shade);
-            Nito.AsyncEx.AsyncContext.Run(async () =>
+            Nito.AsyncEx.AsyncContext.Run(() => Loop(queue));
+            Console.ResetColor(); // We do not want to have spooky colors
+        }
+
+        private async Task Loop(System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo> inputQueue)
+        {
+
+            BeforeStart?.Invoke();
+
+            var g = new UI.Graphics(this);
+            this.Measure(new Size(g.Width, g.Height));
+
+            this.Arrange(new Rect(0, 0, g.Width, g.Height));
+            this.Render(g.GraphicsBuffer);
+
+            g.Draw();
+
+
+
+            while (this.running)
             {
-
-                BeforeStart?.Invoke();
-
-                var g = new UI.Graphics(this);
-                this.Measure(new Size(g.Width, g.Height));
-
-                this.Arrange(new Rect(0, 0, g.Width, g.Height));
-                this.Render(g.GraphicsBuffer);
-
-                g.Draw();
-
-
-
-                while (this.running)
+                if (Width != Console.WindowWidth || Height != Console.WindowHeight)
                 {
-                    if (Width != Console.WindowWidth || Height != Console.WindowHeight)
+                    Width = Console.WindowWidth;
+                    Height = Console.WindowHeight;
+                    g.Resize();
+
+                    //this.InvalidateMeasure();
+                    // We ned to render evything new. :(
+                    this.Measure(new Size(g.Width, g.Height));
+                    this.Arrange(new Rect(0, 0, g.Width, g.Height));
+                    this.Render(g.GraphicsBuffer);
+
+                    //Draw();
+                }
+
+                foreach (var item in elementsMeasureDirty.ConsumableEnumerator())
+                    item.MeasureWithLastAvailableSize();
+
+                foreach (var item in elementsArrangeDirty.ConsumableEnumerator())
+                    item.ArrangeWithLastAvailableSize();
+
+                foreach (var item in elementsRenderDirty.ConsumableEnumerator())
+                    item.RenderWithLastAvailableSize();
+
+                if (needToDraw)
+                    g.Draw();
+                needToDraw = false;
+                await Task.Delay(100);
+                while (this.running && inputQueue.TryDequeue(out var k))
+                {
+                    Console.CursorVisible = false;
+
+                    bool ProcessKey = true;
+
+
+
+                    //if (ActiveWidget is IAcceptInput)
+                    //{
+                    //    ProcessKey = false;
+                    //    switch (k.Key)
+                    //    {
+                    //        case ConsoleKey.Tab:
+                    //            CycleFocus();
+                    //            break;
+                    //        default:
+                    //            ProcessKey = HandleWidgetInput(k);
+                    //            break;
+                    //    }
+                    //}
+
+                    if (ProcessKey)
                     {
-                        Width = Console.WindowWidth;
-                        Height = Console.WindowHeight;
-                        g.Resize();
-
-                        //this.InvalidateMeasure();
-                        // We ned to render evything new. :(
-                        this.Measure(new Size(g.Width, g.Height));
-                        this.Arrange(new Rect(0, 0, g.Width, g.Height));
-                        this.Render(g.GraphicsBuffer);
-
-                        //Draw();
-                    }
-
-                    foreach (var item in elementsMeasureDirty.ConsumableEnumerator())
-                        item.MeasureWithLastAvailableSize();
-
-                    foreach (var item in elementsArrangeDirty.ConsumableEnumerator())
-                        item.ArrangeWithLastAvailableSize();
-
-                    foreach (var item in elementsRenderDirty.ConsumableEnumerator())
-                        item.RenderWithLastAvailableSize();
-
-                    if (needToDraw)
-                        g.Draw();
-                    needToDraw = false;
-                    await Task.Delay(100);
-                    while (this.running && queue.TryDequeue(out var k))
-                    {
-                        Console.CursorVisible = false;
-
-                        bool ProcessKey = true;
-
-
-
-                        //if (ActiveWidget is IAcceptInput)
-                        //{
-                        //    ProcessKey = false;
-                        //    switch (k.Key)
-                        //    {
-                        //        case ConsoleKey.Tab:
-                        //            CycleFocus();
-                        //            break;
-                        //        default:
-                        //            ProcessKey = HandleWidgetInput(k);
-                        //            break;
-                        //    }
-                        //}
-
-                        if (ProcessKey)
+                        switch (k.Key)
                         {
-                            switch (k.Key)
-                            {
-                                //case ConsoleKey.Tab:
-                                //    CycleFocus((k.Modifiers == ConsoleModifiers.Shift) ? -1 : 1);
-                                //    break;
-                                //case ConsoleKey.RightArrow:
-                                //    MoveRight();
-                                //    break;
-                                //case ConsoleKey.LeftArrow:
-                                //    MoveLeft();
-                                //    break;
-                                //case ConsoleKey.UpArrow:
-                                //    MoveUp();
-                                //    break;
-                                //case ConsoleKey.DownArrow:
-                                //    MoveDown();
-                                //    break;
-                                //case ConsoleKey.Spacebar:
-                                //case ConsoleKey.Enter:
-                                //    EnterPressed();
-                                //    break;
-                                case ConsoleKey.Escape:
-                                    this.running = false;
-                                    break;
-                            }
+                            //case ConsoleKey.Tab:
+                            //    CycleFocus((k.Modifiers == ConsoleModifiers.Shift) ? -1 : 1);
+                            //    break;
+                            //case ConsoleKey.RightArrow:
+                            //    MoveRight();
+                            //    break;
+                            //case ConsoleKey.LeftArrow:
+                            //    MoveLeft();
+                            //    break;
+                            //case ConsoleKey.UpArrow:
+                            //    MoveUp();
+                            //    break;
+                            //case ConsoleKey.DownArrow:
+                            //    MoveDown();
+                            //    break;
+                            //case ConsoleKey.Spacebar:
+                            //case ConsoleKey.Enter:
+                            //    EnterPressed();
+                            //    break;
+                            case ConsoleKey.Escape:
+                                this.running = false;
+                                break;
                         }
                     }
-
-
                 }
-            });
-            Console.ResetColor(); // We do not want to have spooky colors
+
+
+            }
         }
 
         internal void UnRegisterArrangeDirty(UIElement uIElement)
