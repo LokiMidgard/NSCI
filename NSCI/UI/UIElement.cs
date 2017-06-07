@@ -8,18 +8,39 @@ namespace NSCI.UI
         private Size lastAvailableSize;
         private IRenderFrame lastFrame;
 
-        public RootWindow RootWindow => this is RootWindow ? this as RootWindow : Parent?.RootWindow;
+        private RootWindow rootWindow;
 
+        private UIElement parent;
+
+        public event EventHandler<EventArgs<(RootWindow oldRoot, RootWindow newRoot)>> RootWindowChanged;
+
+        public RootWindow RootWindow
+        {
+            get => this.rootWindow; set
+            {
+                var oldWindow = this.rootWindow;
+                if (oldWindow != value)
+                {
+                    this.rootWindow = value;
+                    OnRootWindowChanged(oldWindow, rootWindow);
+                }
+            }
+        }
         public UIElement Parent
         {
             get => parent;
             internal set
             {
-                Depth = this.parent?.Depth + 1 ?? 0;
-                this.parent = value;
+                if (this.parent != value)
+                {
+                    parent.RootWindowChanged -= ParentRootChanged;
+                    Depth = this.parent?.Depth + 1 ?? 0;
+                    this.parent = value;
+                    RootWindow = this.parent.RootWindow;
+                    parent.RootWindowChanged += ParentRootChanged;
+                }
             }
         }
-        private UIElement parent;
 
         /// <summary>
         /// Gets the depth in the UI Tree.
@@ -196,6 +217,45 @@ namespace NSCI.UI
 
         public Point TranslateToOtherUICordinates(UIElement uIElement, Point p) => p + GetTranslation(uIElement);
 
+        internal void MeasureWithLastAvailableSize() => Measure(this.lastAvailableSize);
+
+        internal void ArrangeWithLastAvailableSize() => Arrange(ArrangedPosition);
+
+        internal void RenderWithLastAvailableSize() => Render(this.lastFrame);
+
+        /// <summary>
+        /// Notification that is called by Measure of a child when
+        /// it ends up with different desired size then before.
+        /// </summary>
+        /// <remarks>
+        /// This method will only be called when Measure was not called by the Parent Measure.
+        /// </remarks>
+        protected virtual void OnChildDesiredSizeChanged(UIElement child)
+        {
+            if (!MeasureDirty)
+                InvalidateMeasure();
+        }
+
+        protected virtual void OnRootWindowChanged(RootWindow oldWindow, RootWindow newWindow)
+        {
+            RootWindowChanged?.Invoke(this, new EventArgs<(RootWindow oldRoot, RootWindow newRoot)>((oldWindow, newWindow)));
+        }
+
+        protected virtual Size MeasureCore(Size availableSize) => Size.Empty;
+
+        protected virtual void ArrangeCore(Size size)
+        {
+        }
+
+        protected virtual void RenderCore(IRenderFrame frame)
+        {
+
+        }
+
+        private void ParentRootChanged(object sender, EventArgs<(RootWindow oldRoot, RootWindow newRoot)> e)
+        {
+            RootWindow = e.Argument.newRoot;
+        }
         private Size GetTranslation(UIElement uIElement)
         {
             var commoneAcestor = FindCommonAcestor(uIElement);
@@ -229,33 +289,6 @@ namespace NSCI.UI
             }
 
             return currentOther.Parent ?? throw new ArgumentException("No Common Acestor found.");
-        }
-
-        internal void MeasureWithLastAvailableSize() => Measure(this.lastAvailableSize);
-        internal void ArrangeWithLastAvailableSize() => Arrange(ArrangedPosition);
-
-        internal void RenderWithLastAvailableSize() => Render(this.lastFrame);
-
-        /// <summary>
-        /// Notification that is called by Measure of a child when
-        /// it ends up with different desired size then before.
-        /// </summary>
-        /// <remarks>
-        /// This method will only be called when Measure was not called by the Parent Measure.
-        /// </remarks>
-        protected virtual void OnChildDesiredSizeChanged(UIElement child)
-        {
-            if (!MeasureDirty)
-                InvalidateMeasure();
-        }
-
-        protected virtual Size MeasureCore(Size availableSize) => Size.Empty;
-        protected virtual void ArrangeCore(Size size)
-        {
-        }
-        protected virtual void RenderCore(IRenderFrame frame)
-        {
-
         }
     }
 }
