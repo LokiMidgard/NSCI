@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using NSCI.Widgets;
 
 namespace NSCI.UI.Controls
 {
@@ -47,5 +48,6 @@ namespace NSCI.UI.Controls
             foreach (var item in Items)
                 item.Render(frame);
         }
+
     }
 }

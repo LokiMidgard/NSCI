@@ -13,6 +13,7 @@ namespace NSCI.UI
         private UIElement parent;
 
         public event EventHandler<EventArgs<(RootWindow oldRoot, RootWindow newRoot)>> RootWindowChanged;
+        public event EventHandler<EventArgs<(int oldRoot, int newRoot)>> DepthChanged;
 
         public RootWindow RootWindow
         {
@@ -22,7 +23,7 @@ namespace NSCI.UI
                 if (oldWindow != value)
                 {
                     this.rootWindow = value;
-                    OnRootWindowChanged(oldWindow, rootWindow);
+                    OnRootWindowChanged(oldWindow, this.rootWindow);
                 }
             }
         }
@@ -33,11 +34,17 @@ namespace NSCI.UI
             {
                 if (this.parent != value)
                 {
-                    parent.RootWindowChanged -= ParentRootChanged;
-                    Depth = this.parent?.Depth + 1 ?? 0;
+                    if (this.parent != null)
+                        this.parent.RootWindowChanged -= ParentRootChanged;
                     this.parent = value;
-                    RootWindow = this.parent.RootWindow;
-                    parent.RootWindowChanged += ParentRootChanged;
+                    Depth = this.parent?.Depth + 1 ?? 0;
+
+                    if (this.parent is RootWindow r)
+                        RootWindow = r;
+                    else
+                        RootWindow = this.parent?.RootWindow;
+                    if (this.parent != null)
+                        this.parent.RootWindowChanged += ParentRootChanged;
                 }
             }
         }
@@ -49,7 +56,19 @@ namespace NSCI.UI
         /// A direct Child of the RootWindow has depth 1. <para/>
         /// The RootWindow has depth 0 and an UIElement with no parent has also depth 0.
         /// </remarks>
-        public int Depth { get; private set; }
+        private int depth;
+        public int Depth
+        {
+            get => depth; private set
+            {
+                if (this.depth != value)
+                {
+                    var oldValue = this.depth;
+                    this.depth = value;
+                    OnDepthChanged(oldValue, value);
+                }
+            }
+        }
 
         //
         // Zusammenfassung:
@@ -239,6 +258,10 @@ namespace NSCI.UI
         protected virtual void OnRootWindowChanged(RootWindow oldWindow, RootWindow newWindow)
         {
             RootWindowChanged?.Invoke(this, new EventArgs<(RootWindow oldRoot, RootWindow newRoot)>((oldWindow, newWindow)));
+        }
+        protected virtual void OnDepthChanged(int oldDepth, int newDepth)
+        {
+            DepthChanged?.Invoke(this, new EventArgs<(int oldDepth, int newDepth)>((oldDepth, newDepth)));
         }
 
         protected virtual Size MeasureCore(Size availableSize) => Size.Empty;
