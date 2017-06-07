@@ -24,6 +24,7 @@ namespace NSCI.Widgets
             Height = Console.WindowHeight;
             Background = Color.DarkBlue;
             Foreground = Color.White;
+            RootWindow = this;
             //SelectedBackground = ConsoleColor.Magenta;
             //ActiveBackground = ConsoleColor.DarkMagenta;
             //ActiveWidget = null;
@@ -149,7 +150,7 @@ namespace NSCI.Widgets
                     item.RenderWithLastAvailableSize();
 
                 if (needToDraw)
-                                    g.Draw();
+                    g.Draw();
                 needToDraw = false;
                 await Task.Delay(100);
                 while (this.running && inputQueue.TryDequeue(out var k))
