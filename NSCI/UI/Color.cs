@@ -1,4 +1,4 @@
-﻿namespace NSCI.UI.Controls
+﻿namespace NSCI.UI
 {
     public enum Color
     {

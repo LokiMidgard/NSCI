@@ -157,6 +157,116 @@ namespace NSCI.UI
 
         //
         // Zusammenfassung:
+        //     Ruft den Abstand in einem Steuerelement ab oder legt ihn fest.
+        //
+        // Rückgabewerte:
+        //     Den Abstand zwischen den Inhalt einer Windows.UI.Xaml. Controls.Control und seine
+        //     Windows.UI.Xaml. FrameworkElement.Margin oder Windows.UI.Xaml. Controls.Border.
+        //     Der Standardwert ist eine Windows.UI.Xaml. Breite mit Werten von 0 auf allen
+        //     vier Seiten.
+        private Thickness padding;
+        public Thickness Padding
+        {
+            get => padding; set
+            {
+                if (padding != value)
+                {
+                    var oldValue = padding;
+                    padding = value;
+                    OnPaddingChanged(oldValue, value);
+                }
+            }
+        }
+
+        protected void OnPaddingChanged(Thickness oldPadding, Thickness newPadding)
+        {
+            InvalidateMeasure();
+        }
+
+        //
+        // Zusammenfassung:
+        //     Ruft einen Pinsel ab, der die Vordergrundfarbe beschreibt, oder legt diesen fest.
+        //
+        // Rückgabewerte:
+        //     Der Pinsel, der den Vordergrund des Steuerelements zeichnet. Der Standardwert
+        //     ist eine Windows.UI.Xaml. Media.SolidColorBrush mit der Farbe des Windows.UI.
+        //     Colors.Black.
+        private Color foreground = Color.Inherited;
+        public Color Foreground
+        {
+            get => foreground; set
+            {
+                if (value != this.foreground)
+                {
+                    this.foreground = value;
+                    InvalidateRender();
+                }
+            }
+        }
+        public ConsoleColor ActualForeground
+        {
+            get
+            {
+                if (Foreground == Color.Inherited)
+                {
+                    var p = Parent;
+                    while (p != null)
+                    {
+                        if (p is FrameworkElement c)
+                            return c.ActualForeground;
+                        p = p.Parent;
+                    }
+                    return ConsoleColor.Black;
+                }
+                return (ConsoleColor)Foreground;
+            }
+        }
+
+        //
+        // Zusammenfassung:
+        //     Ruft einen Pinsel ab, der den Hintergrund des Steuerelements bereitstellt, oder
+        //     legt diesen fest.
+        //
+        // Rückgabewerte:
+        //     Der Pinsel, der den Hintergrund des Steuerelements bereitstellt. Der Standardwert
+        //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
+        //     für das Rendern.
+        public Color background = Color.Inherited;
+
+        public Color Background
+        {
+            get => background; set
+            {
+                if (value != this.background)
+                {
+                    this.background = value;
+                    InvalidateRender();
+                }
+            }
+        }
+
+        public ConsoleColor ActuellBackground
+        {
+            get
+            {
+                if (Background == Color.Inherited)
+                {
+                    var p = Parent;
+                    while (p != null)
+                    {
+                        if (p is FrameworkElement c)
+                            return c.ActuellBackground;
+                        p = p.Parent;
+                    }
+                    return ConsoleColor.Black;
+                }
+                return (ConsoleColor)Background;
+            }
+        }
+
+
+        //
+        // Zusammenfassung:
         //     Stellt das Verhalten für den "messdurchlauf" von der Layoutzyklus bereit. Klassen
         //     können diese Methode zum Definieren ihrer eigenen "Measure" Pass-Verhaltens überschreiben.
         //
@@ -189,7 +299,13 @@ namespace NSCI.UI
             return new Size(width, height);
         }
 
-        protected override sealed Size MeasureCore(Size availableSize) => MeasureOverride(availableSize);
+        protected override sealed Size MeasureCore(Size availableSize)
+        {
+            var paddingWith = Padding.Left + Padding.Right;
+            var paddingHeight = Padding.Top + Padding.Bottom;
+
+            return MeasureOverride(availableSize.Inflat(-paddingHeight, -paddingHeight)).Inflat(paddingWith, paddingHeight);
+        }
         //
         // Zusammenfassung:
         //     Stellt das Verhalten für die "Anordnungsübergabe" des Layouts. Klassen können
@@ -209,9 +325,34 @@ namespace NSCI.UI
 
         protected override sealed void ArrangeCore(Size finalRect)
         {
+            var paddingWith = Padding.Left + Padding.Right;
+            var paddingHeight = Padding.Top + Padding.Bottom;
+
             ActualHeight = finalRect.Height;
             ActualWidth = finalRect.Width;
-            ArrangeOverride(finalRect);
+            ArrangeOverride(finalRect.Inflat(-paddingWith, -paddingHeight));
+        }
+
+        protected override sealed void RenderCore(IRenderFrame frame)
+        {
+            frame.FillRect(0, 0, Padding.Left, Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
+            frame.FillRect(frame.Width - Padding.Right - Padding.Left, 0, Padding.Right, Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
+            frame.FillRect(0, frame.Height - Padding.Top - Padding.Bottom, Padding.Left, Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
+            frame.FillRect(frame.Width - Padding.Right - Padding.Left, frame.Height - Padding.Top - Padding.Bottom, Padding.Right, Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
+
+            frame.FillRect(Padding.Left, 0, frame.Width - Padding.Left - Padding.Right, Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
+            frame.FillRect(0, Padding.Top, Padding.Left, frame.Height - Padding.Top - Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
+            frame.FillRect(Padding.Left, frame.Height -  Padding.Bottom, frame.Width - Padding.Left-Padding.Right, Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
+            frame.FillRect(frame.Width- Padding.Right, Padding.Top, Padding.Right, frame.Height-Padding.Bottom-Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
+
+
+
+            RenderOverride(frame.GetGraphicsBuffer(new Rect(Padding.Left, Padding.Top, frame.Width - Padding.Right - Padding.Left, frame.Height - Padding.Bottom - Padding.Top)));
+        }
+
+        protected virtual void RenderOverride(IRenderFrame frame)
+        {
+
         }
     }
 }

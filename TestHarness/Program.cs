@@ -4,6 +4,7 @@ using System.Text;
 using NSCI.UI.Controls.Layput;
 using NSCI.UI.Controls;
 using System.Threading.Tasks;
+using NSCI.UI;
 
 namespace TestHarness
 {
@@ -16,29 +17,40 @@ namespace TestHarness
             var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!", Height = 3 };
             var border = new Border() { Style = NSCI.UI.Controls.BorderStyle.DropShadowMedium, Background = Color.Green, Foreground = Color.Black };
             border.Content = text;
-            var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!"};
+            var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" };
+
+            var button1 = new Button() {  Width = 40};
+            var button2 = new Button();
+
+            button1.Text = "Button 1";
+            button2.Text = "Button 2";
 
             var stack = new StackPanel();
 
             stack.Items.Add(border);
+            stack.Items.Add(button1);
+            stack.Items.Add(button2);
+
+
+
             stack.Items.Add(text2);
 
             root.Content = stack;
 
-            root.BeforeStart += async () =>
-              {
-                  var styles = (NSCI.UI.Controls.BorderStyle[])Enum.GetValues(typeof(NSCI.UI.Controls.BorderStyle));
-                  while (root.Running) // this endless loop would prevent the App from quitting :/ Need to handle on framework level.
-                  {
-                      foreach (var s in styles)
-                      {
-                          if (!root.Running)
-                              break;
-                          await Task.Delay(1000);
-                          border.Style = s;
-                      }
-                  }
-              };
+            //root.BeforeStart += async () =>
+            //  {
+            //      var styles = (NSCI.UI.Controls.BorderStyle[])Enum.GetValues(typeof(NSCI.UI.Controls.BorderStyle));
+            //      while (root.Running) // this endless loop would prevent the App from quitting :/ Need to handle on framework level.
+            //      {
+            //          foreach (var s in styles)
+            //          {
+            //              if (!root.Running)
+            //                  break;
+            //              await Task.Delay(1000);
+            //              border.Style = s;
+            //          }
+            //      }
+            //  };
 
             //var dialog = new Dialog(root) { Text = "Hello World!", Width = 60, Height = 32, Top = 4, Left = 4, Border = BorderStyle.Thick };
             //new Label(dialog) { Text = "This is a dialog!", Top = 2, Left = 2 };

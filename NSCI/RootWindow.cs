@@ -43,10 +43,17 @@ namespace NSCI.Widgets
                 int newindex;
                 if (this.tabSelectedIndex < this.tabList.Count && value == this.tabList[this.tabSelectedIndex])
                     newindex = this.tabSelectedIndex;
-                else
+                else if (value != null)
+                {
+
                     newindex = this.tabList.IndexOf(value);
-                if (newindex == -1)
-                    throw new ArgumentException("The Contrle can't be selected or is not a decendent of this RootWindow");
+                    if (newindex == -1)
+                        throw new ArgumentException("The Contrle can't be selected or is not a decendent of this RootWindow");
+                }
+                else
+                {
+                    newindex = -1;
+                }
                 if (value != this.activeControl)
                 {
                     if (this.activeControl != null)
@@ -159,7 +166,8 @@ namespace NSCI.Widgets
 
                     bool ProcessKey = true;
 
-
+                    if (ProcessKey)
+                        ProcessKey = !ActiveControl?.HandleInput(k) ?? true;
 
                     //if (ActiveWidget is IAcceptInput)
                     //{

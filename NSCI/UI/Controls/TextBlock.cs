@@ -61,7 +61,7 @@ namespace NSCI.UI.Controls
             this.renderLines = stringbuffer.ToString().Replace("\r", "").Split('\n');
         }
 
-        protected override void RenderCore(IRenderFrame frame)
+        protected override void RenderOverride(IRenderFrame frame)
         {
             for (int y = 0; y < frame.Height; y++)
                 for (int x = 0; x < frame.Width; x++)

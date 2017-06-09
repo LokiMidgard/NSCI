@@ -69,7 +69,7 @@ namespace NSCI.UI.Controls
             Content?.Arrange(new Rect(borderThikness.Left, borderThikness.Top, finalSize.Width - borderWith, finalSize.Height - borderHeight));
         }
 
-        protected override void RenderCore(IRenderFrame frame)
+        protected override void RenderOverride(IRenderFrame frame)
         {
             RenderBorder(frame);
             if (Content != null)

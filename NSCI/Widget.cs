@@ -298,7 +298,7 @@ namespace NSCI
 
         public void SetFocus()
         {
-            RootWindow.ActiveControl = this;
+            //RootWindow.ActiveControl = this;
         }
 
         internal void Draw()

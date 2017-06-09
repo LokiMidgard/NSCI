@@ -40,7 +40,7 @@ namespace NSCI.UI.Controls
             Content?.Arrange(new Rect(Point.Empty, finalSize));
         }
 
-        protected override void RenderCore(IRenderFrame frame)
+        protected override void RenderOverride(IRenderFrame frame)
         {
             if (Content == null)
             {

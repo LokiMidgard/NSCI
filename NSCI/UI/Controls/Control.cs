@@ -33,7 +33,7 @@ namespace NSCI.UI.Controls
         // Rückgabewerte:
         //     ** "true" ** Wenn der Benutzer mit dem Steuerelement interagieren kann; andernfalls
         //     ** "false" **.
-        private bool isEnabled;
+        private bool isEnabled = true;
         public bool IsEnabled
         {
             get => isEnabled;
@@ -53,56 +53,22 @@ namespace NSCI.UI.Controls
             get => hasFocus;
             set
             {
+                if (!SupportSelection || !IsEnabled)
+                    value = false;
                 if (this.hasFocus != value)
-                    RootWindow.ActiveControl = this;
-            }
-        }
-
-        //
-        // Zusammenfassung:
-        //     Ruft den Abstand in einem Steuerelement ab oder legt ihn fest.
-        //
-        // Rückgabewerte:
-        //     Den Abstand zwischen den Inhalt einer Windows.UI.Xaml. Controls.Control und seine
-        //     Windows.UI.Xaml. FrameworkElement.Margin oder Windows.UI.Xaml. Controls.Border.
-        //     Der Standardwert ist eine Windows.UI.Xaml. Breite mit Werten von 0 auf allen
-        //     vier Seiten.
-        public Thickness Padding { get; set; }
-
-        //
-        // Zusammenfassung:
-        //     Ruft einen Pinsel ab, der die Vordergrundfarbe beschreibt, oder legt diesen fest.
-        //
-        // Rückgabewerte:
-        //     Der Pinsel, der den Vordergrund des Steuerelements zeichnet. Der Standardwert
-        //     ist eine Windows.UI.Xaml. Media.SolidColorBrush mit der Farbe des Windows.UI.
-        //     Colors.Black.
-        public Color Foreground { get; set; } = Color.Inherited;
-        public ConsoleColor ActualForeground
-        {
-            get
-            {
-                if (Foreground == Color.Inherited)
                 {
-                    var p = Parent;
-                    while (p != null)
-                    {
-                        if (p is Control c)
-                            return c.ActualForeground;
-                        p = p.Parent;
-                    }
-                    return ConsoleColor.Black;
+                    RootWindow.ActiveControl = this;
+                    this.hasFocus = value;
+                    OnHasFocusChanged(value);
                 }
-                return (ConsoleColor)Foreground;
             }
         }
-
 
         protected virtual void OnIsEnabledChanged(bool newValue)
         {
-            if(SupportSelection)
+            if (SupportSelection)
             {
-                if(newValue)
+                if (newValue)
                 {
                     RootWindow?.tabList.Add(this);
                 }
@@ -115,35 +81,10 @@ namespace NSCI.UI.Controls
             }
         }
 
-        //
-        // Zusammenfassung:
-        //     Ruft einen Pinsel ab, der den Hintergrund des Steuerelements bereitstellt, oder
-        //     legt diesen fest.
-        //
-        // Rückgabewerte:
-        //     Der Pinsel, der den Hintergrund des Steuerelements bereitstellt. Der Standardwert
-        //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
-        //     für das Rendern.
-        public Color Background { get; set; } = Color.Inherited;
-
-        public ConsoleColor ActuellBackground
+        protected virtual void OnHasFocusChanged(bool newValue)
         {
-            get
-            {
-                if (Background == Color.Inherited)
-                {
-                    var p = Parent;
-                    while (p != null)
-                    {
-                        if (p is Control c)
-                            return c.ActuellBackground;
-                        p = p.Parent;
-                    }
-                    return ConsoleColor.Black;
-                }
-                return (ConsoleColor)Background;
-            }
         }
+
 
         protected override void OnRootWindowChanged(RootWindow oldWindow, RootWindow newWindow)
         {
@@ -158,5 +99,11 @@ namespace NSCI.UI.Controls
             base.OnRootWindowChanged(oldWindow, newWindow);
         }
 
+        /// <summary>
+        /// Handles the Input.
+        /// </summary>
+        /// <param name="k"></param>
+        /// <returns><c>true</c>> if this control handled the input.</c></returns>
+        public virtual bool HandleInput(ConsoleKeyInfo k) => false;
     }
 }

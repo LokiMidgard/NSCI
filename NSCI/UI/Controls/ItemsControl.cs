@@ -43,7 +43,7 @@ namespace NSCI.UI.Controls
                 item.Arrange(new Rect(Point.Empty, finalSize));
         }
 
-        protected override void RenderCore(IRenderFrame frame)
+        protected override void RenderOverride(IRenderFrame frame)
         {
             foreach (var item in Items)
                 item.Render(frame);

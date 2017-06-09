@@ -36,7 +36,7 @@ namespace NSCI.UI.Controls.Layput
                 Items[i].Arrange(new Rect(0, i == 0 ? 0 : elementHeights.Take(i).Sum(), finalSize.Width, elementHeights[i]));
         }
 
-        protected override void RenderCore(IRenderFrame frame)
+        protected override void RenderOverride(IRenderFrame frame)
         {
             for (int i = 0; i < Items.Count; i++)
                 Items[i].Render(frame.GetGraphicsBuffer(GetLocation(Items[i])));
