@@ -14,9 +14,7 @@ namespace NSCI.Widgets
     public class RootWindow : UI.Controls.ContentControl
     {
 
-
-        [XmlIgnore]
-        public Object ViewModel { get; set; }
+        internal readonly OrderedList<Control> tabList = new OrderedList<Control>(TabComparer.Instance);
 
         public RootWindow()
         {
@@ -35,27 +33,29 @@ namespace NSCI.Widgets
         public event Action BeforeStart;
 
 
-        private Widget _activeWidget;
-        public Widget ActiveWidget
+        private Control activeControl;
+        private int tabSelectedIndex;
+        public Control ActiveControl
         {
-            get
-            {
-                return this._activeWidget;
-            }
+            get => this.activeControl;
             set
             {
-                if (value != null && value != this._activeWidget)
+                int newindex;
+                if (this.tabSelectedIndex < this.tabList.Count && value == this.tabList[this.tabSelectedIndex])
+                    newindex = this.tabSelectedIndex;
+                else
+                    newindex = this.tabList.IndexOf(value);
+                if (newindex == -1)
+                    throw new ArgumentException("The Contrle can't be selected or is not a decendent of this RootWindow");
+                if (value != this.activeControl)
                 {
-                    if (this._activeWidget != null)
-                    {
-                        this._activeWidget.HasFocus = false;
-                        this._activeWidget.Draw();
-                    }
+                    if (this.activeControl != null)
+                        this.activeControl.HasFocus = false;
 
-                    this._activeWidget = value;
-
-                    this._activeWidget.HasFocus = true;
-                    this._activeWidget.Draw();
+                    this.activeControl = value;
+                    this.tabSelectedIndex = newindex;
+                    if (this.activeControl != null)
+                        this.activeControl.HasFocus = true;
                 }
             }
         }
@@ -140,18 +140,18 @@ namespace NSCI.Widgets
                     //Draw();
                 }
 
-                foreach (var item in elementsMeasureDirty.ConsumableEnumerator())
+                foreach (var item in this.elementsMeasureDirty.ConsumableEnumerator())
                     item.MeasureWithLastAvailableSize();
 
-                foreach (var item in elementsArrangeDirty.ConsumableEnumerator())
+                foreach (var item in this.elementsArrangeDirty.ConsumableEnumerator())
                     item.ArrangeWithLastAvailableSize();
 
-                foreach (var item in elementsRenderDirty.ConsumableEnumerator())
+                foreach (var item in this.elementsRenderDirty.ConsumableEnumerator())
                     item.RenderWithLastAvailableSize();
 
-                if (needToDraw)
+                if (this.needToDraw)
                     g.Draw();
-                needToDraw = false;
+                this.needToDraw = false;
                 await Task.Delay(100);
                 while (this.running && inputQueue.TryDequeue(out var k))
                 {
@@ -179,9 +179,12 @@ namespace NSCI.Widgets
                     {
                         switch (k.Key)
                         {
-                            //case ConsoleKey.Tab:
-                            //    CycleFocus((k.Modifiers == ConsoleModifiers.Shift) ? -1 : 1);
-                            //    break;
+                            case ConsoleKey.Tab:
+                                if (k.Modifiers == ConsoleModifiers.Shift)
+                                    TabPrevious();
+                                else
+                                    TabNext();
+                                break;
                             //case ConsoleKey.RightArrow:
                             //    MoveRight();
                             //    break;
@@ -209,9 +212,30 @@ namespace NSCI.Widgets
             }
         }
 
+        public void TabNext()
+        {
+            if (this.tabList.Count == 0)
+                return;
+            if (this.tabSelectedIndex < 0)
+                this.tabSelectedIndex = 0;
+            else
+                this.tabSelectedIndex = (this.tabSelectedIndex + 1) % this.tabList.Count;
+            ActiveControl = this.tabList[this.tabSelectedIndex];
+        }
+        public void TabPrevious()
+        {
+            if (this.tabList.Count == 0)
+                return;
+            if (this.tabSelectedIndex < 0)
+                this.tabSelectedIndex = this.tabList.Count - 1;
+            else
+                this.tabSelectedIndex = (this.tabSelectedIndex - 1 + this.tabList.Count) % this.tabList.Count;
+            ActiveControl = this.tabList[this.tabSelectedIndex];
+        }
+
         internal void UnRegisterArrangeDirty(UIElement uIElement)
         {
-            elementsArrangeDirty.Remove(uIElement);
+            this.elementsArrangeDirty.Remove(uIElement);
         }
 
         internal void RequestDraw()
@@ -242,7 +266,7 @@ namespace NSCI.Widgets
 
         private bool HandleWidgetInput(ConsoleKeyInfo k)
         {
-            return (ActiveWidget as IAcceptInput).Keypress(k);
+            return (ActiveControl as IAcceptInput).Keypress(k);
         }
 
         //private void MoveDown()
@@ -451,6 +475,38 @@ namespace NSCI.Widgets
             }
             public static readonly DepthComparer Instance = new DepthComparer();
             public int Compare(UIElement x, UIElement y) => x.Depth.CompareTo(y.Depth);
+        }
+        private class TabComparer : IComparer<Control>
+        {
+            private TabComparer()
+            {
+
+            }
+            public static readonly TabComparer Instance = new TabComparer();
+            public int Compare(Control x, Control y)
+            {
+                var xChain = GetChainToRoot(x).Reverse();
+                var yChain = GetChainToRoot(y).Reverse();
+
+                var compare = xChain.Zip(yChain, (first, seccond) => first.TabIndex.CompareTo(seccond.TabIndex)).FirstOrDefault(c => c != 0);
+
+                if (compare == 0)
+                {
+                    // the longer shorter Chain will winn.
+                    // this case should not happen offten.
+                    return yChain.Count().CompareTo(xChain.Count());
+                }
+                return compare;
+            }
+
+            private IEnumerable<Control> GetChainToRoot(Control c)
+            {
+                while (c != null)
+                {
+                    yield return c;
+                    c = c.Parent as Control;
+                }
+            }
         }
     }
 }

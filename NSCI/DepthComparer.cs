@@ -66,6 +66,9 @@ namespace NSCI
             return false;
         }
 
+        public new int IndexOf(T item) => Math.Max(-1, GetInsertIndex(item));
+
+
         private int GetInsertIndex(T item)
         {
             if (Count == 0)
@@ -77,6 +80,7 @@ namespace NSCI
         }
 
 
+        
 
     }
 

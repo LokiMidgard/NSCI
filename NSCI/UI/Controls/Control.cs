@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using NSCI.Widgets;
 
 namespace NSCI.UI.Controls
 {
@@ -17,6 +18,13 @@ namespace NSCI.UI.Controls
         //     Der Standardwert ist [MaxValue](https://msdn.microsoft.com/library/System.int32.maxvalue.aspx).
         public int TabIndex { get; set; }
 
+        /// <summary>
+        /// Returns a value that indecates if this controle can be selected in general.
+        /// </summary>
+        /// <remarks>
+        /// This value will never change. It does not hold information if the control can currently be selected, e.g. when it is disabled.
+        /// </remarks>
+        public virtual bool SupportSelection => false;
         //
         // Zusammenfassung:
         //     Ruft einen Wert ab, der angibt, ob der Benutzer mit dem Steuerelement interagieren
@@ -25,7 +33,30 @@ namespace NSCI.UI.Controls
         // Rückgabewerte:
         //     ** "true" ** Wenn der Benutzer mit dem Steuerelement interagieren kann; andernfalls
         //     ** "false" **.
-        public bool IsEnabled { get; set; }
+        private bool isEnabled;
+        public bool IsEnabled
+        {
+            get => isEnabled;
+            set
+            {
+                if (value != this.isEnabled)
+                {
+                    this.isEnabled = value;
+                    OnIsEnabledChanged(this.isEnabled);
+                }
+            }
+        }
+
+        private bool hasFocus;
+        public bool HasFocus
+        {
+            get => hasFocus;
+            set
+            {
+                if (this.hasFocus != value)
+                    RootWindow.ActiveControl = this;
+            }
+        }
 
         //
         // Zusammenfassung:
@@ -66,6 +97,24 @@ namespace NSCI.UI.Controls
             }
         }
 
+
+        protected virtual void OnIsEnabledChanged(bool newValue)
+        {
+            if(SupportSelection)
+            {
+                if(newValue)
+                {
+                    RootWindow?.tabList.Add(this);
+                }
+                else
+                {
+                    if ((RootWindow?.ActiveControl ?? null) == this)
+                        RootWindow.ActiveControl = null;
+                    RootWindow?.tabList.Remove(this);
+                }
+            }
+        }
+
         //
         // Zusammenfassung:
         //     Ruft einen Pinsel ab, der den Hintergrund des Steuerelements bereitstellt, oder
@@ -94,6 +143,19 @@ namespace NSCI.UI.Controls
                 }
                 return (ConsoleColor)Background;
             }
+        }
+
+        protected override void OnRootWindowChanged(RootWindow oldWindow, RootWindow newWindow)
+        {
+            if (SupportSelection && IsEnabled)
+            {
+                if ((oldWindow?.ActiveControl ?? null) == this)
+                    oldWindow.ActiveControl = null;
+                oldWindow?.tabList.Remove(this);
+                newWindow?.tabList.Add(this);
+            }
+
+            base.OnRootWindowChanged(oldWindow, newWindow);
         }
 
     }
