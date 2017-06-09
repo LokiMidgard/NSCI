@@ -74,25 +74,6 @@ namespace NSCI.UI
         //     ebenfalls zulässig.
         public int MaxHeight { get; set; } = int.MaxValue;
 
-        //
-        // Zusammenfassung:
-        //     Ruft oder legt den äußeren Rand einer Windows.UI.Xaml. FrameworkElement.
-        //
-        // Rückgabewerte:
-        //     Stellt Randwerte für das Objekt bereit. Der Standardwert ist eine Standard-Windows.UI.Xaml.
-        //     Breite gleich 0 alle Eigenschaften (Dimensionen).
-        public Thickness Margin { get; set; }
-
-        //
-        // Zusammenfassung:
-        //     Ruft oder legt die horizontale Ausrichtung Merkmale, die auf eine Windows.UI.Xaml
-        //     angewendet werden. FrameworkElement, wenn es in einem übergeordneten Layoutelement,
-        //     z. B. einem Panel oder Elemente besteht.
-        //
-        // Rückgabewerte:
-        //     Eine Einstellung für die horizontale Ausrichtung als Wert der Enumeration. Der
-        //     Standardwert ist ** Stretch **.
-        public HorizontalAlignment HorizontalAlignment { get; set; } = HorizontalAlignment.Strech;
 
         //
         // Zusammenfassung:
@@ -104,16 +85,7 @@ namespace NSCI.UI
         //     lautet der Wert muss gleich oder größer als 0.
         public int? Width { get; set; } = null;
 
-        //
-        // Zusammenfassung:
-        //     Ruft oder legt die vertikale Ausrichtung Merkmale, die auf eine Windows.UI.Xaml
-        //     angewendet werden. FrameworkElement, wenn er in ein übergeordnetes Objekt z.
-        //     B. ein Bereich oder Elemente besteht.
-        //
-        // Rückgabewerte:
-        //     Eine Einstellung für die vertikale Ausrichtung als Enumerationswert. Der Standardwert
-        //     ist ** Stretch **.
-        public VerticalAlignment VerticalAlignment { get; set; } = VerticalAlignment.Strech;
+
 
         //
         // Zusammenfassung:
@@ -345,7 +317,8 @@ namespace NSCI.UI
             frame.FillRect(Padding.Left, frame.Height -  Padding.Bottom, frame.Width - Padding.Left-Padding.Right, Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
             frame.FillRect(frame.Width- Padding.Right, Padding.Top, Padding.Right, frame.Height-Padding.Bottom-Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
 
-
+            if (Padding.Left + Padding.Right >= frame.Width || Padding.Top + Padding.Bottom >= frame.Height)
+                return; // Not enough Place to draw content.
 
             RenderOverride(frame.GetGraphicsBuffer(new Rect(Padding.Left, Padding.Top, frame.Width - Padding.Right - Padding.Left, frame.Height - Padding.Bottom - Padding.Top)));
         }

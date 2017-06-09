@@ -49,6 +49,89 @@ namespace NSCI.UI
             }
         }
 
+        //
+        // Zusammenfassung:
+        //     Ruft oder legt den äußeren Rand einer Windows.UI.Xaml. FrameworkElement.
+        //
+        // Rückgabewerte:
+        //     Stellt Randwerte für das Objekt bereit. Der Standardwert ist eine Standard-Windows.UI.Xaml.
+        //     Breite gleich 0 alle Eigenschaften (Dimensionen).
+        private Thickness margin;
+        public Thickness Margin
+        {
+            get => margin; set
+            {
+                if (value != this.margin)
+                {
+                    var oldValue = this.margin;
+                    this.margin = value;
+                    OnMarginChanged(oldValue, value);
+                }
+            }
+        }
+
+        protected virtual void OnMarginChanged(Thickness oldValue, Thickness value)
+        {
+            InvalidateMeasure();
+        }
+
+        //
+        // Zusammenfassung:
+        //     Ruft oder legt die vertikale Ausrichtung Merkmale, die auf eine Windows.UI.Xaml
+        //     angewendet werden. FrameworkElement, wenn er in ein übergeordnetes Objekt z.
+        //     B. ein Bereich oder Elemente besteht.
+        //
+        // Rückgabewerte:
+        //     Eine Einstellung für die vertikale Ausrichtung als Enumerationswert. Der Standardwert
+        //     ist ** Stretch **.
+        private VerticalAlignment verticalAlignment = VerticalAlignment.Strech;
+        public VerticalAlignment VerticalAlignment
+        {
+            get => verticalAlignment; set
+            {
+                if (value != this.verticalAlignment)
+                {
+                    var oldValue = this.verticalAlignment;
+                    this.verticalAlignment = value;
+                    OnVerticalAlignmentChanged(oldValue, value);
+                }
+            }
+        }
+
+        protected virtual void OnVerticalAlignmentChanged(VerticalAlignment oldValue, VerticalAlignment newValue)
+        {
+            InvalidateArrange();
+        }
+
+        //
+        // Zusammenfassung:
+        //     Ruft oder legt die horizontale Ausrichtung Merkmale, die auf eine Windows.UI.Xaml
+        //     angewendet werden. FrameworkElement, wenn es in einem übergeordneten Layoutelement,
+        //     z. B. einem Panel oder Elemente besteht.
+        //
+        // Rückgabewerte:
+        //     Eine Einstellung für die horizontale Ausrichtung als Wert der Enumeration. Der
+        //     Standardwert ist ** Stretch **.
+        private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Strech;
+        public HorizontalAlignment HorizontalAlignment
+        {
+            get => horizontalAlignment; set
+            {
+                if (this.horizontalAlignment != value)
+                {
+                    var oldValue = this.horizontalAlignment;
+                    this.horizontalAlignment = value;
+                    OnHorizontalAlignmentChanged(oldValue, value);
+                }
+            }
+        }
+
+        protected virtual void OnHorizontalAlignmentChanged(HorizontalAlignment oldValue, HorizontalAlignment newValue)
+        {
+            InvalidateArrange();
+        }
+
+
         /// <summary>
         /// Gets the depth in the UI Tree.
         /// </summary>
@@ -80,7 +163,23 @@ namespace NSCI.UI
         //     des Layoutvorgangs.
         public Size DesiredSize { get; private set; }
 
-        public bool IsVisible { get; set; } = true;
+        private bool isVisible = true;
+        public bool IsVisible
+        {
+            get => isVisible; set
+            {
+                if (value != this.isVisible)
+                {
+                    this.isVisible = value;
+                    OnIsVisibleChanged(value);
+                }
+            }
+        }
+
+        protected virtual void OnIsVisibleChanged(bool newValue)
+        {
+            InvalidateMeasure();
+        }
 
         public bool MeasureDirty { get; private set; } = true;
 
@@ -121,6 +220,7 @@ namespace NSCI.UI
                 if (!IsVisible)
                 {
                     DesiredSize = Size.Empty;
+                    MeasureDirty = false;
                     return;
                 }
 

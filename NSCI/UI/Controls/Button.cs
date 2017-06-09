@@ -33,7 +33,7 @@ namespace NSCI.UI.Controls
         public Button()
         {
             this.border = new Border();
-            this.text = new TextBlock() { background= Color.Yellow };
+            this.text = new TextBlock() { background = Color.Yellow, Height = 3 };
             this.border.Content = this.text;
             this.border.Parent = this;
             Up();

@@ -19,8 +19,8 @@ namespace TestHarness
             border.Content = text;
             var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" };
 
-            var button1 = new Button() {  Width = 40};
-            var button2 = new Button();
+            var button1 = new Button() {  Width = 40, HorizontalAlignment = HorizontalAlignment.Left};
+            var button2 = new Button() {  HorizontalAlignment=  HorizontalAlignment.Center};
 
             button1.Text = "Button 1";
             button2.Text = "Button 2";
