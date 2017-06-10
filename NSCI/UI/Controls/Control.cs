@@ -18,6 +18,16 @@ namespace NSCI.UI.Controls
         //     Der Standardwert ist [MaxValue](https://msdn.microsoft.com/library/System.int32.maxvalue.aspx).
         public int TabIndex { get; set; }
 
+        //
+        // Zusammenfassung:
+        //     Ruft ab oder legt fest, ob ein deaktiviertes Steuerelement den Fokus erhalten
+        //     kann.
+        //
+        // Rückgabewerte:
+        //     ** "true" ** Wenn ein deaktiviertes Steuerelement den Fokus erhalten kann; andernfalls
+        //     ** "false" **.
+        public bool AllowFocusWhenDisabled { get; set; }
+
         /// <summary>
         /// Returns a value that indecates if this controle can be selected in general.
         /// </summary>

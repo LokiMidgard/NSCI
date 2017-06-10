@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using NSCI.UI;
 using NSCI.UI.Controls;
 
-namespace NSCI.Widgets
+namespace NSCI.UI
 {
     public class RootWindow : UI.Controls.ContentControl
     {
@@ -23,11 +23,6 @@ namespace NSCI.Widgets
             Background = Color.DarkBlue;
             Foreground = Color.White;
             RootWindow = this;
-            //SelectedBackground = ConsoleColor.Magenta;
-            //ActiveBackground = ConsoleColor.DarkMagenta;
-            //ActiveWidget = null;
-            //AllowDraw = false;
-            //this.AllChildren = new List<Widget>();
         }
 
         public event Action BeforeStart;
@@ -91,7 +86,7 @@ namespace NSCI.Widgets
             this.running = true;
             Console.CursorVisible = false;
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            //ActiveWidget = this.RootFocusableChildren.FirstOrDefault();
+            //ActiveControl = this.RootFocusableChildren.FirstOrDefault();
 
             //Draw();
 
@@ -121,12 +116,12 @@ namespace NSCI.Widgets
             BeforeStart?.Invoke();
 
             var g = new UI.Graphics(this);
-            this.Measure(new Size(g.Width, g.Height));
+            Measure(new Size(g.Width, g.Height));
 
-            this.Arrange(new Rect(0, 0, g.Width, g.Height));
-            this.Render(g.GraphicsBuffer);
+            Arrange(new Rect(0, 0, g.Width, g.Height));
+            Render(g.GraphicsBuffer);
 
-            g.Draw();
+            //g.Draw();
 
 
 
@@ -140,12 +135,13 @@ namespace NSCI.Widgets
 
                     //this.InvalidateMeasure();
                     // We ned to render evything new. :(
-                    this.Measure(new Size(g.Width, g.Height));
-                    this.Arrange(new Rect(0, 0, g.Width, g.Height));
-                    this.Render(g.GraphicsBuffer);
-
-                    //Draw();
+                    Measure(new Size(g.Width, g.Height));
+                    Arrange(new Rect(0, 0, g.Width, g.Height));
+                    Render(g.GraphicsBuffer);
                 }
+
+                if (ActiveControl == null && this.tabList.Count > 0)
+                    ActiveControl = this.tabList[0];
 
                 foreach (var item in this.elementsMeasureDirty.ConsumableEnumerator())
                     item.MeasureWithLastAvailableSize();
@@ -169,7 +165,7 @@ namespace NSCI.Widgets
                     if (ProcessKey)
                         ProcessKey = !ActiveControl?.HandleInput(k) ?? true;
 
-                    //if (ActiveWidget is IAcceptInput)
+                    //if (ActiveControl is IAcceptInput)
                     //{
                     //    ProcessKey = false;
                     //    switch (k.Key)
@@ -193,18 +189,18 @@ namespace NSCI.Widgets
                                 else
                                     TabNext();
                                 break;
-                            //case ConsoleKey.RightArrow:
-                            //    MoveRight();
-                            //    break;
-                            //case ConsoleKey.LeftArrow:
-                            //    MoveLeft();
-                            //    break;
-                            //case ConsoleKey.UpArrow:
-                            //    MoveUp();
-                            //    break;
-                            //case ConsoleKey.DownArrow:
-                            //    MoveDown();
-                            //    break;
+                            case ConsoleKey.RightArrow:
+                                MoveRight();
+                                break;
+                            case ConsoleKey.LeftArrow:
+                                MoveLeft();
+                                break;
+                            case ConsoleKey.UpArrow:
+                                MoveUp();
+                                break;
+                            case ConsoleKey.DownArrow:
+                                MoveDown();
+                                break;
                             //case ConsoleKey.Spacebar:
                             //case ConsoleKey.Enter:
                             //    EnterPressed();
@@ -259,222 +255,132 @@ namespace NSCI.Widgets
         internal void RegisterRenderDirty(UIElement uIElement)
         {
 
-            elementsRenderDirty.Add(uIElement);
+            this.elementsRenderDirty.Add(uIElement);
         }
 
         internal void RegisterArrangeDirty(UIElement uIElement)
         {
-            elementsArrangeDirty.Add(uIElement);
+            this.elementsArrangeDirty.Add(uIElement);
         }
 
         internal void RegisterMeasureDirty(UIElement uIElement)
         {
-            elementsMeasureDirty.Add(uIElement);
+            this.elementsMeasureDirty.Add(uIElement);
         }
 
-        private bool HandleWidgetInput(ConsoleKeyInfo k)
+
+
+        private void MoveDown()
         {
-            return (ActiveControl as IAcceptInput).Keypress(k);
+            if (ActiveControl == null)
+                return;
+            var w = FindFocusableWidgetBelow(ActiveControl);
+            if (w != null)
+                ActiveControl = w;
         }
 
-        //private void MoveDown()
-        //{
-        //    var w = FindFocusableWidgetBelow(ActiveWidget);
-        //    if (w != null)
-        //    {
-        //        ActiveWidget = w;
-        //        this.lastIndex = this.RootFocusableChildren.IndexOf(ActiveWidget);
-        //    }
-        //}
+        private void MoveUp()
+        {
+            if (ActiveControl == null)
+                return;
+            var w = FindFocusableWidgetAbove(ActiveControl);
+            if (w != null)
+            {
+                ActiveControl = w;
+            }
+        }
 
-        //private void MoveUp()
-        //{
-        //    var w = FindFocusableWidgetAbove(ActiveWidget);
-        //    if (w != null)
-        //    {
-        //        ActiveWidget = w;
-        //        this.lastIndex = this.RootFocusableChildren.IndexOf(ActiveWidget);
-        //    }
-        //}
+        private void MoveLeft()
+        {
+            if (ActiveControl == null)
+                return;
+            var w = FindFocusableWidgetToLeftOf(ActiveControl);
+            if (w != null)
+            {
+                ActiveControl = w;
+            }
+        }
 
-        //private void MoveLeft()
-        //{
-        //    var w = FindFocusableWidgetToLeftOf(ActiveWidget);
-        //    if (w != null)
-        //    {
-        //        ActiveWidget = w;
-        //        this.lastIndex = this.RootFocusableChildren.IndexOf(ActiveWidget);
-        //    }
-        //}
+        private void MoveRight()
+        {
+            if (ActiveControl == null)
+                return;
+            var w = FindFocusableControlToRightOf(ActiveControl);
+            if (w != null)
+            {
+                ActiveControl = w;
+            }
+        }
 
-        //private void MoveRight()
-        //{
-        //    var w = FindFocusableWidgetToRightOf(ActiveWidget);
-        //    if (w != null)
-        //    {
-        //        ActiveWidget = w;
-        //        this.lastIndex = this.RootFocusableChildren.IndexOf(ActiveWidget);
-        //    }
-        //}
 
-        //private void EnterPressed()
-        //{
-        //    if (ActiveWidget != null && ActiveWidget.Enabled)
-        //    {
-        //        ActiveWidget.FireClickedAsync();
-        //    }
-        //}
+        private Control FindFocusableControlToRightOf(Control from)
+        {
+            var fromLocation = GetLocation(from);
+            var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
+            // First search 15 deegree
+            var ImmediateRight = locationLost.Where(c => c.Location.Center.X > fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X) / 3).OrderBy(c => c.Location.Center.X).FirstOrDefault();
 
-        //private int lastIndex = 0;
+            if (ImmediateRight == null)
+            {
+            // Then search 45 deegree
+                var RoughRight = locationLost.Where(c => c.Location.Center.X > fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X)).OrderBy(c => c.Location.Center.X).FirstOrDefault();
+                return RoughRight?.Control;
+            }
 
-        //private Widget FindFocusableWidgetToRightOf(Widget from)
-        //{
-        //    var ImmediateRight = ActivableChildren.Where(c => c.Top == from.Top && c.Left > from.Left).OrderBy(c => c.Left).FirstOrDefault();
+            return ImmediateRight.Control;
+        }
 
-        //    if (ImmediateRight == null)
-        //    {
-        //        var RoughRight = ActivableChildren.Where(c => c.Left > from.Left && Math.Abs(c.Top - from.Top) < 2).OrderBy(c => c.Left).OrderBy(c => Math.Abs(c.Top - from.Top)).FirstOrDefault();
+        private Control FindFocusableWidgetToLeftOf(Control from)
+        {
+            var fromLocation = GetLocation(from);
+            var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
+            // First search 15 deegree
+            var ImmediateRight = locationLost.Where(c => c.Location.Center.X < fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X) / 3).OrderByDescending(c => c.Location.Center.X).FirstOrDefault();
 
-        //        if (RoughRight == null)
-        //        {
-        //            return ActivableChildren.Where(c => c.Top == from.Top).OrderBy(c => c.Left).FirstOrDefault();
-        //        }
+            if (ImmediateRight == null)
+            {
+            // Then search 45 deegree
+                var RoughRight = locationLost.Where(c => c.Location.Center.X < fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X)).OrderByDescending(c => c.Location.Center.X).FirstOrDefault();
+                return RoughRight?.Control;
+            }
 
-        //        return RoughRight;
-        //    }
+            return ImmediateRight.Control;
+        }
 
-        //    return ImmediateRight;
-        //}
+        private Control FindFocusableWidgetAbove(Control from)
+        {
+            var fromLocation = GetLocation(from);
+            var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
+            // First search 15 deegree
+            var ImmediateRight = locationLost.Where(c => c.Location.Center.Y < fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) / 3).OrderByDescending(c => c.Location.Center.Y).FirstOrDefault();
 
-        //private Widget FindFocusableWidgetToLeftOf(Widget from)
-        //{
-        //    var ImmediateLeft = ActivableChildren.Where(c => c.Top == from.Top && c.Left < from.Left).OrderByDescending(c => c.Left).FirstOrDefault();
+            if (ImmediateRight == null)
+            {
+            // Then search 45 deegree
+                var RoughRight = locationLost.Where(c => c.Location.Center.Y < fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y)).OrderByDescending(c => c.Location.Center.Y).FirstOrDefault();
+                return RoughRight?.Control;
+            }
 
-        //    if (ImmediateLeft == null)
-        //    {
-        //        var RoughLeft = ActivableChildren.Where(c => c.Left < from.Left && Math.Abs(c.Top - from.Top) < 2).OrderByDescending(c => c.Left).OrderBy(c => Math.Abs(c.Top - from.Top)).FirstOrDefault();
+            return ImmediateRight.Control;
+        }
 
-        //        if (RoughLeft == null)
-        //        {
-        //            return ActivableChildren.Where(c => c.Top == from.Top).OrderByDescending(c => c.Left).FirstOrDefault();
-        //        }
+        private Control FindFocusableWidgetBelow(Control from)
+        {
+            var fromLocation = GetLocation(from);
+            var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
+            // First search 15 deegree
+            var ImmediateRight = locationLost.Where(c => c.Location.Center.Y > fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) / 3).OrderBy(c => c.Location.Center.Y).FirstOrDefault();
 
-        //        return RoughLeft;
-        //    }
+            if (ImmediateRight == null)
+            {
+            // Then search 45 deegree
+                var RoughRight = locationLost.Where(c => c.Location.Center.Y > fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y)).OrderBy(c => c.Location.Center.Y).FirstOrDefault();
+                return RoughRight?.Control;
+            }
 
-        //    return ImmediateLeft;
-        //}
+            return ImmediateRight.Control;
+        }
 
-        //private Widget FindFocusableWidgetAbove(Widget from)
-        //{
-        //    var ImmediateAbove = ActivableChildren.Where(c => c.Left == from.Left && c.Top < from.Top).OrderByDescending(c => c.Top).FirstOrDefault();
-
-        //    if (ImmediateAbove == null)
-        //    {
-        //        return ActivableChildren.Where(c => c.Top < from.Top).OrderByDescending(c => c.Top).OrderBy(c => c.Left).FirstOrDefault();
-        //    }
-
-        //    return ImmediateAbove;
-        //}
-
-        //private Widget FindFocusableWidgetBelow(Widget from)
-        //{
-        //    var ImmediateBelow = ActivableChildren.Where(c => c.Left == from.Left && c.Top > from.Top).OrderBy(c => c.Top).FirstOrDefault();
-
-        //    if (ImmediateBelow == null)
-        //    {
-        //        return ActivableChildren.Where(c => c.Top > from.Top).OrderBy(c => c.Left).OrderBy(c => c.Top).FirstOrDefault();
-        //    }
-
-        //    return ImmediateBelow;
-        //}
-
-        //private void CycleFocus(int Direction = 1)
-        //{
-        //    if (ActiveWidget == null)
-        //    {
-        //        this.lastIndex = 0;
-        //        ActiveWidget = ActivableChildren.FirstOrDefault();
-        //    }
-        //    else
-        //    {
-        //        this.lastIndex = (this.lastIndex + Direction) % ActivableChildren.Count;
-        //        if (this.lastIndex == -1) { this.lastIndex = ActivableChildren.Count - 1; }
-        //        ActiveWidget = ActivableChildren[this.lastIndex];
-        //    }
-        //}
-
-        //private static Type[] GetWidgetTypes()
-        //{
-        //    return Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.IsSubclassOf(typeof(Widget))).ToArray();
-        //}
-
-        //private XmlSerializerNamespaces GetNS()
-        //{
-        //    XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
-        //    ns.Add("", "");
-        //    return ns;
-        //}
-
-        //public void Save(Stream stream)
-        //{
-        //    var ser = new XmlSerializer(typeof(RootWindow), GetWidgetTypes());
-        //    ser.Serialize(stream, this, GetNS());
-        //}
-
-        //public void Save(string Filename)
-        //{
-        //    var ser = new XmlSerializer(typeof(RootWindow), GetWidgetTypes());
-
-        //    using (var stream = new StreamWriter(Filename))
-        //    {
-        //        ser.Serialize(stream, this, GetNS());
-        //    }
-        //}
-
-        //public String Save()
-        //{
-        //    var ser = new XmlSerializer(typeof(RootWindow), GetWidgetTypes());
-
-        //    using (var stream = new StringWriter())
-        //    {
-        //        ser.Serialize(stream, this, GetNS());
-        //        return stream.ToString();
-        //    }
-        //}
-
-        //public static RootWindow LoadFromStream(Stream stream)
-        //{
-        //    var ser = new XmlSerializer(typeof(RootWindow), GetWidgetTypes());
-
-        //    var obj = (RootWindow)ser.Deserialize(stream);
-        //    obj.FixChildParents(obj);
-        //    obj.BuildLookup();
-        //    return obj;
-        //}
-
-        //public static RootWindow LoadFromString(String data)
-        //{
-        //    var ser = new XmlSerializer(typeof(RootWindow), GetWidgetTypes());
-
-        //    var obj = (RootWindow)ser.Deserialize(new StringReader(data));
-        //    obj.FixChildParents(obj);
-        //    obj.BuildLookup();
-        //    return obj;
-        //}
-
-        //public static RootWindow LoadFromFile(string Filename)
-        //{
-        //    var ser = new XmlSerializer(typeof(RootWindow), GetWidgetTypes());
-
-        //    using (var stream = new StreamReader(Filename))
-        //    {
-        //        var obj = (RootWindow)ser.Deserialize(stream);
-        //        obj.FixChildParents(obj);
-        //        obj.BuildLookup();
-        //        return obj;
-        //    }
-        //}
         private class DepthComparer : IComparer<UIElement>
         {
             private DepthComparer()

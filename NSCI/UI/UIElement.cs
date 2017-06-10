@@ -405,13 +405,13 @@ namespace NSCI.UI
             while (currentThis.Depth > currentOther.Depth)
                 currentThis = currentThis.Parent;
 
-            while (currentThis.Parent != currentOther.Parent)
+            while (currentThis!= currentOther)
             {
                 currentThis = currentThis.Parent;
                 currentOther = currentOther.Parent;
             }
 
-            return currentOther.Parent ?? throw new ArgumentException("No Common Acestor found.");
+            return currentOther ?? throw new ArgumentException("No Common Acestor found.");
         }
     }
 }

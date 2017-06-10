@@ -117,15 +117,7 @@ namespace NSCI.UI
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
         public int ActualWidth { get; private set; }
 
-        //
-        // Zusammenfassung:
-        //     Ruft ab oder legt fest, ob ein deaktiviertes Steuerelement den Fokus erhalten
-        //     kann.
-        //
-        // Rückgabewerte:
-        //     ** "true" ** Wenn ein deaktiviertes Steuerelement den Fokus erhalten kann; andernfalls
-        //     ** "false" **.
-        public bool AllowFocusWhenDisabled { get; set; }
+
 
         //
         // Zusammenfassung:

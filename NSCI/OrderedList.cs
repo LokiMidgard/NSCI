@@ -28,18 +28,22 @@ namespace NSCI
 
         public new bool Remove(T item)
         {
+            var index = IndexOf(item);
+            if (index == -1)
+                return false;
+            RemoveAt(index);
+            return true;
+        }
+
+        public new int IndexOf(T item)
+        {
             var foundIndex = GetInsertIndex(item);
             if (foundIndex < 0 || Count == 0) // No element found
-                return false;
+                return -1;
 
             //we found one Item that has the same Size, but this must not be the equals to the searched object.
-
             if (item.Equals(this[foundIndex]))
-            {
-                RemoveAt(foundIndex);
-                return true;
-            }
-
+                return foundIndex;
 
             var i = foundIndex - 1;
             //search backwards
@@ -47,10 +51,7 @@ namespace NSCI
                 --i;
 
             if (i >= 0 && item.Equals(this[i]))
-            {
-                RemoveAt(i);
-                return true;
-            }
+                return i;
 
             i = foundIndex + 1;
             //search forward
@@ -58,15 +59,10 @@ namespace NSCI
                 ++i;
 
             if (i < Count && item.Equals(this[i]))
-            {
-                RemoveAt(i);
-                return true;
-            }
+                return i;
 
-            return false;
+            return -1;
         }
-
-        public new int IndexOf(T item) => Math.Max(-1, GetInsertIndex(item));
 
 
         private int GetInsertIndex(T item)

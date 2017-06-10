@@ -12,7 +12,7 @@ namespace TestHarness
     {
         static void Main(string[] args)
         {
-            var root = new NSCI.Widgets.RootWindow();
+            var root = new NSCI.UI.RootWindow();
 
             var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!", Height = 3 };
             var border = new Border() { Style = NSCI.UI.Controls.BorderStyle.DropShadowMedium, Background = Color.Green, Foreground = Color.Black };

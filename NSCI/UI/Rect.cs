@@ -47,6 +47,8 @@ namespace NSCI.UI
 
         public bool IsEmpty => Height == 0 && Width == 0 && X == 0 && Y == 0;
 
+        public Point Center => Location.Offset(Width / 2, Height / 2);
+
         public bool Equals(Rect other) => (other.X == X) && (other.Y == Y) && (other.Width == Width) && (other.Height == Height);
         public override bool Equals(object obj)
         {
