@@ -4,44 +4,38 @@ using System.Text;
 
 namespace NSCI.UI.Controls
 {
-    public class Border : ContentControl
+    public partial class Border : ContentControl
     {
-        private BorderStyle style;
 
-        public BorderStyle Style
+        [NDProperty.NDP]
+        protected virtual void  OnStyleChanged(NDProperty.OnChangedArg<BorderStyle> arg)
         {
-            get => this.style; set
-            {
-                var oldThickness = BorderThikness;
-                this.style = value;
-                var newThickness = BorderThikness;
-                if (oldThickness != newThickness)
-                    InvalidateMeasure();
+            var oldThickness = CalculateBorderThikness(arg.OldValue);
+            var newThickness = CalculateBorderThikness(arg.NewValue);
+            if (oldThickness != newThickness)
+                InvalidateMeasure();
 
-                // InvalidateMeasure not always results in invalidate Render!
-                InvalidateRender();
-            }
+            // InvalidateMeasure not always results in invalidate Render!
+            InvalidateRender();
         }
+        public Thickness BorderThikness => CalculateBorderThikness(Style);
 
-        public Thickness BorderThikness
+        private Thickness CalculateBorderThikness(BorderStyle style)
         {
-            get
+            switch (style) 
             {
-                switch (Style)
-                {
-                    case BorderStyle.None:
-                        return new Thickness();
-                    case BorderStyle.DropShadowLight:
-                    case BorderStyle.DropShadowMedium:
-                    case BorderStyle.DropShadowStrong:
-                        return new Thickness(0, 0, 1, 1);
-                    case BorderStyle.SingelLined:
-                    case BorderStyle.DoubleLined:
-                    case BorderStyle.Block:
-                        return new Thickness(1);
-                    default:
-                        throw new NotImplementedException($"BoarderStyle {Style} not implemented.");
-                }
+                case BorderStyle.None:
+                    return new Thickness();
+                case BorderStyle.DropShadowLight:
+                case BorderStyle.DropShadowMedium:
+                case BorderStyle.DropShadowStrong:
+                    return new Thickness(0, 0, 1, 1);
+                case BorderStyle.SingelLined:
+                case BorderStyle.DoubleLined:
+                case BorderStyle.Block:
+                    return new Thickness(1);
+                default:
+                    throw new NotImplementedException($"BoarderStyle {Style} not implemented.");
             }
         }
 
@@ -84,7 +78,7 @@ namespace NSCI.UI.Controls
                 var borderThikness = BorderThikness;
                 var borderWith = borderThikness.Left + borderThikness.Right;
                 var borderHeight = borderThikness.Top + borderThikness.Bottom;
-                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, ActualForeground, ActuellBackground, SpecialChars.Fill);
+                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, Foreground, Background, SpecialChars.Fill);
             }
         }
 
@@ -114,7 +108,7 @@ namespace NSCI.UI.Controls
                     throw new NotImplementedException($"BoarderStyle {Style} not implemented.");
             }
 
-            frame.DrawRect(0, 0, frame.Width, frame.Height, ActualForeground, ActuellBackground, borderPen);
+            frame.DrawRect(0, 0, frame.Width, frame.Height, Foreground, Background, borderPen);
         }
 
         private void RenderDropShadow(IRenderFrame frame)
@@ -134,12 +128,12 @@ namespace NSCI.UI.Controls
                 default:
                     throw new NotImplementedException($"BoarderStyle {Style} is not a shadow.");
             }
-            frame[frame.Width - 1, 0] = new ColoredKey(' ', ActualForeground, ActuellBackground);
-            frame[0, frame.Height - 1] = new ColoredKey(' ', ActualForeground, ActuellBackground);
+            frame[frame.Width - 1, 0] = new ColoredKey(' ', Foreground, Background);
+            frame[0, frame.Height - 1] = new ColoredKey(' ', Foreground, Background);
             for (int y = 1; y < frame.Height - 1; y++)
-                frame[frame.Width - 1, y] = new ColoredKey(shadowChar, ActualForeground, ActuellBackground);
+                frame[frame.Width - 1, y] = new ColoredKey(shadowChar, Foreground, Background);
             for (int x = 1; x < frame.Width; x++)
-                frame[x, frame.Height - 1] = new ColoredKey(shadowChar, ActualForeground, ActuellBackground);
+                frame[x, frame.Height - 1] = new ColoredKey(shadowChar, Foreground, Background);
         }
     }
 

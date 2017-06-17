@@ -1,53 +1,48 @@
 ﻿using System;
+using System.ComponentModel;
+using NDProperty;
 using NSCI.Widgets;
 
 namespace NSCI.UI
 {
-    public abstract class UIElement
+    public abstract partial class UIElement
     {
         private Size lastAvailableSize;
         private IRenderFrame lastFrame;
 
-        private RootWindow rootWindow;
-
-        private UIElement parent;
-
-        public event EventHandler<EventArgs<(RootWindow oldRoot, RootWindow newRoot)>> RootWindowChanged;
-        public event EventHandler<EventArgs<(int oldRoot, int newRoot)>> DepthChanged;
-
-        public RootWindow RootWindow
+        public UIElement()
         {
-            get => this.rootWindow; set
-            {
-                var oldWindow = this.rootWindow;
-                if (oldWindow != value)
-                {
-                    this.rootWindow = value;
-                    OnRootWindowChanged(oldWindow, this.rootWindow);
-                }
-            }
+            if (this is RootWindow)
+                RootWindow = this as RootWindow;
         }
-        public UIElement Parent
-        {
-            get => parent;
-            internal set
-            {
-                if (this.parent != value)
-                {
-                    if (this.parent != null)
-                        this.parent.RootWindowChanged -= ParentRootChanged;
-                    this.parent = value;
-                    Depth = this.parent?.Depth + 1 ?? 0;
 
-                    if (this.parent is RootWindow r)
-                        RootWindow = r;
-                    else
-                        RootWindow = this.parent?.RootWindow;
-                    if (this.parent != null)
-                        this.parent.RootWindowChanged += ParentRootChanged;
-                }
-            }
+
+        [NDP(IsReadOnly = true)]
+        protected virtual void OnRootWindowChanged(OnChangedArg<RootWindow> arg)
+        {
+            if (this is RootWindow && arg.NewValue == null)
+                arg.MutatedValue = this as RootWindow;
         }
+
+        [NDP(IsParentReference = true)]
+        protected virtual void OnParentChanged(global::NDProperty.OnChangedArg<UIElement> arg)
+        {
+            if (arg.NewValue != arg.OldValue)
+            {
+                if (arg.OldValue != null)
+                    arg.OldValue.RootWindowChanged -= ParentRootChanged;
+                Depth = arg.NewValue?.Depth + 1 ?? 0;
+
+                if (arg.NewValue is RootWindow r)
+                    RootWindow = r;
+                else
+                    RootWindow = arg.NewValue?.RootWindow;
+                if (arg.NewValue != null)
+                    arg.NewValue.RootWindowChanged += ParentRootChanged;
+            }
+
+        }
+
 
         //
         // Zusammenfassung:
@@ -56,21 +51,8 @@ namespace NSCI.UI
         // Rückgabewerte:
         //     Stellt Randwerte für das Objekt bereit. Der Standardwert ist eine Standard-Windows.UI.Xaml.
         //     Breite gleich 0 alle Eigenschaften (Dimensionen).
-        private Thickness margin;
-        public Thickness Margin
-        {
-            get => margin; set
-            {
-                if (value != this.margin)
-                {
-                    var oldValue = this.margin;
-                    this.margin = value;
-                    OnMarginChanged(oldValue, value);
-                }
-            }
-        }
-
-        protected virtual void OnMarginChanged(Thickness oldValue, Thickness value)
+        [NDP]
+        protected virtual void OnMarginChanged(OnChangedArg<Thickness> arg)
         {
             InvalidateMeasure();
         }
@@ -84,21 +66,9 @@ namespace NSCI.UI
         // Rückgabewerte:
         //     Eine Einstellung für die vertikale Ausrichtung als Enumerationswert. Der Standardwert
         //     ist ** Stretch **.
-        private VerticalAlignment verticalAlignment = VerticalAlignment.Strech;
-        public VerticalAlignment VerticalAlignment
-        {
-            get => verticalAlignment; set
-            {
-                if (value != this.verticalAlignment)
-                {
-                    var oldValue = this.verticalAlignment;
-                    this.verticalAlignment = value;
-                    OnVerticalAlignmentChanged(oldValue, value);
-                }
-            }
-        }
-
-        protected virtual void OnVerticalAlignmentChanged(VerticalAlignment oldValue, VerticalAlignment newValue)
+        [NDP]
+        [DefaultValue(VerticalAlignment.Strech)]
+        protected virtual void OnVerticalAlignmentChanged(OnChangedArg<VerticalAlignment> arg)
         {
             InvalidateArrange();
         }
@@ -112,21 +82,10 @@ namespace NSCI.UI
         // Rückgabewerte:
         //     Eine Einstellung für die horizontale Ausrichtung als Wert der Enumeration. Der
         //     Standardwert ist ** Stretch **.
-        private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Strech;
-        public HorizontalAlignment HorizontalAlignment
-        {
-            get => horizontalAlignment; set
-            {
-                if (this.horizontalAlignment != value)
-                {
-                    var oldValue = this.horizontalAlignment;
-                    this.horizontalAlignment = value;
-                    OnHorizontalAlignmentChanged(oldValue, value);
-                }
-            }
-        }
 
-        protected virtual void OnHorizontalAlignmentChanged(HorizontalAlignment oldValue, HorizontalAlignment newValue)
+        [NDP]
+        [DefaultValue(HorizontalAlignment.Strech)]
+        protected virtual void OnHorizontalAlignmentChanged(OnChangedArg<HorizontalAlignment> arg)
         {
             InvalidateArrange();
         }
@@ -139,44 +98,19 @@ namespace NSCI.UI
         /// A direct Child of the RootWindow has depth 1. <para/>
         /// The RootWindow has depth 0 and an UIElement with no parent has also depth 0.
         /// </remarks>
-        private int depth;
-        public int Depth
+
+
+        [NDP(IsReadOnly = true)]
+        protected virtual void OnDepthChanged(global::NDProperty.OnChangedArg<int> arg)
         {
-            get => depth; private set
-            {
-                if (this.depth != value)
-                {
-                    var oldValue = this.depth;
-                    this.depth = value;
-                    OnDepthChanged(oldValue, value);
-                }
-            }
+
         }
 
-        //
-        // Zusammenfassung:
-        //     Ruft die Größe ab, die diese Windows.UI.Xaml. UIElement berechnet, der während
-        //     des messdurchlaufs des Layoutvorgangs.
-        //
-        // Rückgabewerte:
-        //     Die Größe, die diese Windows.UI.Xaml. UIElement berechnet, der während des messdurchlaufs
-        //     des Layoutvorgangs.
-        public Size DesiredSize { get; private set; }
 
-        private bool isVisible = true;
-        public bool IsVisible
-        {
-            get => isVisible; set
-            {
-                if (value != this.isVisible)
-                {
-                    this.isVisible = value;
-                    OnIsVisibleChanged(value);
-                }
-            }
-        }
 
-        protected virtual void OnIsVisibleChanged(bool newValue)
+        [NDP]
+        [DefaultValue(true)]
+        protected virtual void OnIsVisibleChanged(global::NDProperty.OnChangedArg<bool> arg)
         {
             InvalidateMeasure();
         }
@@ -190,6 +124,18 @@ namespace NSCI.UI
         internal bool MeasureInProgress { get; private set; }
 
         internal Rect ArrangedPosition { get; private set; }
+
+        //
+        // Zusammenfassung:
+        //     Ruft die Größe ab, die diese Windows.UI.Xaml. UIElement berechnet, der während
+        //     des messdurchlaufs des Layoutvorgangs.
+        //
+        // Rückgabewerte:
+        //     Die Größe, die diese Windows.UI.Xaml. UIElement berechnet, der während des messdurchlaufs
+        //     des Layoutvorgangs.
+        public Size DesiredSize { get; private set; }
+
+
 
         //
         // Zusammenfassung:
@@ -355,14 +301,6 @@ namespace NSCI.UI
                 InvalidateMeasure();
         }
 
-        protected virtual void OnRootWindowChanged(RootWindow oldWindow, RootWindow newWindow)
-        {
-            RootWindowChanged?.Invoke(this, new EventArgs<(RootWindow oldRoot, RootWindow newRoot)>((oldWindow, newWindow)));
-        }
-        protected virtual void OnDepthChanged(int oldDepth, int newDepth)
-        {
-            DepthChanged?.Invoke(this, new EventArgs<(int oldDepth, int newDepth)>((oldDepth, newDepth)));
-        }
 
         protected virtual Size MeasureCore(Size availableSize) => Size.Empty;
 
@@ -375,10 +313,11 @@ namespace NSCI.UI
 
         }
 
-        private void ParentRootChanged(object sender, EventArgs<(RootWindow oldRoot, RootWindow newRoot)> e)
+        private void ParentRootChanged(object sender, ChangedEventArgs<RootWindow, UIElement> e)
         {
-            RootWindow = e.Argument.newRoot;
+            RootWindow = e.NewValue;
         }
+
         private Size GetTranslation(UIElement uIElement)
         {
             var commoneAcestor = FindCommonAcestor(uIElement);
@@ -405,7 +344,7 @@ namespace NSCI.UI
             while (currentThis.Depth > currentOther.Depth)
                 currentThis = currentThis.Parent;
 
-            while (currentThis!= currentOther)
+            while (currentThis != currentOther)
             {
                 currentThis = currentThis.Parent;
                 currentOther = currentOther.Parent;

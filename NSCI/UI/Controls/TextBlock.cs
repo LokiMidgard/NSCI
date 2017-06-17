@@ -5,18 +5,15 @@ using System.Text;
 
 namespace NSCI.UI.Controls
 {
-    public class TextBlock : Control
+    public partial class TextBlock : Control
     {
-        private string text;
 
-        public string Text
+        [NDProperty.NDP]
+        protected virtual void OnTextChanged(NDProperty.OnChangedArg<string> arg)
         {
-            get => this.text; set
-            {
-                this.text = value?.Replace("\t", "    ").Replace("\r", "");
-
-            }
+            arg.MutatedValue = arg.NewValue?.Replace("\t", "    ").Replace("\r", "");
         }
+
 
         private string[] renderLines = new string[0];
 
@@ -26,7 +23,7 @@ namespace NSCI.UI.Controls
             availableSize = base.MeasureOverride(availableSize);
 
 
-            var lines = this.text?.Split('\n') ?? new string[0];
+            var lines = Text?.Split('\n') ?? new string[0];
             var maxLineLength = lines.Max(x => x.Length);
             int lineheight = lines.Length;
             if (maxLineLength > availableSize.Width)
@@ -41,7 +38,7 @@ namespace NSCI.UI.Controls
             {
                 if (Height <= availableSize.Height)
                     lineheight = Height.Value;
-                
+
 
             }
 
@@ -52,6 +49,7 @@ namespace NSCI.UI.Controls
         {
             base.ArrangeOverride(finalSize);
             var stringbuffer = new StringBuilder();
+            var text = Text;
             for (int i = 0; i < text.Length; i++)
             {
                 if (i != 0 && i % finalSize.Width == 0 && text[i] != '\n')
@@ -65,7 +63,7 @@ namespace NSCI.UI.Controls
         {
             for (int y = 0; y < frame.Height; y++)
                 for (int x = 0; x < frame.Width; x++)
-                    frame[x, y] = new ColoredKey(y < renderLines.Length && x < renderLines[y].Length ? renderLines[y][x] : ' ', this.ActualForeground, this.ActuellBackground);
+                    frame[x, y] = new ColoredKey(y < this.renderLines.Length && x < this.renderLines[y].Length ? this.renderLines[y][x] : ' ', Foreground, Background);
 
         }
     }

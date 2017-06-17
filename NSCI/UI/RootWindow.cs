@@ -11,7 +11,7 @@ using NSCI.UI.Controls;
 
 namespace NSCI.UI
 {
-    public class RootWindow : UI.Controls.ContentControl
+    public partial class RootWindow : UI.Controls.ContentControl
     {
 
         internal readonly OrderedList<Control> tabList = new OrderedList<Control>(TabComparer.Instance);
@@ -20,49 +20,43 @@ namespace NSCI.UI
         {
             Width = Console.WindowWidth;
             Height = Console.WindowHeight;
-            Background = Color.DarkBlue;
-            Foreground = Color.White;
-            RootWindow = this;
+            Background = ConsoleColor.DarkBlue;
+            Foreground = ConsoleColor.White;
         }
 
         public event Action BeforeStart;
 
-
-        private Control activeControl;
         private int tabSelectedIndex;
-        public Control ActiveControl
+        [NDProperty.NDP(Settigns = NDProperty.NDPropertySettings.CallOnChangedHandlerOnEquals)]
+        protected virtual void OnActiveControlChanged(NDProperty.OnChangedArg<Control> arg)
         {
-            get => this.activeControl;
-            set
+            arg.ExecuteAfterChange += () =>
             {
                 int newindex;
-                if (this.tabSelectedIndex < this.tabList.Count && value == this.tabList[this.tabSelectedIndex])
+                if (this.tabSelectedIndex < this.tabList.Count && arg.NewValue == this.tabList[this.tabSelectedIndex])
                     newindex = this.tabSelectedIndex;
-                else if (value != null)
+                else if (arg.NewValue != null)
                 {
 
-                    newindex = this.tabList.IndexOf(value);
+                    newindex = this.tabList.IndexOf(arg.NewValue);
                     if (newindex == -1)
-                        throw new ArgumentException("The Contrle can't be selected or is not a decendent of this RootWindow");
+                        arg.Reject = true;
                 }
                 else
                 {
                     newindex = -1;
                 }
-                if (value != this.activeControl)
+                if (arg.OldValue != arg.NewValue)
                 {
-                    if (this.activeControl != null)
-                        this.activeControl.HasFocus = false;
+                    if (arg.OldValue != null)
+                        arg.OldValue.HasFocus = false;
 
-                    this.activeControl = value;
                     this.tabSelectedIndex = newindex;
-                    if (this.activeControl != null)
-                        this.activeControl.HasFocus = true;
+                    if (arg.NewValue != null)
+                        arg.NewValue.HasFocus = true;
                 }
-            }
+            };
         }
-
-
 
 
         public bool Running => this.running;
@@ -322,7 +316,7 @@ namespace NSCI.UI
 
             if (ImmediateRight == null)
             {
-            // Then search 45 deegree
+                // Then search 45 deegree
                 var RoughRight = locationLost.Where(c => c.Location.Center.X > fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X)).OrderBy(c => c.Location.Center.X).FirstOrDefault();
                 return RoughRight?.Control;
             }
@@ -339,7 +333,7 @@ namespace NSCI.UI
 
             if (ImmediateRight == null)
             {
-            // Then search 45 deegree
+                // Then search 45 deegree
                 var RoughRight = locationLost.Where(c => c.Location.Center.X < fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X)).OrderByDescending(c => c.Location.Center.X).FirstOrDefault();
                 return RoughRight?.Control;
             }
@@ -356,7 +350,7 @@ namespace NSCI.UI
 
             if (ImmediateRight == null)
             {
-            // Then search 45 deegree
+                // Then search 45 deegree
                 var RoughRight = locationLost.Where(c => c.Location.Center.Y < fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y)).OrderByDescending(c => c.Location.Center.Y).FirstOrDefault();
                 return RoughRight?.Control;
             }
@@ -373,7 +367,7 @@ namespace NSCI.UI
 
             if (ImmediateRight == null)
             {
-            // Then search 45 deegree
+                // Then search 45 deegree
                 var RoughRight = locationLost.Where(c => c.Location.Center.Y > fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y)).OrderBy(c => c.Location.Center.Y).FirstOrDefault();
                 return RoughRight?.Control;
             }

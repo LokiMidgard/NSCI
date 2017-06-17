@@ -16,7 +16,7 @@ namespace NSCI.UI.Controls.Layput
         {
             //base.ArrangeOverride(finalSize);
 
-            var elementHeights = this.Items.Select(x => x.DesiredSize.Height).ToArray();
+            var elementHeights = Items.Select(x => x.DesiredSize.Height).ToArray();
             var sumHight = elementHeights.Sum();
             if (sumHight > finalSize.Height)
             {
@@ -70,9 +70,9 @@ namespace NSCI.UI.Controls.Layput
                 var location = GetLocation(Items[i]);
                 Items[i].Render(frame.GetGraphicsBuffer(location));
                 if (location.Left > 0)
-                    frame.FillRect(0, location.Top, location.Left, location.Height, ActualForeground, ActuellBackground, SpecialChars.Fill);
+                    frame.FillRect(0, location.Top, location.Left, location.Height, Foreground, Background, SpecialChars.Fill);
                 if (frame.Width - location.Right > 0)
-                    frame.FillRect(location.Right, location.Top, frame.Width - location.Right, location.Height, ActualForeground, ActuellBackground, SpecialChars.Fill);
+                    frame.FillRect(location.Right, location.Top, frame.Width - location.Right, location.Height, Foreground, Background, SpecialChars.Fill);
             }
         }
 

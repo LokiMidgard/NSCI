@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+using NDProperty;
 
 namespace NSCI.UI
 {
-    public abstract class FrameworkElement : UIElement
+    public abstract partial class FrameworkElement : UIElement
     {
         //
         // Zusammenfassung:
@@ -14,7 +16,9 @@ namespace NSCI.UI
         //     Die Höhe des Objekts in Pixel. Der Standardwert ist [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx).
         //     Mit Ausnahme der speziellen [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx)-Wert,
         //     lautet der Wert muss gleich oder größer als 0.
-        public int? Height { get; set; } = null;
+        //public int? Height { get; set; } = null;
+        [NDProperty.NDP]
+        protected virtual void OnHeightChanged(global::NDProperty.OnChangedArg<int?> arg) { }
 
         //
         // Zusammenfassung:
@@ -25,7 +29,10 @@ namespace NSCI.UI
         //     Die minimale Höhe des Objekts in Pixel. Der Standardwert ist 0. Dieser Wert kann
         //     ein beliebiger Wert größer oder gleich 0 sein. Allerdings [PositiveInfinity](https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx)
         //     ist ungültig.
-        public int MinHeight { get; set; } = 0;
+        //public int MinHeight { get; set; } = 0;
+        [DefaultValue(0)]
+        [NDP]
+        protected virtual void OnMinHeightChanged(OnChangedArg<int> arg) { }
 
         //
         // Zusammenfassung:
@@ -37,7 +44,9 @@ namespace NSCI.UI
         //     Der Name des Objekts, das eine Zeichenfolge sein muss, die in der XamlName-Grammatik
         //     gültig ist (siehe Tabelle [X: Name attribute](http://msdn.microsoft.com/library/4ff1f3ed-903A-4305-b2bd-dcd29e0c9e6d)
         //     Referenz). Der Standard ist eine leere Zeichenfolge.
-        public string Name { get; set; }
+        //public string Name { get; set; }
+        [NDP]
+        protected virtual void OnNameChanged(OnChangedArg<string> arg) { }
 
         //
         // Zusammenfassung:
@@ -48,7 +57,10 @@ namespace NSCI.UI
         //     Die minimale Breite des Objekts in Pixel. Der Standardwert ist 0. Dieser Wert
         //     kann ein beliebiger Wert größer oder gleich 0 sein. Allerdings [PositiveInfinity](https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx)
         //     ist ungültig.
-        public int MinWidth { get; set; } = 0;
+        //public int MinWidth { get; set; } = 0;
+        [DefaultValue(0)]
+        [NDP]
+        protected virtual void OnMinWidthChanged(OnChangedArg<int> arg) { }
 
         //
         // Zusammenfassung:
@@ -60,7 +72,10 @@ namespace NSCI.UI
         //     Dieser Wert kann ein beliebiger Wert größer oder gleich 0 sein. [PositiveInfinity]
         //     (https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx) ist
         //     ebenfalls zulässig.
-        public int MaxWidth { get; set; } = int.MaxValue;
+        //public int MaxWidth { get; set; } = int.MaxValue;
+        [NDP]
+        [DefaultValue(int.MaxValue)]
+        protected virtual void OnMaxWidthChanged(global::NDProperty.OnChangedArg<int> arg) { }
 
         //
         // Zusammenfassung:
@@ -72,7 +87,10 @@ namespace NSCI.UI
         //     Dieser Wert kann ein beliebiger Wert größer oder gleich 0 sein. [PositiveInfinity]
         //     (https://msdn.microsoft.com/library/System.int.positiveinfinity.aspx) ist
         //     ebenfalls zulässig.
-        public int MaxHeight { get; set; } = int.MaxValue;
+        //public int MaxHeight { get; set; } = int.MaxValue;
+        [NDP]
+        [DefaultValue(int.MaxValue)]
+        protected virtual void OnMaxHeightChanged(OnChangedArg<int> arg) { }
 
 
         //
@@ -83,7 +101,10 @@ namespace NSCI.UI
         //     Die Breite des Objekts in Pixel. Der Standardwert ist [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx).
         //     Mit Ausnahme der speziellen [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx)-Wert,
         //     lautet der Wert muss gleich oder größer als 0.
-        public int? Width { get; set; } = null;
+        //public int? Width { get; set; } = null;
+        [NDP]
+        [DefaultValue(int.MaxValue)]
+        protected virtual void OnWidthChanged(OnChangedArg<int?> arg) { }
 
 
 
@@ -95,7 +116,9 @@ namespace NSCI.UI
         // Rückgabewerte:
         //     Der Wert des beabsichtigten beliebigen Objekts. Diese Eigenschaft verfügt über
         //     keinen Standardwert.
-        public object Tag { get; set; }
+        //public object Tag { get; set; }
+        [NDP]
+        protected virtual void OnTagChanged(OnChangedArg<object> arg) { }
 
         //
         // Zusammenfassung:
@@ -105,7 +128,9 @@ namespace NSCI.UI
         //     Die Höhe des Objekts in Pixel. Der Standardwert ist 0. Der Standardwert wird
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
-        public int ActualHeight { get; private set; }
+        //public int ActualHeight { get; private set; }
+        [NDP(IsReadOnly = true)]
+        protected virtual void OnActualHeightChanged(OnChangedArg<int> arg) { }
 
         //
         // Zusammenfassung:
@@ -115,7 +140,9 @@ namespace NSCI.UI
         //     Die Breite des Objekts in Pixel. Der Standardwert ist 0. Der Standardwert wird
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
-        public int ActualWidth { get; private set; }
+        //public int ActualWidth { get; private set; }
+        [NDP(IsReadOnly = true)]
+        protected virtual void OnActualWidthChanged(OnChangedArg<int> arg) { }
 
 
 
@@ -128,23 +155,11 @@ namespace NSCI.UI
         //     Windows.UI.Xaml. FrameworkElement.Margin oder Windows.UI.Xaml. Controls.Border.
         //     Der Standardwert ist eine Windows.UI.Xaml. Breite mit Werten von 0 auf allen
         //     vier Seiten.
-        private Thickness padding;
-        public Thickness Padding
+        [NDP]
+        protected virtual void OnPaddingChanged(OnChangedArg<Thickness> arg)
         {
-            get => padding; set
-            {
-                if (padding != value)
-                {
-                    var oldValue = padding;
-                    padding = value;
-                    OnPaddingChanged(oldValue, value);
-                }
-            }
-        }
-
-        protected void OnPaddingChanged(Thickness oldPadding, Thickness newPadding)
-        {
-            InvalidateMeasure();
+            if (arg.OldValue != arg.NewValue)
+                InvalidateMeasure();
         }
 
         //
@@ -155,36 +170,17 @@ namespace NSCI.UI
         //     Der Pinsel, der den Vordergrund des Steuerelements zeichnet. Der Standardwert
         //     ist eine Windows.UI.Xaml. Media.SolidColorBrush mit der Farbe des Windows.UI.
         //     Colors.Black.
-        private Color foreground = Color.Inherited;
-        public Color Foreground
+        //private ConsoleColor foreground = ConsoleColor.Inherited;
+
+
+        [NDP(Inherited =true)]
+        protected virtual void OnForegroundChanged(OnChangedArg<ConsoleColor> arg)
         {
-            get => foreground; set
-            {
-                if (value != this.foreground)
-                {
-                    this.foreground = value;
-                    InvalidateRender();
-                }
-            }
+            if (arg.OldValue != arg.NewValue)
+                InvalidateRender();
         }
-        public ConsoleColor ActualForeground
-        {
-            get
-            {
-                if (Foreground == Color.Inherited)
-                {
-                    var p = Parent;
-                    while (p != null)
-                    {
-                        if (p is FrameworkElement c)
-                            return c.ActualForeground;
-                        p = p.Parent;
-                    }
-                    return ConsoleColor.Black;
-                }
-                return (ConsoleColor)Foreground;
-            }
-        }
+
+
 
         //
         // Zusammenfassung:
@@ -195,40 +191,14 @@ namespace NSCI.UI
         //     Der Pinsel, der den Hintergrund des Steuerelements bereitstellt. Der Standardwert
         //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
         //     für das Rendern.
-        public Color background = Color.Inherited;
-
-        public Color Background
+        [NDP(Inherited =true)]
+        protected virtual void OnBackgroundChanged(OnChangedArg<ConsoleColor> arg)
         {
-            get => background; set
-            {
-                if (value != this.background)
-                {
-                    this.background = value;
-                    InvalidateRender();
-                }
-            }
+            if (arg.OldValue != arg.NewValue)
+                InvalidateRender();
         }
 
-        public ConsoleColor ActuellBackground
-        {
-            get
-            {
-                if (Background == Color.Inherited)
-                {
-                    var p = Parent;
-                    while (p != null)
-                    {
-                        if (p is FrameworkElement c)
-                            return c.ActuellBackground;
-                        p = p.Parent;
-                    }
-                    return ConsoleColor.Black;
-                }
-                return (ConsoleColor)Background;
-            }
-        }
-
-
+      
         //
         // Zusammenfassung:
         //     Stellt das Verhalten für den "messdurchlauf" von der Layoutzyklus bereit. Klassen
@@ -299,15 +269,15 @@ namespace NSCI.UI
 
         protected override sealed void RenderCore(IRenderFrame frame)
         {
-            frame.FillRect(0, 0, Padding.Left, Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
-            frame.FillRect(frame.Width - Padding.Right - Padding.Left, 0, Padding.Right, Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
-            frame.FillRect(0, frame.Height - Padding.Top - Padding.Bottom, Padding.Left, Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
-            frame.FillRect(frame.Width - Padding.Right - Padding.Left, frame.Height - Padding.Top - Padding.Bottom, Padding.Right, Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
+            frame.FillRect(0, 0, Padding.Left, Padding.Top, Foreground, Background, SpecialChars.Fill);
+            frame.FillRect(frame.Width - Padding.Right - Padding.Left, 0, Padding.Right, Padding.Top, Foreground, Background, SpecialChars.Fill);
+            frame.FillRect(0, frame.Height - Padding.Top - Padding.Bottom, Padding.Left, Padding.Bottom, Foreground, Background, SpecialChars.Fill);
+            frame.FillRect(frame.Width - Padding.Right - Padding.Left, frame.Height - Padding.Top - Padding.Bottom, Padding.Right, Padding.Bottom, Foreground, Background, SpecialChars.Fill);
 
-            frame.FillRect(Padding.Left, 0, frame.Width - Padding.Left - Padding.Right, Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
-            frame.FillRect(0, Padding.Top, Padding.Left, frame.Height - Padding.Top - Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
-            frame.FillRect(Padding.Left, frame.Height -  Padding.Bottom, frame.Width - Padding.Left-Padding.Right, Padding.Bottom, ActualForeground, ActuellBackground, SpecialChars.Fill);
-            frame.FillRect(frame.Width- Padding.Right, Padding.Top, Padding.Right, frame.Height-Padding.Bottom-Padding.Top, ActualForeground, ActuellBackground, SpecialChars.Fill);
+            frame.FillRect(Padding.Left, 0, frame.Width - Padding.Left - Padding.Right, Padding.Top, Foreground, Background, SpecialChars.Fill);
+            frame.FillRect(0, Padding.Top, Padding.Left, frame.Height - Padding.Top - Padding.Bottom, Foreground, Background, SpecialChars.Fill);
+            frame.FillRect(Padding.Left, frame.Height - Padding.Bottom, frame.Width - Padding.Left - Padding.Right, Padding.Bottom, Foreground, Background, SpecialChars.Fill);
+            frame.FillRect(frame.Width - Padding.Right, Padding.Top, Padding.Right, frame.Height - Padding.Bottom - Padding.Top, Foreground, Background, SpecialChars.Fill);
 
             if (Padding.Left + Padding.Right >= frame.Width || Padding.Top + Padding.Bottom >= frame.Height)
                 return; // Not enough Place to draw content.

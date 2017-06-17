@@ -4,24 +4,22 @@ using System.Text;
 
 namespace NSCI.UI.Controls
 {
-    public class ContentControl : Control
+    public partial class ContentControl : Control
     {
-        private UIElement content;
-        public UIElement Content
+
+        [NDProperty.NDP]
+        protected virtual void OnContentChanged(NDProperty.OnChangedArg<UIElement> arg)
         {
-            get => content; set
+            if (arg.NewValue != arg.OldValue)
             {
-                if (content != value)
-                {
-                    if (value.Parent != null)
-                        throw new ArgumentException($"The Element is already Chiled of {value.Parent}");
-                    if (content != null)
-                        content.Parent = null;
-                    content = value;
-                    if (content != null)
-                        content.Parent = this;
-                    InvalidateMeasure();
-                }
+                if (arg.NewValue.Parent != null)
+                    throw new ArgumentException($"The Element is already Chiled of {arg.NewValue.Parent}");
+                if (arg.OldValue != null)
+                    arg.OldValue.Parent = null;
+                if (arg.NewValue != null)
+                    arg.NewValue.Parent = this;
+                
+                InvalidateMeasure();
             }
         }
 
@@ -45,7 +43,7 @@ namespace NSCI.UI.Controls
             if (Content == null)
             {
                 var clip = frame.Clip ?? new Rect(0, 0, frame.Width, frame.Height);
-                frame.FillRect(clip.Left, clip.Right, clip.Width, clip.Height, this.ActualForeground, this.ActuellBackground, SpecialChars.Fill);
+                frame.FillRect(clip.Left, clip.Right, clip.Width, clip.Height, Foreground, Background, SpecialChars.Fill);
             }
             else
             {

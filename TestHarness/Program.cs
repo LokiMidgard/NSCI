@@ -15,7 +15,7 @@ namespace TestHarness
             var root = new NSCI.UI.RootWindow();
 
             var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!", Height = 3 };
-            var border = new Border() { Style = NSCI.UI.Controls.BorderStyle.DropShadowMedium, Background = Color.Green, Foreground = Color.Black };
+            var border = new Border() { Style = NSCI.UI.Controls.BorderStyle.DropShadowMedium, Background = ConsoleColor.Green, Foreground = ConsoleColor.Black };
             border.Content = text;
             var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" };
 
