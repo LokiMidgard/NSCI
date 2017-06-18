@@ -55,18 +55,24 @@ namespace NSCI.UI.Controls.Layout
                 if (columns[i] is FixSizeDefinition f)
                     columnWidth[i] = f.Size;
                 else
-                    columnWidth[i] = (int)Items
-                        .Where(x => Grid.ColumnSpan[x].Value == 1 && Grid.Column[x].Value == i)
-                        .Max(x => x.DesiredSize.Width);
+                {
+
+                    var singelSpanElements = Items
+                        .Where(x => Grid.ColumnSpan[x].Value == 1 && Grid.Column[x].Value == i);
+                    columnWidth[i] = (int)(singelSpanElements.Any() ? singelSpanElements.Max(x => x.DesiredSize.Width) : 0);
+                }
             }
             for (int i = 0; i < rowHeight.Length; i++)
             {
                 if (rows[i] is FixSizeDefinition f)
                     rowHeight[i] = f.Size;
                 else
-                    rowHeight[i] = (int)Items
-                        .Where(x => Grid.RowSpan[x].Value == 1 && Grid.Row[x].Value == i)
-                        .Max(x => x.DesiredSize.Height);
+                {
+
+                    var singelSpanElements = Items
+                        .Where(x => Grid.RowSpan[x].Value == 1 && Grid.Row[x].Value == i);
+                    rowHeight[i] = (int)(singelSpanElements.Any() ? singelSpanElements.Max(x => x.DesiredSize.Height) : 0);
+                }
             }
 
             // calculate multispan items
@@ -323,6 +329,7 @@ namespace NSCI.UI.Controls.Layout
 
         protected override void RenderOverride(IRenderFrame frame)
         {
+            frame.FillRect(0, 0, frame.Width, frame.Height, Foreground, Background, SpecialChars.Fill);
             base.RenderOverride(frame);
         }
     }

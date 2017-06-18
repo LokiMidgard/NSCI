@@ -27,13 +27,16 @@ namespace TestHarness
 
             var grid = new Grid();
 
+            grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
             grid.ColumnDefinitions.Add(new FixSizeDefinition() { Size = 20 });
+            grid.ColumnDefinitions.Add(new AutoSizeDefinition() );
             grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
 
             grid.Items.Add(button1);
             grid.Items.Add(button2);
 
-            Grid.Column[button2].Value = 1;
+            Grid.Column[button1].Value = 1;
+            Grid.Column[button2].Value = 2;
 
             var stack = new StackPanel();
 
