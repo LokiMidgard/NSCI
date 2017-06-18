@@ -8,8 +8,8 @@ namespace NSCI.UI
         public static readonly Size Empty = new Size();
 
         public bool IsEmpty => Width == 0 && Height == 0;
-        public int Width { get; }
-        public int Height { get; }
+        public IntEx Width { get; }
+        public IntEx Height { get; }
 
         public Size(Point pt)
         {
@@ -17,7 +17,7 @@ namespace NSCI.UI
             Height = pt.Y;
         }
 
-        public Size(int width, int height)
+        public Size(IntEx width, IntEx height)
         {
             Width = width;
             Height = height;
@@ -50,11 +50,11 @@ namespace NSCI.UI
 
         }
 
-        public override int GetHashCode() => Width ^ (13 * Height);
+        public override int GetHashCode() => Width.GetHashCode() ^ (13 * Height.GetHashCode());
 
         public override string ToString() => $"{{Width={Width}, Height={Height}}}";
 
-        internal Size Inflat(int width, int height)
+        internal Size Inflat(IntEx width, IntEx height)
         {
             return new Size(Width + width, Height + height);
         }

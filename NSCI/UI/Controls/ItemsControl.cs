@@ -46,7 +46,10 @@ namespace NSCI.UI.Controls
         protected override void RenderOverride(IRenderFrame frame)
         {
             foreach (var item in Items)
-                item.Render(frame);
+            {
+                var location = GetLocation(item);
+                item.Render(frame.GetGraphicsBuffer(location));
+            }
         }
 
     }

@@ -5,11 +5,11 @@
         public static readonly Point Empty = new Point();
 
         public bool IsEmpty => X == 0 && Y == 0;
-        public int X { get; }
-        public int Y { get; }
+        public IntEx X { get; }
+        public IntEx Y { get; }
 
 
-        public Point(int x, int y)
+        public Point(IntEx x, IntEx y)
         {
             X = x;
             Y = y;
@@ -48,9 +48,9 @@
 
         public bool Equals(Point other) => other.X == X && other.Y == Y;
 
-        public override int GetHashCode() => unchecked(X ^ (13 * Y));
+        public override int GetHashCode() => unchecked(X.GetHashCode() ^ (13 * Y.GetHashCode()));
 
-        public Point Offset(int dx, int dy) => new Point(X + dx, Y + dy);
+        public Point Offset(IntEx dx, IntEx dy) => new Point(X + dx, Y + dy);
 
         public Point Offset(Point p) => Offset(p.X, p.Y);
         public override string ToString() => $"{{X={X},Y={Y}}}";

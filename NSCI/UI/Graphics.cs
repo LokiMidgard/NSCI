@@ -54,8 +54,8 @@ namespace NSCI.UI
                     if (y < 0 || y > this.translation.Height)
                         throw new ArgumentOutOfRangeException(nameof(y));
 
-                    x += this.translation.X;
-                    y += this.translation.Y;
+                    x += (int)this.translation.X;
+                    y += (int)this.translation.Y;
                     return this.parent[x, y];
                 }
                 set
@@ -68,15 +68,15 @@ namespace NSCI.UI
                     if (Clip.HasValue && (x < Clip.Value.Left || x > Clip.Value.Right || y < Clip.Value.Top || y > Clip.Value.Bottom))
                         return; // we doe nothing out of clipping
 
-                    x += this.translation.X;
-                    y += this.translation.Y;
+                    x += (int)this.translation.X;
+                    y += (int)this.translation.Y;
                     this.parent[x, y] = value;
                 }
             }
 
-            public int Width => this.translation.Width;
+            public int Width => (int)this.translation.Width;
 
-            public int Height => this.translation.Height;
+            public int Height => (int)this.translation.Height;
 
 
             /// <summary>
@@ -204,7 +204,7 @@ namespace NSCI.UI
                         continue;
                     var (left, top) = GetXYFromIndex(i);
                     Console.SetCursorPosition(left, top);
-                                        
+
                     Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
                     Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
                     int j = 0;

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using NDProperty;
 
-namespace NSCI.UI.Controls.Layput
+namespace NSCI.UI.Controls.Layout
 {
     public partial class Grid : ItemsControl
     {
@@ -42,9 +42,9 @@ namespace NSCI.UI.Controls.Layput
             var rows = this.RowDefinitions as IList<ISizeDefinition>;
             var columns = this.ColumnDefinitions as IList<ISizeDefinition>;
             if (rows.Count == 0)
-                rows = new ISizeDefinition[] { new RelativSizeDefinition() };
+                rows = new ISizeDefinition[] { new RelativSizeDefinition() { Size = 1 } };
             if (columns.Count == 0)
-                columns = new ISizeDefinition[] { new RelativSizeDefinition() };
+                columns = new ISizeDefinition[] { new RelativSizeDefinition() { Size = 1 } };
             int[] columnWidth = new int[columns.Count];
             int[] rowHeight = new int[rows.Count];
 
@@ -55,7 +55,7 @@ namespace NSCI.UI.Controls.Layput
                 if (columns[i] is FixSizeDefinition f)
                     columnWidth[i] = f.Size;
                 else
-                    columnWidth[i] = Items
+                    columnWidth[i] = (int)Items
                         .Where(x => Grid.ColumnSpan[x].Value == 1 && Grid.Column[x].Value == i)
                         .Max(x => x.DesiredSize.Width);
             }
@@ -64,7 +64,7 @@ namespace NSCI.UI.Controls.Layput
                 if (rows[i] is FixSizeDefinition f)
                     rowHeight[i] = f.Size;
                 else
-                    rowHeight[i] = Items
+                    rowHeight[i] = (int)Items
                         .Where(x => Grid.RowSpan[x].Value == 1 && Grid.Row[x].Value == i)
                         .Max(x => x.DesiredSize.Height);
             }
@@ -121,13 +121,13 @@ namespace NSCI.UI.Controls.Layput
             var relativeWidthRatio = columns.Zip(columnWidth, (c, w) =>
             {
                 if (c is RelativSizeDefinition r)
-                    return w / r.Size;
+                    return r.Size != 0.0 ? w / r.Size : 0.0;
                 return 0.0;
             }).Max();
             var relativeHeightRatio = rows.Zip(rowHeight, (c, h) =>
             {
                 if (c is RelativSizeDefinition r)
-                    return h / r.Size;
+                    return r.Size != 0.0 ? h / r.Size : 0;
                 return 0.0;
             }).Max();
 
@@ -147,7 +147,7 @@ namespace NSCI.UI.Controls.Layput
             {
                 if (columns[i].Min.HasValue)
                     columnWidth[i] = Math.Max(columns[i].Min.Value, columnWidth[i]);
-                if (rows[i].Max.HasValue)
+                if (columns[i].Max.HasValue)
                     columnWidth[i] = Math.Min(columns[i].Max.Value, columnWidth[i]);
             }
 
@@ -169,9 +169,9 @@ namespace NSCI.UI.Controls.Layput
             var rows = this.RowDefinitions as IList<ISizeDefinition>;
             var columns = this.ColumnDefinitions as IList<ISizeDefinition>;
             if (rows.Count == 0)
-                rows = new ISizeDefinition[] { new RelativSizeDefinition() };
+                rows = new ISizeDefinition[] { new RelativSizeDefinition() { Size = 1 } };
             if (columns.Count == 0)
-                columns = new ISizeDefinition[] { new RelativSizeDefinition() };
+                columns = new ISizeDefinition[] { new RelativSizeDefinition() { Size = 1 } };
             int[] columnWidth = new int[columns.Count];
             int[] rowHeight = new int[rows.Count];
 
@@ -186,7 +186,7 @@ namespace NSCI.UI.Controls.Layput
                     }
                     else
                     {
-                        columnWidth[i] = availableWidth;
+                        columnWidth[i] = (int)availableWidth;
                         availableWidth = 0;
                     }
 
@@ -198,12 +198,12 @@ namespace NSCI.UI.Controls.Layput
                     var desiredWidth = Items.Where(x => Column[x].Value == i && ColumnSpan[x].Value == 1).Max(x => x.DesiredSize.Width);
                     if (availableWidth > desiredWidth)
                     {
-                        columnWidth[i] = desiredWidth;
+                        columnWidth[i] = (int)desiredWidth;
                         availableWidth -= desiredWidth;
                     }
                     else
                     {
-                        columnWidth[i] = availableWidth;
+                        columnWidth[i] = (int)availableWidth;
                         availableWidth = 0;
                     }
                 }
@@ -224,12 +224,106 @@ namespace NSCI.UI.Controls.Layput
                         }
                         else
                         {
-                            columnWidth[i] = availableWidth;
+                            columnWidth[i] = (int)availableWidth;
                             availableWidth = 0;
                         }
                     }
                 }
             }
+
+            /////////////////
+
+            var availableHeight = finalSize.Height;
+
+            for (int i = 0; i < rowHeight.Length; i++)
+                if (rows[i] is FixSizeDefinition f)
+                    if (availableWidth > f.Size)
+                    {
+                        rowHeight[i] = f.Size;
+                        availableHeight -= f.Size;
+                    }
+                    else
+                    {
+                        rowHeight[i] = (int)availableHeight;
+                        availableHeight = 0;
+                    }
+
+
+
+            for (int i = 0; i < rowHeight.Length; i++)
+                if (rows[i] is AutoSizeDefinition a)
+                {
+                    var desiredHeight = Items.Where(x => Row[x].Value == i && RowSpan[x].Value == 1).Max(x => x.DesiredSize.Height);
+                    if (availableHeight > desiredHeight)
+                    {
+                        rowHeight[i] = (int)desiredHeight;
+                        availableHeight -= desiredHeight;
+                    }
+                    else
+                    {
+                        rowHeight[i] = (int)availableHeight;
+                        availableHeight = 0;
+                    }
+                }
+
+            totalRelativeSize = rows.OfType<RelativSizeDefinition>().Sum(x => x.Size);
+            if (totalRelativeSize > 0)
+            {
+                var heightRatio = availableHeight / totalRelativeSize;
+                for (int i = 0; i < rowHeight.Length; i++)
+                {
+                    if (rows[i] is RelativSizeDefinition r)
+                    {
+                        var desiredheight = (int)Math.Ceiling(r.Size * heightRatio);
+                        if (availableHeight > desiredheight)
+                        {
+                            rowHeight[i] = desiredheight;
+                            availableHeight -= desiredheight;
+                        }
+                        else
+                        {
+                            rowHeight[i] = (int)availableHeight;
+                            availableHeight = 0;
+                        }
+                    }
+                }
+            }
+            ///////////////////////////
+
+            foreach (var item in Items)
+            {
+                var row = Grid.Row[item].Value;
+                var column = Grid.Column[item].Value;
+                var rowSpan = Grid.RowSpan[item].Value;
+                var columnSpan = Grid.ColumnSpan[item].Value;
+
+                var xFrom = Math.Min(columns.Count - 1, column);
+                var xTo = Math.Min(columns.Count, column + columnSpan);
+                var yFrom = Math.Min(rows.Count - 1, row);
+                var yTo = Math.Min(rows.Count, row + rowSpan);
+
+                int width = 0;
+                int height = 0;
+                for (int i = xFrom; i < xTo; i++)
+                    width += columnWidth[i];
+                for (int i = yFrom; i < yTo; i++)
+                    height += rowHeight[i];
+
+                int x = 0;
+                int y = 0;
+                for (int i = 0; i < xFrom; i++)
+                    x += columnWidth[i];
+                for (int i = 0; i < yFrom; i++)
+                    y += rowHeight[i];
+
+                item.Arrange(new Rect(x, y, width, height));
+
+            }
+        }
+
+        protected override void RenderOverride(IRenderFrame frame)
+        {
+            base.RenderOverride(frame);
         }
     }
 

@@ -179,6 +179,8 @@ namespace NSCI.UI
                 //notify parent if our desired size changed
                 if (DesiredSize != desiredSize)
                 {
+                    System.Diagnostics.Debug.Assert(desiredSize.Height >= 0 && desiredSize.Height.IsNumber);
+                    System.Diagnostics.Debug.Assert(desiredSize.Width >= 0 && desiredSize.Width.IsNumber);
                     DesiredSize = desiredSize;
                     var p = Parent;
                     if (!p?.MeasureInProgress ?? false)
@@ -217,6 +219,8 @@ namespace NSCI.UI
 
                 InvalidateRender();
                 RootWindow.UnRegisterArrangeDirty(this);
+                System.Diagnostics.Debug.Assert(finalRect.Width >= 0);
+                System.Diagnostics.Debug.Assert(finalRect.Height >= 0);
                 ArrangedPosition = finalRect;
                 ArrangeCore(finalRect.Size);
             }
@@ -286,7 +290,11 @@ namespace NSCI.UI
 
         internal void ArrangeWithLastAvailableSize() => Arrange(ArrangedPosition);
 
-        internal void RenderWithLastAvailableSize() => Render(this.lastFrame);
+        internal void RenderWithLastAvailableSize()
+        {
+            if (lastFrame != null)
+                Render(this.lastFrame);
+        }
 
         /// <summary>
         /// Notification that is called by Measure of a child when

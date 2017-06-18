@@ -28,16 +28,16 @@ namespace NSCI.UI.Controls
             int lineheight = lines.Length;
             if (maxLineLength > availableSize.Width)
             {
-                maxLineLength = availableSize.Width;
+                maxLineLength = (int)availableSize.Width;
                 if (maxLineLength == 0)
                     maxLineLength = 1;
-                lineheight = lines.Select(x => Math.Ceiling(x.Length / (double)maxLineLength)).Cast<int>().Sum();
+                lineheight = lines.Select(x => (int)Math.Ceiling(x.Length / (double)maxLineLength)).Sum();
             }
 
-            if (lineheight < (Height ?? 0))
+            if (lineheight < (Height.IsNaN ? 0 : Height))
             {
                 if (Height <= availableSize.Height)
-                    lineheight = Height.Value;
+                    lineheight = (int)Height;
 
 
             }
@@ -48,6 +48,8 @@ namespace NSCI.UI.Controls
         protected override void ArrangeOverride(Size finalSize)
         {
             base.ArrangeOverride(finalSize);
+            if (finalSize.Width <= 0 || finalSize.Height <= 0)
+                return;// nothing to do :(
             var stringbuffer = new StringBuilder();
             var text = Text;
             for (int i = 0; i < text.Length; i++)

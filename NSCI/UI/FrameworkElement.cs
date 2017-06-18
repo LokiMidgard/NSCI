@@ -17,8 +17,9 @@ namespace NSCI.UI
         //     Mit Ausnahme der speziellen [NaN](https://msdn.microsoft.com/library/System.int.nan.aspx)-Wert,
         //     lautet der Wert muss gleich oder größer als 0.
         //public int? Height { get; set; } = null;
-        [NDProperty.NDP]
-        protected virtual void OnHeightChanged(global::NDProperty.OnChangedArg<int?> arg) { }
+        [NDP]
+        [DefaultValue(float.NaN)]
+        protected virtual void OnHeightChanged(global::NDProperty.OnChangedArg<IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -32,7 +33,7 @@ namespace NSCI.UI
         //public int MinHeight { get; set; } = 0;
         [DefaultValue(0)]
         [NDP]
-        protected virtual void OnMinHeightChanged(OnChangedArg<int> arg) { }
+        protected virtual void OnMinHeightChanged(OnChangedArg<IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -60,7 +61,7 @@ namespace NSCI.UI
         //public int MinWidth { get; set; } = 0;
         [DefaultValue(0)]
         [NDP]
-        protected virtual void OnMinWidthChanged(OnChangedArg<int> arg) { }
+        protected virtual void OnMinWidthChanged(OnChangedArg<IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -74,8 +75,8 @@ namespace NSCI.UI
         //     ebenfalls zulässig.
         //public int MaxWidth { get; set; } = int.MaxValue;
         [NDP]
-        [DefaultValue(int.MaxValue)]
-        protected virtual void OnMaxWidthChanged(global::NDProperty.OnChangedArg<int> arg) { }
+        [DefaultValue(float.PositiveInfinity)]
+        protected virtual void OnMaxWidthChanged(global::NDProperty.OnChangedArg<IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -89,8 +90,8 @@ namespace NSCI.UI
         //     ebenfalls zulässig.
         //public int MaxHeight { get; set; } = int.MaxValue;
         [NDP]
-        [DefaultValue(int.MaxValue)]
-        protected virtual void OnMaxHeightChanged(OnChangedArg<int> arg) { }
+        [DefaultValue(float.PositiveInfinity)]
+        protected virtual void OnMaxHeightChanged(OnChangedArg<IntEx> arg) { }
 
 
         //
@@ -103,8 +104,8 @@ namespace NSCI.UI
         //     lautet der Wert muss gleich oder größer als 0.
         //public int? Width { get; set; } = null;
         [NDP]
-        [DefaultValue(int.MaxValue)]
-        protected virtual void OnWidthChanged(OnChangedArg<int?> arg) { }
+        [DefaultValue(float.NaN)]
+        protected virtual void OnWidthChanged(OnChangedArg<IntEx> arg) { }
 
 
 
@@ -173,7 +174,7 @@ namespace NSCI.UI
         //private ConsoleColor foreground = ConsoleColor.Inherited;
 
 
-        [NDP(Inherited =true)]
+        [NDP(Inherited = true)]
         protected virtual void OnForegroundChanged(OnChangedArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
@@ -191,14 +192,14 @@ namespace NSCI.UI
         //     Der Pinsel, der den Hintergrund des Steuerelements bereitstellt. Der Standardwert
         //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
         //     für das Rendern.
-        [NDP(Inherited =true)]
+        [NDP(Inherited = true)]
         protected virtual void OnBackgroundChanged(OnChangedArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
         }
 
-      
+
         //
         // Zusammenfassung:
         //     Stellt das Verhalten für den "messdurchlauf" von der Layoutzyklus bereit. Klassen
@@ -221,15 +222,18 @@ namespace NSCI.UI
 
         protected Size EnsureMinMaxWidthHeight(Size availableSize)
         {
-            var width = Width ?? int.MaxValue;
-            width = Math.Min(width, MaxWidth);
-            width = Math.Max(width, MinWidth);
-            width = Math.Min(width, availableSize.Width);
+            var width = Width.IsNaN ? IntEx.PositiveInfinity : Width;
+            if (!MaxWidth.IsNaN)
+                width = MathEx.Min(width, MaxWidth);
+            if (!MinWidth.IsNaN)
+                width = MathEx.Max(width, MinWidth);
+            width = MathEx.Min(width, availableSize.Width);
 
-            var height = Height ?? int.MaxValue;
-            height = Math.Min(height, MaxHeight);
-            height = Math.Max(height, MinHeight);
-            height = Math.Min(height, availableSize.Height);
+            var height = Height.IsNaN ? IntEx.PositiveInfinity : Height;
+
+            height = MathEx.Min(height, MaxHeight);
+            height = MathEx.Max(height, MinHeight);
+            height = MathEx.Min(height, availableSize.Height);
             return new Size(width, height);
         }
 
@@ -262,9 +266,15 @@ namespace NSCI.UI
             var paddingWith = Padding.Left + Padding.Right;
             var paddingHeight = Padding.Top + Padding.Bottom;
 
-            ActualHeight = finalRect.Height;
-            ActualWidth = finalRect.Width;
-            ArrangeOverride(finalRect.Inflat(-paddingWith, -paddingHeight));
+            System.Diagnostics.Debug.Assert(finalRect.Width >= 0);
+            System.Diagnostics.Debug.Assert(finalRect.Height >= 0);
+
+            ActualHeight = (int)finalRect.Height;
+            ActualWidth = (int)finalRect.Width;
+
+            finalRect = finalRect.Inflat(-paddingWith, -paddingHeight);
+            finalRect = new Size(MathEx.Max(0, finalRect.Width), MathEx.Max(0, finalRect.Height));
+            ArrangeOverride(finalRect);
         }
 
         protected override sealed void RenderCore(IRenderFrame frame)

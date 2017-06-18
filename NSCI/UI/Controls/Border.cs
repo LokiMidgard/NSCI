@@ -8,7 +8,7 @@ namespace NSCI.UI.Controls
     {
 
         [NDProperty.NDP]
-        protected virtual void  OnStyleChanged(NDProperty.OnChangedArg<BorderStyle> arg)
+        protected virtual void OnStyleChanged(NDProperty.OnChangedArg<BorderStyle> arg)
         {
             var oldThickness = CalculateBorderThikness(arg.OldValue);
             var newThickness = CalculateBorderThikness(arg.NewValue);
@@ -22,7 +22,7 @@ namespace NSCI.UI.Controls
 
         private Thickness CalculateBorderThikness(BorderStyle style)
         {
-            switch (style) 
+            switch (style)
             {
                 case BorderStyle.None:
                     return new Thickness();
@@ -60,7 +60,14 @@ namespace NSCI.UI.Controls
             var borderWith = borderThikness.Left + borderThikness.Right;
             var borderHeight = borderThikness.Top + borderThikness.Bottom;
 
-            Content?.Arrange(new Rect(borderThikness.Left, borderThikness.Top, finalSize.Width - borderWith, finalSize.Height - borderHeight));
+            System.Diagnostics.Debug.Assert(finalSize.Width >= 0);
+            System.Diagnostics.Debug.Assert(finalSize.Height >= 0);
+
+            var finalRect = new Rect(MathEx.Max(0, borderThikness.Left), MathEx.Max(0, borderThikness.Top), MathEx.Max(0, finalSize.Width - borderWith), MathEx.Max(0, finalSize.Height - borderHeight));
+
+
+
+            Content?.Arrange(finalRect);
         }
 
         protected override void RenderOverride(IRenderFrame frame)

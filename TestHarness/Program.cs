@@ -1,10 +1,10 @@
 ﻿using NSCI;
 using System;
 using System.Text;
-using NSCI.UI.Controls.Layput;
 using NSCI.UI.Controls;
 using System.Threading.Tasks;
 using NSCI.UI;
+using NSCI.UI.Controls.Layout;
 
 namespace TestHarness
 {
@@ -19,17 +19,28 @@ namespace TestHarness
             border.Content = text;
             var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" };
 
-            var button1 = new Button() {  Width = 40, HorizontalAlignment = HorizontalAlignment.Left};
-            var button2 = new Button() {  HorizontalAlignment=  HorizontalAlignment.Center};
+            var button1 = new Button() { Width = 40, HorizontalAlignment = HorizontalAlignment.Left };
+            var button2 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
 
             button1.Text = "Button 1";
             button2.Text = "Button 2";
 
+            var grid = new Grid();
+
+            grid.ColumnDefinitions.Add(new FixSizeDefinition() { Size = 20 });
+            grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
+
+            grid.Items.Add(button1);
+            grid.Items.Add(button2);
+
+            Grid.Column[button2].Value = 1;
+
             var stack = new StackPanel();
 
             stack.Items.Add(border);
-            stack.Items.Add(button1);
-            stack.Items.Add(button2);
+            stack.Items.Add(grid);
+            //stack.Items.Add(button1);
+            //stack.Items.Add(button2);
 
 
 
