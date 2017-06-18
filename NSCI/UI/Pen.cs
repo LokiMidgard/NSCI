@@ -16,7 +16,7 @@ namespace NSCI.UI
 
         public static Pen DoubleLine { get; } = new UI.Pen('═', '║', '╔', '╗', '╚', '╝');
         public static Pen SingelLine { get; } = new UI.Pen('─', '│', '┌', '┐', '└', '┘');
-        public static RectPen BlockLine { get; } = new RectPen('▄', '▀', '█', '█', '▄', '▄', '▀', '▀');
+        public static RectPen BlockLine { get; } = new RectPen((char)SpecialChars.LowerHalfBlock, (char)SpecialChars.UpperHalfBlock, (char)SpecialChars.RightHalfBlock, (char)SpecialChars.LeftHalfBlock, (char)SpecialChars.FullBlock, (char)SpecialChars.FullBlock, (char)SpecialChars.FullBlock, (char)SpecialChars.FullBlock);
     }
 
     public class RectPen

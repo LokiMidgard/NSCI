@@ -80,13 +80,7 @@ namespace NSCI.UI
             this.running = true;
             Console.CursorVisible = false;
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            //ActiveControl = this.RootFocusableChildren.FirstOrDefault();
-
-            //Draw();
-
-
-
-
+            Console.OutputEncoding = Encoding.UTF8;
 
             var queue = new System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo>();
             Task.Factory.StartNew(() =>

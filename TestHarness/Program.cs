@@ -5,6 +5,8 @@ using NSCI.UI.Controls;
 using System.Threading.Tasks;
 using NSCI.UI;
 using NSCI.UI.Controls.Layout;
+using System.Reflection;
+using System.Linq;
 
 namespace TestHarness
 {
@@ -12,22 +14,39 @@ namespace TestHarness
     {
         static void Main(string[] args)
         {
-            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Console.OutputEncoding = Encoding.UTF8;
 
-            //Console.ForegroundColor = ConsoleColor.White;
-            //Console.BackgroundColor = ConsoleColor.Black;
-            //foreach (SpecialChars item in Enum.GetValues(typeof(SpecialChars)))
-            //{
-            //    Console.WriteLine($"{Enum.GetName(typeof(SpecialChars), item),-40}: {(char)item}");
-            //    System.Threading.Thread.Sleep(300);
-            //}
-            //Console.ReadKey(true);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Black;
+            var t = typeof(NSCI.Characters.Box);
+            var fileds = t.GetFields().Where(x => x.FieldType == typeof(char)).OrderBy(x => x.Name).ToArray();
+            Console.BufferHeight = fileds.Length + 1;
+            int i=0;
+            foreach (var field in fileds)
+            {
+                i++;
+                var c = (char)field.GetRawConstantValue();
 
-            
+                Console.WriteLine($"{field.Name,-80}{c}");
+                //System.Threading.Thread.Sleep(15);
+                Console.BackgroundColor = i % 2 == 0 ? ConsoleColor.Black : ConsoleColor.DarkBlue;
+
+            }
+            Console.ReadKey(true);
+
+            foreach (SpecialChars item in Enum.GetValues(typeof(SpecialChars)))
+            {
+                Console.WriteLine($"{Enum.GetName(typeof(SpecialChars), item),-40}: {(char)item}");
+                System.Threading.Thread.Sleep(300);
+            }
+            Console.ReadKey(true);
+
+
             var root = new NSCI.UI.RootWindow();
 
             var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!", Height = 3 };
-            var border = new Border() { Style = NSCI.UI.Controls.BorderStyle.DropShadowMedium, Background = ConsoleColor.Green, Foreground = ConsoleColor.Black };
+            var border = new Border() { Style = NSCI.UI.Controls.BorderStyle.Block, Background = ConsoleColor.Green, Foreground = ConsoleColor.Black };
             border.Content = text;
             var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" };
 
