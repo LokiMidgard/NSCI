@@ -12,6 +12,18 @@ namespace TestHarness
     {
         static void Main(string[] args)
         {
+            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            //Console.ForegroundColor = ConsoleColor.White;
+            //Console.BackgroundColor = ConsoleColor.Black;
+            //foreach (SpecialChars item in Enum.GetValues(typeof(SpecialChars)))
+            //{
+            //    Console.WriteLine($"{Enum.GetName(typeof(SpecialChars), item),-40}: {(char)item}");
+            //    System.Threading.Thread.Sleep(300);
+            //}
+            //Console.ReadKey(true);
+
+            
             var root = new NSCI.UI.RootWindow();
 
             var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!", Height = 3 };
@@ -21,22 +33,32 @@ namespace TestHarness
 
             var button1 = new Button() { Width = 40, HorizontalAlignment = HorizontalAlignment.Left };
             var button2 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
+            var button3 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
 
             button1.Text = "Button 1";
             button2.Text = "Button 2";
+            button3.Text = "Button 3";
 
             var grid = new Grid();
 
             grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
             grid.ColumnDefinitions.Add(new FixSizeDefinition() { Size = 20 });
-            grid.ColumnDefinitions.Add(new AutoSizeDefinition() );
+            grid.ColumnDefinitions.Add(new AutoSizeDefinition());
             grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
+
+            grid.RowDefinitions.Add(new AutoSizeDefinition());
+            grid.RowDefinitions.Add(new AutoSizeDefinition());
 
             grid.Items.Add(button1);
             grid.Items.Add(button2);
+            grid.Items.Add(button3);
 
             Grid.Column[button1].Value = 1;
             Grid.Column[button2].Value = 2;
+
+            Grid.Column[button3].Value = 1;
+            Grid.ColumnSpan[button3].Value = 2;
+            Grid.Row[button3].Value = 1;
 
             var stack = new StackPanel();
 
