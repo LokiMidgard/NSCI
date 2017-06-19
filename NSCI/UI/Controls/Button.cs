@@ -33,7 +33,7 @@ namespace NSCI.UI.Controls
         public Button()
         {
             this.border = new Border();
-            this.text = new TextBlock() { Background = ConsoleColor.Yellow, Height = 3 };
+            this.text = new TextBlock() { Background = ConsoleColor.Yellow, Height = 3, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
             this.border.Content = this.text;
             this.border.Parent = this;
             Up();
@@ -86,7 +86,7 @@ namespace NSCI.UI.Controls
         }
 
 
-        public override bool HandleInput(ConsoleKeyInfo k)
+        public override bool HandleInput(Control originalTarget,ConsoleKeyInfo k)
         {
             if (k.Key == ConsoleKey.Enter)
             {

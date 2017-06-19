@@ -149,60 +149,67 @@ namespace NSCI.UI
                     Console.CursorVisible = false;
 
                     bool ProcessKey = true;
-
-                    if (ProcessKey)
-                        ProcessKey = !ActiveControl?.HandleInput(k) ?? true;
-
-                    //if (ActiveControl is IAcceptInput)
-                    //{
-                    //    ProcessKey = false;
-                    //    switch (k.Key)
-                    //    {
-                    //        case ConsoleKey.Tab:
-                    //            CycleFocus();
-                    //            break;
-                    //        default:
-                    //            ProcessKey = HandleWidgetInput(k);
-                    //            break;
-                    //    }
-                    //}
-
-                    if (ProcessKey)
+                    var active = ActiveControl;
+                    if (active != null)
                     {
-                        switch (k.Key)
-                        {
-                            case ConsoleKey.Tab:
-                                if (k.Modifiers == ConsoleModifiers.Shift)
-                                    TabPrevious();
-                                else
-                                    TabNext();
-                                break;
-                            case ConsoleKey.RightArrow:
-                                MoveRight();
-                                break;
-                            case ConsoleKey.LeftArrow:
-                                MoveLeft();
-                                break;
-                            case ConsoleKey.UpArrow:
-                                MoveUp();
-                                break;
-                            case ConsoleKey.DownArrow:
-                                MoveDown();
-                                break;
-                            //case ConsoleKey.Spacebar:
-                            //case ConsoleKey.Enter:
-                            //    EnterPressed();
-                            //    break;
-                            case ConsoleKey.Escape:
-                                this.running = false;
-                                break;
-                        }
+                        var path = active.GetPathToRoot().ToArray();
+                        bool handled = false;
+                        for (int i = path.Length - 1; i >= 0 && !handled; i--)
+                            if (path[i].PreviewHandleInput(active, k))
+                                handled = true;
+
+                        for (int i = 0; i < path.Length && !handled; i++)
+                            if (path[i].HandleInput(active, k))
+                                handled = true;
                     }
+                    else
+                    {
+                        if (!this.PreviewHandleInput(this, k))
+                            this.HandleInput(this, k);
+                    }
+
                 }
 
 
             }
         }
+
+        public override bool HandleInput(Control originalTarget, ConsoleKeyInfo keyInfo)
+        {
+            switch (keyInfo.Key)
+            {
+                case ConsoleKey.Tab:
+                    if (keyInfo.Modifiers == ConsoleModifiers.Shift)
+                        TabPrevious();
+                    else
+                        TabNext();
+                    return true;
+
+                case ConsoleKey.RightArrow:
+                    MoveRight();
+                    return true;
+
+                case ConsoleKey.LeftArrow:
+                    MoveLeft();
+                    return true;
+                case ConsoleKey.UpArrow:
+                    MoveUp();
+                    return true;
+                case ConsoleKey.DownArrow:
+                    MoveDown();
+                    return true;
+                //case ConsoleKey.Spacebar:
+                //case ConsoleKey.Enter:
+                //    EnterPressed();
+                //    break;
+                case ConsoleKey.Escape:
+                    this.running = false;
+                    return true;
+            }
+            return false;
+
+        }
+
 
         public void TabNext()
         {

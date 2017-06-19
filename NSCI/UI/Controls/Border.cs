@@ -56,6 +56,8 @@ namespace NSCI.UI.Controls
 
         protected override void ArrangeOverride(Size finalSize)
         {
+            if (Content == null)
+                return;
             var borderThikness = BorderThikness;
             var borderWith = borderThikness.Left + borderThikness.Right;
             var borderHeight = borderThikness.Top + borderThikness.Bottom;
@@ -63,11 +65,12 @@ namespace NSCI.UI.Controls
             System.Diagnostics.Debug.Assert(finalSize.Width >= 0);
             System.Diagnostics.Debug.Assert(finalSize.Height >= 0);
 
-            var finalRect = new Rect(MathEx.Max(0, borderThikness.Left), MathEx.Max(0, borderThikness.Top), MathEx.Max(0, finalSize.Width - borderWith), MathEx.Max(0, finalSize.Height - borderHeight));
-
-
-
-            Content?.Arrange(finalRect);
+            var finalRect = new Rect(
+                MathEx.Max(0, borderThikness.Left),
+                MathEx.Max(0, borderThikness.Top),
+                MathEx.Max(0, finalSize.Width - borderWith),
+                MathEx.Max(0, finalSize.Height - borderHeight));
+            Content.Arrange(finalRect);
         }
 
         protected override void RenderOverride(IRenderFrame frame)

@@ -116,6 +116,24 @@ namespace NSCI.UI.Controls
         /// </summary>
         /// <param name="k"></param>
         /// <returns><c>true</c>> if this control handled the input.</c></returns>
-        public virtual bool HandleInput(ConsoleKeyInfo k) => false;
+        public virtual bool HandleInput(Control originalTarget, ConsoleKeyInfo keyInfo) => false;
+        /// <summary>
+        /// Handles the Input.
+        /// </summary>
+        /// <param name="k"></param>
+        /// <returns><c>true</c>> if this control handled the input.</c></returns>
+        public virtual bool PreviewHandleInput(Control originalTarget, ConsoleKeyInfo keyInfo) => false;
+
+        internal IEnumerable<Control> GetPathToRoot()
+        {
+            UIElement current = this;
+            while (current != null)
+            {
+                if (current is Control c)
+                    yield return c;
+                current = current.Parent;
+            }
+        }
     }
+
 }
