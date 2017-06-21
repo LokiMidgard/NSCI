@@ -19,13 +19,13 @@ namespace NSCI.UI
         {
             this.rootwindow = rootwindow;
             Width = Console.WindowWidth;
-            Height = Console.WindowHeight - 1;
+            Height = Console.WindowHeight;
             this.currentBuffer = new Buffer(Width, Height);
             this.previousBuffer = new Buffer(Width, Height);
             this.previousBufferValid = false;
 
             Console.SetCursorPosition(0, 0); // Reset Curso so we can set buffer
-            Console.BufferHeight = Height + 1;
+            Console.BufferHeight = Height;
             Console.BufferWidth = Width;
 
         }
@@ -197,13 +197,12 @@ namespace NSCI.UI
         {
             if (this.previousBufferValid)
             {
+                Console.SetCursorPosition(0, 0);
 
                 for (int i = 0; i < this.currentBuffer.Length; i++)
                 {
                     if (this.currentBuffer[i] == this.previousBuffer[i])
                         continue;
-                    var (left, top) = GetXYFromIndex(i);
-                    Console.SetCursorPosition(left, top);
 
                     Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
                     Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
@@ -229,14 +228,31 @@ namespace NSCI.UI
                         else
                             break;
                     }
+                    bool increasedBuffer = false;
+                    if (i + j == this.currentBuffer.Length - 1)
+                    {
+                        // we will write the last char, this will result in a line break that will delets the first line
+                        // to prevent this we must temporary increase the buffer Size.
+                        Console.BufferHeight += 1;
+                        increasedBuffer = true;
+                    }
+
+                    var (left, top) = GetXYFromIndex(i);
+                    Console.SetCursorPosition(left, top);
 
                     Console.Write(this.currentBuffer.CharacterBuffer, i, j);
-                    i += j;
+                    if (increasedBuffer)
+                    {
+                        Console.SetCursorPosition(0, 0);
+                        Console.BufferHeight -= 1;
+                    }
+                    i += j-1; // minus 1 because off the ++ in the for loop.
                 }
             }
             else
             {
 
+                Console.BufferHeight += 1;
                 Console.SetCursorPosition(0, 0);
                 for (int i = 0, j = 0; i < this.currentBuffer.Length; i += j)
                 {
@@ -250,13 +266,17 @@ namespace NSCI.UI
                         ++j;
 
                     Console.Write(this.currentBuffer.CharacterBuffer, i, j);
-                    ;
                 }
 
+                Console.SetCursorPosition(0, 0);
+                Console.BufferHeight -= 1;
             }
 
             Console.ResetColor(); // We do not want to have spooky colors
             this.previousBuffer.CopyFrom(this.currentBuffer);
+            this.previousBufferValid = true;
+            Console.SetCursorPosition(0, 0);
+
         }
 
         private (int x, int y) GetXYFromIndex(int i) => (i % Width, i / Width);
