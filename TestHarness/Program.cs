@@ -14,33 +14,33 @@ namespace TestHarness
     {
         static void Main(string[] args)
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Console.OutputEncoding = Encoding.UTF8;
+            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            //Console.OutputEncoding = Encoding.UTF8;
 
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.Black;
-            var t = typeof(NSCI.Characters.Box);
-            var fileds = t.GetFields().Where(x => x.FieldType == typeof(char)).OrderBy(x => x.Name).ToArray();
-            Console.BufferHeight = fileds.Length + 1;
-            int i=0;
-            foreach (var field in fileds)
-            {
-                i++;
-                var c = (char)field.GetRawConstantValue();
+            //Console.ForegroundColor = ConsoleColor.White;
+            //Console.BackgroundColor = ConsoleColor.Black;
+            //var t = typeof(NSCI.Characters.Box);
+            //var fileds = t.GetFields().Where(x => x.FieldType == typeof(char)).OrderBy(x => x.Name).ToArray();
+            //Console.BufferHeight = fileds.Length + 1;
+            //int i=0;
+            //foreach (var field in fileds)
+            //{
+            //    i++;
+            //    var c = (char)field.GetRawConstantValue();
 
-                Console.WriteLine($"{field.Name,-80}{c}");
-                //System.Threading.Thread.Sleep(15);
-                Console.BackgroundColor = i % 2 == 0 ? ConsoleColor.Black : ConsoleColor.DarkBlue;
+            //    Console.WriteLine($"{field.Name,-80}{c}");
+            //    //System.Threading.Thread.Sleep(15);
+            //    Console.BackgroundColor = i % 2 == 0 ? ConsoleColor.Black : ConsoleColor.DarkBlue;
 
-            }
-            Console.ReadKey(true);
+            //}
+            //Console.ReadKey(true);
 
-            foreach (SpecialChars item in Enum.GetValues(typeof(SpecialChars)))
-            {
-                Console.WriteLine($"{Enum.GetName(typeof(SpecialChars), item),-40}: {(char)item}");
-                System.Threading.Thread.Sleep(300);
-            }
-            Console.ReadKey(true);
+            //foreach (SpecialChars item in Enum.GetValues(typeof(SpecialChars)))
+            //{
+            //    Console.WriteLine($"{Enum.GetName(typeof(SpecialChars), item),-40}: {(char)item}");
+            //    System.Threading.Thread.Sleep(300);
+            //}
+            //Console.ReadKey(true);
 
 
             var root = new NSCI.UI.RootWindow();

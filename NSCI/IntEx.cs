@@ -437,6 +437,15 @@ namespace NSCI
 
             return Min(Max(min, value), max);
         }
+
+        internal static IntEx Abs(IntEx value)
+        {
+            if (value.IsNaN)
+                return value;
+            if (value.IsInfinity)
+                return IntEx.PositiveInfinity;
+            return (int)Math.Abs((long)value);
+        }
     }
 }
 

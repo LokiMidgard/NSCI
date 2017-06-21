@@ -147,8 +147,7 @@ namespace NSCI.UI
                 while (this.running && inputQueue.TryDequeue(out var k))
                 {
                     Console.CursorVisible = false;
-
-                    bool ProcessKey = true;
+                    
                     var active = ActiveControl;
                     if (active != null)
                     {
@@ -164,8 +163,8 @@ namespace NSCI.UI
                     }
                     else
                     {
-                        if (!this.PreviewHandleInput(this, k))
-                            this.HandleInput(this, k);
+                        if (!PreviewHandleInput(this, k))
+                            HandleInput(this, k);
                     }
 
                 }
@@ -186,18 +185,21 @@ namespace NSCI.UI
                     return true;
 
                 case ConsoleKey.RightArrow:
-                    MoveRight();
+                    MoveFocus(SearchDirection.Right);
                     return true;
 
                 case ConsoleKey.LeftArrow:
-                    MoveLeft();
+                    MoveFocus(SearchDirection.Left);
                     return true;
+
                 case ConsoleKey.UpArrow:
-                    MoveUp();
+                    MoveFocus(SearchDirection.Top);
                     return true;
+
                 case ConsoleKey.DownArrow:
-                    MoveDown();
+                    MoveFocus(SearchDirection.Bottom);
                     return true;
+
                 //case ConsoleKey.Spacebar:
                 //case ConsoleKey.Enter:
                 //    EnterPressed();
@@ -263,44 +265,11 @@ namespace NSCI.UI
             this.elementsMeasureDirty.Add(uIElement);
         }
 
-
-
-        private void MoveDown()
+        private void MoveFocus(SearchDirection direction)
         {
             if (ActiveControl == null)
                 return;
-            var w = FindFocusableWidgetBelow(ActiveControl);
-            if (w != null)
-                ActiveControl = w;
-        }
-
-        private void MoveUp()
-        {
-            if (ActiveControl == null)
-                return;
-            var w = FindFocusableWidgetAbove(ActiveControl);
-            if (w != null)
-            {
-                ActiveControl = w;
-            }
-        }
-
-        private void MoveLeft()
-        {
-            if (ActiveControl == null)
-                return;
-            var w = FindFocusableWidgetToLeftOf(ActiveControl);
-            if (w != null)
-            {
-                ActiveControl = w;
-            }
-        }
-
-        private void MoveRight()
-        {
-            if (ActiveControl == null)
-                return;
-            var w = FindFocusableControlToRightOf(ActiveControl);
+            var w = FindFocusableControl(ActiveControl, direction);
             if (w != null)
             {
                 ActiveControl = w;
@@ -308,73 +277,105 @@ namespace NSCI.UI
         }
 
 
-        private Control FindFocusableControlToRightOf(Control from)
+        private Control FindFocusableControl(Control from, SearchDirection direction)
+        {
+            // First search directly in the direction
+            return FindFocusableControl(IntEx.PositiveInfinity, from, direction)
+                // Then search 15 deegree
+                ?? FindFocusableControl(3, from, direction)
+                // Then search 45 deegree
+                ?? FindFocusableControl(1, from, direction);
+        }
+
+        private enum SearchDirection
+        {
+            Left,
+            Top,
+            Bottom,
+            Right
+        }
+
+        private Control FindFocusableControl(IntEx factor, Control from, SearchDirection direction)
         {
             var fromLocation = GetLocation(from);
             var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
-            // First search 15 deegree
-            var ImmediateRight = locationLost.Where(c => c.Location.Center.X > fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X) / 3).OrderBy(c => c.Location.Center.X).FirstOrDefault();
-
-            if (ImmediateRight == null)
+            return locationLost.Where(c =>
             {
-                // Then search 45 deegree
-                var RoughRight = locationLost.Where(c => c.Location.Center.X > fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X)).OrderBy(c => c.Location.Center.X).FirstOrDefault();
-                return RoughRight?.Control;
-            }
+                switch (direction)
+                {
+                    case SearchDirection.Left:
+                        {
+                            var bottomGreaterControlTop = fromLocation.Top - MathEx.Abs(fromLocation.Left - c.Location.Left) / factor < c.Location.Bottom;
+                            var topGreaterControlTop = fromLocation.Top - MathEx.Abs(fromLocation.Left - c.Location.Left) / factor < c.Location.Top;
 
-            return ImmediateRight.Control;
+                            var topLessthenControlBotom = fromLocation.Bottom + MathEx.Abs(fromLocation.Left - c.Location.Left) / factor > c.Location.Top;
+                            var bottomLessthenControlBotom = fromLocation.Bottom + MathEx.Abs(fromLocation.Left - c.Location.Left) / factor > c.Location.Bottom;
+                            return fromLocation.Left > c.Location.Left
+                               && (
+                                   bottomGreaterControlTop && !topGreaterControlTop
+                                   || topLessthenControlBotom && !bottomLessthenControlBotom
+                                   || topGreaterControlTop && bottomLessthenControlBotom
+                                   || !topGreaterControlTop && !bottomLessthenControlBotom
+                                   );
+                        }
+
+                    case SearchDirection.Top:
+                        {
+
+                            var rightGreaterControlLeft = fromLocation.Left - MathEx.Abs(fromLocation.Top - c.Location.Top) / factor < c.Location.Right;
+                            var leftGreaterControlLeft = fromLocation.Left - MathEx.Abs(fromLocation.Top - c.Location.Top) / factor < c.Location.Left;
+
+                            var leftLessthenControlRight = fromLocation.Right + MathEx.Abs(fromLocation.Top - c.Location.Top) / factor > c.Location.Right;
+                            var rightLessthenControlRight = fromLocation.Right + MathEx.Abs(fromLocation.Top - c.Location.Top) / factor > c.Location.Left;
+                            return fromLocation.Top > c.Location.Top
+                               && (
+                                   rightGreaterControlLeft && !leftGreaterControlLeft
+                                   || leftLessthenControlRight && !rightLessthenControlRight
+                                   || leftGreaterControlLeft && rightLessthenControlRight
+                                   || !leftGreaterControlLeft && !rightLessthenControlRight
+                                   );
+                        }
+
+                    case SearchDirection.Bottom:
+                        {
+                            var rightGreaterControlLeft = fromLocation.Left - MathEx.Abs(fromLocation.Bottom - c.Location.Bottom) / factor < c.Location.Right;
+                            var leftGreaterControlLeft = fromLocation.Left - MathEx.Abs(fromLocation.Bottom - c.Location.Bottom) / factor < c.Location.Left;
+
+                            var leftLessthenControlRight = fromLocation.Right + MathEx.Abs(fromLocation.Bottom - c.Location.Bottom) / factor > c.Location.Right;
+                            var rightLessthenControlRight = fromLocation.Right + MathEx.Abs(fromLocation.Bottom - c.Location.Bottom) / factor > c.Location.Left;
+                            return fromLocation.Bottom < c.Location.Bottom
+                               && (
+                                   rightGreaterControlLeft && !leftGreaterControlLeft
+                                   || leftLessthenControlRight && !rightLessthenControlRight
+                                   || leftGreaterControlLeft && rightLessthenControlRight
+                                   || !leftGreaterControlLeft && !rightLessthenControlRight
+                                   );
+                        }
+
+                    case SearchDirection.Right:
+                        {
+                            var bottomGreaterControlTop = fromLocation.Top - MathEx.Abs(fromLocation.Right - c.Location.Right) / factor < c.Location.Bottom;
+                            var topGreaterControlTop = fromLocation.Top - MathEx.Abs(fromLocation.Right - c.Location.Right) / factor < c.Location.Top;
+
+                            var topLessthenControlBotom = fromLocation.Bottom + MathEx.Abs(fromLocation.Right - c.Location.Right) / factor > c.Location.Top;
+                            var bottomLessthenControlBotom = fromLocation.Bottom + MathEx.Abs(fromLocation.Right - c.Location.Right) / factor > c.Location.Bottom;
+                            return fromLocation.Right < c.Location.Right
+                               && (
+                                   bottomGreaterControlTop && !topGreaterControlTop
+                                   || topLessthenControlBotom && !bottomLessthenControlBotom
+                                   || topGreaterControlTop && bottomLessthenControlBotom
+                                   || !topGreaterControlTop && !bottomLessthenControlBotom
+                                   );
+                        }
+
+                    default:
+                        throw new ArgumentException();
+                }
+            })
+            .OrderBy(c => c.Location.Center.X)
+            .FirstOrDefault()?.Control;
         }
 
-        private Control FindFocusableWidgetToLeftOf(Control from)
-        {
-            var fromLocation = GetLocation(from);
-            var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
-            // First search 15 deegree
-            var ImmediateRight = locationLost.Where(c => c.Location.Center.X < fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X) / 3).OrderByDescending(c => c.Location.Center.X).FirstOrDefault();
-
-            if (ImmediateRight == null)
-            {
-                // Then search 45 deegree
-                var RoughRight = locationLost.Where(c => c.Location.Center.X < fromLocation.Center.X && Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) < Math.Abs(c.Location.Center.X - fromLocation.Center.X)).OrderByDescending(c => c.Location.Center.X).FirstOrDefault();
-                return RoughRight?.Control;
-            }
-
-            return ImmediateRight.Control;
-        }
-
-        private Control FindFocusableWidgetAbove(Control from)
-        {
-            var fromLocation = GetLocation(from);
-            var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
-            // First search 15 deegree
-            var ImmediateRight = locationLost.Where(c => c.Location.Center.Y < fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) / 3).OrderByDescending(c => c.Location.Center.Y).FirstOrDefault();
-
-            if (ImmediateRight == null)
-            {
-                // Then search 45 deegree
-                var RoughRight = locationLost.Where(c => c.Location.Center.Y < fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y)).OrderByDescending(c => c.Location.Center.Y).FirstOrDefault();
-                return RoughRight?.Control;
-            }
-
-            return ImmediateRight.Control;
-        }
-
-        private Control FindFocusableWidgetBelow(Control from)
-        {
-            var fromLocation = GetLocation(from);
-            var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
-            // First search 15 deegree
-            var ImmediateRight = locationLost.Where(c => c.Location.Center.Y > fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y) / 3).OrderBy(c => c.Location.Center.Y).FirstOrDefault();
-
-            if (ImmediateRight == null)
-            {
-                // Then search 45 deegree
-                var RoughRight = locationLost.Where(c => c.Location.Center.Y > fromLocation.Center.Y && Math.Abs(c.Location.Center.X - fromLocation.Center.X) < Math.Abs(c.Location.Center.Y - fromLocation.Center.Y)).OrderBy(c => c.Location.Center.Y).FirstOrDefault();
-                return RoughRight?.Control;
-            }
-
-            return ImmediateRight.Control;
-        }
 
         private class DepthComparer : IComparer<UIElement>
         {
