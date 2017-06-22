@@ -201,7 +201,10 @@ namespace NSCI.UI.Controls.Layout
             for (int i = 0; i < columnWidth.Length; i++)
                 if (columns[i] is AutoSizeDefinition a)
                 {
-                    var desiredWidth = Items.Where(x => Column[x].Value == i && ColumnSpan[x].Value == 1).Max(x => x.DesiredSize.Width);
+
+                    var viableElements = Items.Where(x => Column[x].Value == i && ColumnSpan[x].Value == 1);
+
+                    var desiredWidth = viableElements.Any() ? viableElements.Max(x => x.DesiredSize.Width) : 0;
                     if (availableWidth > desiredWidth)
                     {
                         columnWidth[i] = (int)desiredWidth;
@@ -243,7 +246,7 @@ namespace NSCI.UI.Controls.Layout
 
             for (int i = 0; i < rowHeight.Length; i++)
                 if (rows[i] is FixSizeDefinition f)
-                    if (availableWidth > f.Size)
+                    if (availableHeight > f.Size)
                     {
                         rowHeight[i] = f.Size;
                         availableHeight -= f.Size;
@@ -259,7 +262,8 @@ namespace NSCI.UI.Controls.Layout
             for (int i = 0; i < rowHeight.Length; i++)
                 if (rows[i] is AutoSizeDefinition a)
                 {
-                    var desiredHeight = Items.Where(x => Row[x].Value == i && RowSpan[x].Value == 1).Max(x => x.DesiredSize.Height);
+                    var validElements = Items.Where(x => Row[x].Value == i && RowSpan[x].Value == 1);
+                    var desiredHeight = validElements.Any() ? validElements.Max(x => x.DesiredSize.Height) : 0;
                     if (availableHeight > desiredHeight)
                     {
                         rowHeight[i] = (int)desiredHeight;
@@ -329,7 +333,7 @@ namespace NSCI.UI.Controls.Layout
 
         protected override void RenderOverride(IRenderFrame frame)
         {
-            frame.FillRect(0, 0, frame.Width, frame.Height, Foreground, Background, SpecialChars.Fill);
+            frame.FillRect(0, 0, frame.Width, frame.Height, Foreground, Background, (char) SpecialChars.Fill);
             base.RenderOverride(frame);
         }
     }

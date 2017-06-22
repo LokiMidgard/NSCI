@@ -79,6 +79,8 @@ namespace NSCI.UI
         {
             this.running = true;
             Console.CursorVisible = false;
+            Console.TreatControlCAsInput = true;
+            
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -233,10 +235,14 @@ namespace NSCI.UI
                 this.tabSelectedIndex = (this.tabSelectedIndex - 1 + this.tabList.Count) % this.tabList.Count;
             ActiveControl = this.tabList[this.tabSelectedIndex];
         }
-
+        
         internal void UnRegisterArrangeDirty(UIElement uIElement)
         {
             this.elementsArrangeDirty.Remove(uIElement);
+        }
+        internal void UnRegisterRenderDirty(UIElement uIElement)
+        {
+            this.elementsRenderDirty.Remove(uIElement);
         }
 
         internal void RequestDraw()

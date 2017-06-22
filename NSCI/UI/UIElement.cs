@@ -237,6 +237,7 @@ namespace NSCI.UI
             {
                 RenderInProgress = true;
                 RootWindow.RequestDraw();
+                RootWindow.UnRegisterRenderDirty(this);
                 this.lastFrame = frame;
                 RenderCore(frame);
             }

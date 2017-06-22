@@ -58,6 +58,10 @@ namespace TestHarness
             button2.Text = "Button 2";
             button3.Text = "Button 3";
 
+            var scroll = new ScrollView();
+            var text3 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World! Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n\nDuis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.Lorem ipsum dolor sit amet,\nconsectetuer adipiscing elit,\nsed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.\n\nUt wisi enim ad minim veniam,\nquis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\n\nNam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer" };
+            scroll.Content = text3;
+
             var grid = new Grid();
 
             grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
@@ -65,24 +69,32 @@ namespace TestHarness
             grid.ColumnDefinitions.Add(new AutoSizeDefinition());
             grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
 
+            grid.RowDefinitions.Add(new FixSizeDefinition() { Size = 5 });
             grid.RowDefinitions.Add(new AutoSizeDefinition());
             grid.RowDefinitions.Add(new AutoSizeDefinition());
 
             grid.Items.Add(button1);
             grid.Items.Add(button2);
             grid.Items.Add(button3);
+            grid.Items.Add(scroll);
 
-            Grid.Column[button1].Value = 1;
-            Grid.Column[button2].Value = 2;
+            Grid.Column[button1].Value = 0;
+            Grid.Column[button2].Value = 1;
 
-            Grid.Column[button3].Value = 1;
+            Grid.Column[button3].Value = 0;
             Grid.ColumnSpan[button3].Value = 2;
-            Grid.Row[button3].Value = 1;
+            Grid.Row[button3].Value = 2;
+            Grid.Row[button1].Value = 1;
+            Grid.Row[button2].Value = 1;
+
+            Grid.ColumnSpan[scroll].Value = 2;
+            Grid.Row[scroll].Value = 0;
 
             var stack = new StackPanel();
 
             stack.Items.Add(border);
             stack.Items.Add(grid);
+            //stack.Items.Add(/*grid*/);
             //stack.Items.Add(button1);
             //stack.Items.Add(button2);
 

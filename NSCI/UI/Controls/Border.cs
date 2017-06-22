@@ -88,7 +88,7 @@ namespace NSCI.UI.Controls
                 var borderThikness = BorderThikness;
                 var borderWith = borderThikness.Left + borderThikness.Right;
                 var borderHeight = borderThikness.Top + borderThikness.Bottom;
-                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, Foreground, Background, SpecialChars.Fill);
+                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, Foreground, Background, (char)SpecialChars.Fill);
             }
         }
 

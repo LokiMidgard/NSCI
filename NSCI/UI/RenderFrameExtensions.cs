@@ -7,7 +7,7 @@ namespace NSCI.UI
     public static class RenderFrameExtensions
     {
 
-        public static void FillRect(this IRenderFrame buffer, int xPos, int yPos, int width, int height, ConsoleColor forground, ConsoleColor background, SpecialChars c)
+        public static void FillRect(this IRenderFrame buffer, int xPos, int yPos, int width, int height, ConsoleColor forground, ConsoleColor background, char c)
         {
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)

@@ -74,9 +74,9 @@ namespace NSCI.UI.Controls.Layout
                 var location = GetLocation(Items[i]);
                 Items[i].Render(frame.GetGraphicsBuffer(location));
                 if (location.Left > 0)
-                    frame.FillRect(0, (int)location.Top, (int)location.Left, (int)location.Height, Foreground, Background, SpecialChars.Fill);
+                    frame.FillRect(0, (int)location.Top, (int)location.Left, (int)location.Height, Foreground, Background, (char)SpecialChars.Fill);
                 if (frame.Width - location.Right > 0)
-                    frame.FillRect((int)location.Right, (int)location.Top, (int)(frame.Width - location.Right), (int)location.Height, Foreground, Background, SpecialChars.Fill);
+                    frame.FillRect((int)location.Right, (int)location.Top, (int)(frame.Width - location.Right), (int)location.Height, Foreground, Background, (char)SpecialChars.Fill);
             }
         }
 

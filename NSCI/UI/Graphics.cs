@@ -40,8 +40,8 @@ namespace NSCI.UI
                 this.parent = parent;
                 this.translation = translation ?? new Rect(0, 0, parent.Width, parent.Height);
                 Clip = clip;
-
-                if (this.translation.Right > parent.Width || this.translation.Bottom > parent.Height || this.translation.Left < 0 || this.translation.Top < 0)
+                var test = clip?.Translate((Size)this.translation.Location) ?? this.translation;
+                if (test.Right > parent.Width || test.Bottom > parent.Height || test.Left < 0 || test.Top < 0)
                     throw new ArgumentOutOfRangeException(nameof(translation), $"Translation must be insied the width and height of the parent. Width={parent.Width},Height={parent.Height}. Translation={this.translation}");
             }
 
@@ -60,16 +60,17 @@ namespace NSCI.UI
                 }
                 set
                 {
+                    if (Clip.HasValue && (x < Clip.Value.Left || x >= Clip.Value.Right || y < Clip.Value.Top || y >= Clip.Value.Bottom))
+                        return; // we doe nothing out of clipping
+
                     if (x < 0 || x > this.translation.Width)
                         throw new ArgumentOutOfRangeException(nameof(x));
                     if (y < 0 || y > this.translation.Height)
                         throw new ArgumentOutOfRangeException(nameof(y));
 
-                    if (Clip.HasValue && (x < Clip.Value.Left || x > Clip.Value.Right || y < Clip.Value.Top || y > Clip.Value.Bottom))
-                        return; // we doe nothing out of clipping
-
                     x += (int)this.translation.X;
                     y += (int)this.translation.Y;
+
                     this.parent[x, y] = value;
                 }
             }
@@ -88,7 +89,8 @@ namespace NSCI.UI
             public IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?))
             {
                 if (clip.HasValue && translation.HasValue)
-                    clip = new Rect(clip.Value.Left + translation.Value.Left, clip.Value.Top + translation.Value.Top, clip.Value.Width - translation.Value.Left, clip.Value.Height - translation.Value.Top);
+                    clip = clip.Value.Translate(new Size(-translation.Value.X, -translation.Value.Y));// new Rect(clip.Value.Left + translation.Value.Left, clip.Value.Top + translation.Value.Top, clip.Value.Width - translation.Value.Left, clip.Value.Height - translation.Value.Top);
+                //clip = new Rect(clip.Value.Left + translation.Value.Left, clip.Value.Top + translation.Value.Top, clip.Value.Width - translation.Value.Left, clip.Value.Height - translation.Value.Top);
                 return new BufferWraper(this, translation, clip);
             }
 
@@ -246,7 +248,7 @@ namespace NSCI.UI
                         Console.SetCursorPosition(0, 0);
                         Console.BufferHeight -= 1;
                     }
-                    i += j-1; // minus 1 because off the ++ in the for loop.
+                    i += j - 1; // minus 1 because off the ++ in the for loop.
                 }
             }
             else
