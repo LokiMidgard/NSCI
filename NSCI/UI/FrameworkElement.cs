@@ -6,7 +6,7 @@ using NDProperty;
 
 namespace NSCI.UI
 {
-    public abstract partial class 
+    public abstract partial class
         FrameworkElement : UIElement
     {
         //
@@ -176,6 +176,7 @@ namespace NSCI.UI
 
 
         [NDP(Inherited = true)]
+        [DefaultValue(ConsoleColor.White)]
         protected virtual void OnForegroundChanged(OnChangedArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
@@ -194,11 +195,59 @@ namespace NSCI.UI
         //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
         //     für das Rendern.
         [NDP(Inherited = true)]
+        [DefaultValue(ConsoleColor.DarkBlue)]
         protected virtual void OnBackgroundChanged(OnChangedArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
         }
+
+        [NDP(Inherited = true)]
+        [DefaultValue(ConsoleColor.DarkGray)]
+        protected virtual void OnBackgroundDisabledChanged(OnChangedArg<ConsoleColor> arg)
+        {
+            if (arg.OldValue != arg.NewValue)
+                InvalidateRender();
+        }
+
+        [NDP(Inherited = true)]
+        [DefaultValue(ConsoleColor.Gray)]
+        protected virtual void OnForegroundDisabledChanged(OnChangedArg<ConsoleColor> arg)
+        {
+            if (arg.OldValue != arg.NewValue)
+                InvalidateRender();
+        }
+
+        [NDP(Inherited = true)]
+        [DefaultValue(ConsoleColor.Red)]
+        protected virtual void OnPrimaryColorChanged(OnChangedArg<ConsoleColor> arg)
+        {
+            if (arg.OldValue != arg.NewValue)
+                InvalidateRender();
+        }
+        [NDP(Inherited = true)]
+        [DefaultValue(ConsoleColor.DarkRed)]
+        protected virtual void OnPrimaryColorDisabledChanged(OnChangedArg<ConsoleColor> arg)
+        {
+            if (arg.OldValue != arg.NewValue)
+                InvalidateRender();
+        }
+
+        [NDP(Inherited = true)]
+        [DefaultValue(ConsoleColor.Cyan)]
+        protected virtual void OnSecondaryColorChanged(OnChangedArg<ConsoleColor> arg)
+        {
+            if (arg.OldValue != arg.NewValue)
+                InvalidateRender();
+        }
+        [NDP(Inherited = true)]
+        [DefaultValue(ConsoleColor.DarkCyan)]
+        protected virtual void OnSecondaryColorDisabledChanged(OnChangedArg<ConsoleColor> arg)
+        {
+            if (arg.OldValue != arg.NewValue)
+                InvalidateRender();
+        }
+
 
 
         //
@@ -280,15 +329,15 @@ namespace NSCI.UI
 
         protected override sealed void RenderCore(IRenderFrame frame)
         {
-            frame.FillRect(0, 0, Padding.Left, Padding.Top, Foreground, Background, (char) SpecialChars.Fill);
+            frame.FillRect(0, 0, Padding.Left, Padding.Top, Foreground, Background, (char)SpecialChars.Fill);
             frame.FillRect(frame.Width - Padding.Right - Padding.Left, 0, Padding.Right, Padding.Top, Foreground, Background, (char)SpecialChars.Fill);
             frame.FillRect(0, frame.Height - Padding.Top - Padding.Bottom, Padding.Left, Padding.Bottom, Foreground, Background, (char)SpecialChars.Fill);
             frame.FillRect(frame.Width - Padding.Right - Padding.Left, frame.Height - Padding.Top - Padding.Bottom, Padding.Right, Padding.Bottom, Foreground, Background, (char)SpecialChars.Fill);
 
-            frame.FillRect(Padding.Left, 0, frame.Width - Padding.Left - Padding.Right, Padding.Top, Foreground, Background, (char) SpecialChars.Fill);
-            frame.FillRect(0, Padding.Top, Padding.Left, frame.Height - Padding.Top - Padding.Bottom, Foreground, Background, (char) SpecialChars.Fill);
-            frame.FillRect(Padding.Left, frame.Height - Padding.Bottom, frame.Width - Padding.Left - Padding.Right, Padding.Bottom, Foreground, Background, (char) SpecialChars.Fill);
-            frame.FillRect(frame.Width - Padding.Right, Padding.Top, Padding.Right, frame.Height - Padding.Bottom - Padding.Top, Foreground, Background, (char) SpecialChars.Fill);
+            frame.FillRect(Padding.Left, 0, frame.Width - Padding.Left - Padding.Right, Padding.Top, Foreground, Background, (char)SpecialChars.Fill);
+            frame.FillRect(0, Padding.Top, Padding.Left, frame.Height - Padding.Top - Padding.Bottom, Foreground, Background, (char)SpecialChars.Fill);
+            frame.FillRect(Padding.Left, frame.Height - Padding.Bottom, frame.Width - Padding.Left - Padding.Right, Padding.Bottom, Foreground, Background, (char)SpecialChars.Fill);
+            frame.FillRect(frame.Width - Padding.Right, Padding.Top, Padding.Right, frame.Height - Padding.Bottom - Padding.Top, Foreground, Background, (char)SpecialChars.Fill);
 
             if (Padding.Left + Padding.Right >= frame.Width || Padding.Top + Padding.Bottom >= frame.Height)
                 return; // Not enough Place to draw content.

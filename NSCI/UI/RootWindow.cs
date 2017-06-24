@@ -20,8 +20,6 @@ namespace NSCI.UI
         {
             Width = Console.WindowWidth;
             Height = Console.WindowHeight;
-            Background = ConsoleColor.DarkBlue;
-            Foreground = ConsoleColor.White;
         }
 
         public event Action BeforeStart;

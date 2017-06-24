@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using NDProperty;
 
@@ -11,6 +12,7 @@ namespace NSCI.UI.Controls
         protected void OnMaxScrollPositionChanged(OnChangedArg<int> arg) { }
 
         [NDP]
+        [DefaultValue(true)]
         protected void OnScroolbarVisibleChanged(OnChangedArg<bool> arg)
         {
             InvalidateMeasure();

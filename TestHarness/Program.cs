@@ -90,8 +90,13 @@ namespace TestHarness
             Grid.ColumnSpan[scroll].Value = 2;
             Grid.Row[scroll].Value = 0;
 
+            var checkbox = new CheckBox();
+
+            checkbox.Content = new TextBlock() { Text = "Test Slection" };
+
             var stack = new StackPanel();
 
+            stack.Items.Add(checkbox);
             stack.Items.Add(border);
             stack.Items.Add(grid);
             //stack.Items.Add(/*grid*/);
