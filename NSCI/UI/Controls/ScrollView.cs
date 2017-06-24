@@ -7,7 +7,14 @@ namespace NSCI.UI.Controls
 {
     public partial class ScrollView : ContentControl
     {
-        private int maxScrollPosition;
+        [NDP(IsReadOnly = true)]
+        protected void OnMaxScrollPositionChanged(OnChangedArg<int> arg) { }
+
+        [NDP]
+        protected void OnScroolbarVisibleChanged(OnChangedArg<bool> arg)
+        {
+            InvalidateMeasure();
+        }
 
         public override bool SupportSelection => true;
 
@@ -25,83 +32,94 @@ namespace NSCI.UI.Controls
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            availableSize = base.EnsureMinMaxWidthHeight(availableSize);
-            var scroolbarVisible = true;
-            Content.Measure(availableSize.Inflat(scroolbarVisible ? -1 : 0, 0));
-            return EnsureMinMaxWidthHeight(Content.DesiredSize.Inflat(scroolbarVisible ? 1 : 0, 0));
+            if (Content != null)
+            {
+                availableSize = base.EnsureMinMaxWidthHeight(availableSize);
+                Content.Measure(availableSize.Inflat(ScroolbarVisible ? -1 : 0, 0));
+                return EnsureMinMaxWidthHeight(Content.DesiredSize.Inflat(ScroolbarVisible ? 1 : 0, 0));
+            }
+            else
+            {
+                return base.MeasureOverride(availableSize);
+            }
         }
 
         protected override void ArrangeOverride(Size finalSize)
         {
-            var scroolbarVisible = true;
-            finalSize = finalSize.Inflat(scroolbarVisible && finalSize.Width > 0 ? -1 : 0, 0);
+            //ScroolbarVisible = finalSize.Height < Content.DesiredSize.Height;
+            if (Content != null)
+            {
+                finalSize = finalSize.Inflat(ScroolbarVisible && finalSize.Width > 0 ? -1 : 0, 0);
 
-            maxScrollPosition = (int)(Content.DesiredSize.Height - finalSize.Height);
+                MaxScrollPosition = (int)(Content.DesiredSize.Height - finalSize.Height);
 
-            if (ScrollPosition > maxScrollPosition)
-                ScrollPosition = maxScrollPosition;
-            if (ScrollPosition < 0)
-                ScrollPosition = 0;
+                if (ScrollPosition > MaxScrollPosition)
+                    ScrollPosition = MaxScrollPosition;
+                if (ScrollPosition < 0)
+                    ScrollPosition = 0;
 
-            Content.Arrange(new Rect(0, -ScrollPosition, finalSize.Width - 1, Content.DesiredSize.Height));
-
+                Content.Arrange(new Rect(0, -ScrollPosition, finalSize.Width - 1, Content.DesiredSize.Height));
+            }
         }
 
         protected override void RenderOverride(IRenderFrame frame)
         {
-            var scroolbarVisible = true;
-            //new Rect(new Point(0, -ScrollPosition), finalSize)
-            Content.Render(frame.GetGraphicsBuffer(new Rect(0, -ScrollPosition, scroolbarVisible ? frame.Width - 1 : frame.Width, Content.ArrangedPosition.Height), new Rect(0, 0, scroolbarVisible ? frame.Width - 1 : frame.Width, frame.Height)));
-            var foregroundColor = HasFocus ? ConsoleColor.Red : Background;
-
-            if (frame.Height == 1)
-            {
-                if (ScrollPosition == 0)
-                    frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.DOWNWARDS_ARROW, foregroundColor, Foreground);
-                else if (ScrollPosition == maxScrollPosition)
-                    frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.UPWARDS_ARROW, foregroundColor, Foreground);
-                else
-                    frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.UP_DOWN_ARROW, foregroundColor, Foreground);
-            }
-            else if (frame.Height == 2)
-            {
-                if (ScrollPosition == 0)
-                    frame[frame.Width - 1, 0] = new ColoredKey(Characters.Block.FULL_BLOCK, Foreground, Background);
-                else
-                    frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.BLACK_UP_POINTING_TRIANGLE, foregroundColor, Foreground);
-
-                if (ScrollPosition == maxScrollPosition)
-                    frame[frame.Width - 1, 1] = new ColoredKey(Characters.Block.FULL_BLOCK, Foreground, Background);
-                else
-                    frame[frame.Width - 1, 1] = new ColoredKey(Characters.Arrows.BLACK_DOWN_POINTING_TRIANGLE, foregroundColor, Foreground);
-
-            }
+            if (Content != null)
+                Content.Render(frame.GetGraphicsBuffer(new Rect(0, -ScrollPosition, ScroolbarVisible ? frame.Width - 1 : frame.Width, Content.ArrangedPosition.Height), new Rect(0, 0, ScroolbarVisible ? frame.Width - 1 : frame.Width, frame.Height)));
             else
+                frame.FillRect(0, 0, ScroolbarVisible ? frame.Width - 1 : frame.Width, frame.Height, Foreground, Background, ' ');
+
+            if (ScroolbarVisible)
             {
+                var foregroundColor = HasFocus ? ConsoleColor.Red : Background;
 
-
-                frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.BLACK_UP_POINTING_TRIANGLE, foregroundColor, Foreground);
-                frame[frame.Width - 1, frame.Height - 1] = new ColoredKey(Characters.Arrows.BLACK_DOWN_POINTING_TRIANGLE, foregroundColor, Foreground);
-                frame.FillRect(frame.Width - 1, 1, 1, frame.Height - 2, Foreground, Background, Characters.Block.FULL_BLOCK);
-
-
-                var numberOfPossibleScrollbarLocation = (frame.Height - 2) * 2 - 1;
-                int currentScrollBarPosition;
-                if (ScrollPosition == 0)
-                    currentScrollBarPosition = 0;
-                else if (ScrollPosition == maxScrollPosition)
-                    currentScrollBarPosition = numberOfPossibleScrollbarLocation - 1;
-                else
-                    currentScrollBarPosition = (int)((ScrollPosition - 1) / (double)(maxScrollPosition - 2) * (numberOfPossibleScrollbarLocation - 2)) + 1;
-
-                if (currentScrollBarPosition % 2 == 0) // Print FullBlock
+                if (frame.Height == 1)
                 {
-                    frame[frame.Width - 1, currentScrollBarPosition / 2 + 1] = new ColoredKey(Characters.Block.FULL_BLOCK, foregroundColor, Foreground);
+                    if (ScrollPosition == 0)
+                        frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.DOWNWARDS_ARROW, foregroundColor, Foreground);
+                    else if (ScrollPosition == MaxScrollPosition)
+                        frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.UPWARDS_ARROW, foregroundColor, Foreground);
+                    else
+                        frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.UP_DOWN_ARROW, foregroundColor, Foreground);
                 }
-                else // Print two Half Blocks
+                else if (frame.Height == 2)
                 {
-                    frame[frame.Width - 1, currentScrollBarPosition / 2 + 1] = new ColoredKey(Characters.Block.LOWER_HALF_BLOCK, foregroundColor, Foreground);
-                    frame[frame.Width - 1, currentScrollBarPosition / 2 + 2] = new ColoredKey(Characters.Block.UPPER_HALF_BLOCK, foregroundColor, Foreground);
+                    if (ScrollPosition == 0)
+                        frame[frame.Width - 1, 0] = new ColoredKey(Characters.Block.FULL_BLOCK, Foreground, Background);
+                    else
+                        frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.BLACK_UP_POINTING_TRIANGLE, foregroundColor, Foreground);
+
+                    if (ScrollPosition == MaxScrollPosition)
+                        frame[frame.Width - 1, 1] = new ColoredKey(Characters.Block.FULL_BLOCK, Foreground, Background);
+                    else
+                        frame[frame.Width - 1, 1] = new ColoredKey(Characters.Arrows.BLACK_DOWN_POINTING_TRIANGLE, foregroundColor, Foreground);
+
+                }
+                else
+                {
+                    frame[frame.Width - 1, 0] = new ColoredKey(Characters.Arrows.BLACK_UP_POINTING_TRIANGLE, foregroundColor, Foreground);
+                    frame[frame.Width - 1, frame.Height - 1] = new ColoredKey(Characters.Arrows.BLACK_DOWN_POINTING_TRIANGLE, foregroundColor, Foreground);
+                    frame.FillRect(frame.Width - 1, 1, 1, frame.Height - 2, Foreground, Background, Characters.Block.FULL_BLOCK);
+
+
+                    var numberOfPossibleScrollbarLocation = (frame.Height - 2) * 2 - 1;
+                    int currentScrollBarPosition;
+                    if (ScrollPosition == 0)
+                        currentScrollBarPosition = 0;
+                    else if (ScrollPosition == MaxScrollPosition)
+                        currentScrollBarPosition = numberOfPossibleScrollbarLocation - 1;
+                    else
+                        currentScrollBarPosition = (int)((ScrollPosition - 1) / (double)(MaxScrollPosition - 2) * (numberOfPossibleScrollbarLocation - 2)) + 1;
+
+                    if (currentScrollBarPosition % 2 == 0) // Print FullBlock
+                    {
+                        frame[frame.Width - 1, currentScrollBarPosition / 2 + 1] = new ColoredKey(Characters.Block.FULL_BLOCK, foregroundColor, Foreground);
+                    }
+                    else // Print two Half Blocks
+                    {
+                        frame[frame.Width - 1, currentScrollBarPosition / 2 + 1] = new ColoredKey(Characters.Block.LOWER_HALF_BLOCK, foregroundColor, Foreground);
+                        frame[frame.Width - 1, currentScrollBarPosition / 2 + 2] = new ColoredKey(Characters.Block.UPPER_HALF_BLOCK, foregroundColor, Foreground);
+                    }
                 }
             }
 
