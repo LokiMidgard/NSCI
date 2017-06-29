@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using NDProperty;
+using NDProperty.Propertys;
 using NSCI.Widgets;
 
 namespace NSCI.UI.Controls
@@ -19,7 +20,7 @@ namespace NSCI.UI.Controls
         //     Ein Wert, der die Reihenfolge für die logische Navigation für ein Gerät bestimmt.
         //     Der Standardwert ist [MaxValue](https://msdn.microsoft.com/library/System.int32.maxvalue.aspx).
         [NDProperty.NDP]
-        protected virtual void OnTabIndexChanged(NDProperty.OnChangedArg<int> arg)
+        protected virtual void OnTabIndexChanging(NDProperty.Propertys.OnChangingArg<int> arg)
         {
 
         }
@@ -35,7 +36,7 @@ namespace NSCI.UI.Controls
         //     ** "true" ** Wenn ein deaktiviertes Steuerelement den Fokus erhalten kann; andernfalls
         //     ** "false" **.
         [NDProperty.NDP]
-        protected virtual void OnAllowFocusWhenDisabledChanged(global::NDProperty.OnChangedArg<bool> arg)
+        protected virtual void OnAllowFocusWhenDisabledChanging(global::NDProperty.Propertys.OnChangingArg<bool> arg)
         {
 
         }
@@ -52,7 +53,7 @@ namespace NSCI.UI.Controls
 
 
         [NDProperty.NDP]
-        protected virtual void OnHasFocusChanged(NDProperty.OnChangedArg<bool> arg)
+        protected virtual void OnHasFocusChanging(NDProperty.Propertys.OnChangingArg<bool> arg)
         {
             if (!SupportSelection || !IsEnabled)
                 arg.MutatedValue = false;
@@ -77,7 +78,7 @@ namespace NSCI.UI.Controls
         //     ** "false" **.
         [NDP]
         [DefaultValue(true)]
-        protected virtual void OnIsEnabledChanged(global::NDProperty.OnChangedArg<bool> arg)
+        protected virtual void OnIsEnabledChanging(global::NDProperty.Propertys.OnChangingArg<bool> arg)
         {
             if (SupportSelection)
             {
@@ -98,7 +99,7 @@ namespace NSCI.UI.Controls
         }
 
 
-        protected override void OnRootWindowChanged(OnChangedArg<RootWindow> arg)
+        protected override void OnRootWindowChanging(OnChangingArg<RootWindow> arg)
         {
             if (SupportSelection && IsEnabled)
             {
@@ -108,7 +109,7 @@ namespace NSCI.UI.Controls
                 arg.NewValue?.tabList.Add(this);
             }
 
-            base.OnRootWindowChanged(arg);
+            base.OnRootWindowChanging(arg);
         }
 
         /// <summary>

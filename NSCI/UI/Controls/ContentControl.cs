@@ -8,7 +8,7 @@ namespace NSCI.UI.Controls
     {
 
         [NDProperty.NDP]
-        protected virtual void OnContentChanged(NDProperty.OnChangedArg<UIElement> arg)
+        protected virtual void OnContentChanging(NDProperty.Propertys.OnChangingArg<UIElement> arg)
         {
             if (arg.NewValue != arg.OldValue)
             {

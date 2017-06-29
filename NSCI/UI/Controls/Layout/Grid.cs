@@ -5,22 +5,23 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using NDProperty;
+using NDProperty.Propertys;
 
 namespace NSCI.UI.Controls.Layout
 {
     public partial class Grid : ItemsControl
     {
         [NDPAttach]
-        private static void OnRowChanged(OnChangedArg<int, UIElement> arg) { }
+        private static void OnRowChanging(OnChangingArg<int, UIElement> arg) { }
         [NDPAttach]
-        private static void OnColumnChanged(OnChangedArg<int, UIElement> arg) { }
+        private static void OnColumnChanging(OnChangingArg<int, UIElement> arg) { }
 
         [DefaultValue(1)]
         [NDPAttach]
-        private static void OnRowSpanChanged(OnChangedArg<int, UIElement> arg) { }
+        private static void OnRowSpanChanging(OnChangingArg<int, UIElement> arg) { }
         [DefaultValue(1)]
         [NDPAttach]
-        private static void OnColumnSpanChanged(OnChangedArg<int, UIElement> arg) { }
+        private static void OnColumnSpanChanging(OnChangingArg<int, UIElement> arg) { }
 
         public ObservableCollection<ISizeDefinition> RowDefinitions { get; } = new ObservableCollection<ISizeDefinition>();
         public ObservableCollection<ISizeDefinition> ColumnDefinitions { get; } = new ObservableCollection<ISizeDefinition>();

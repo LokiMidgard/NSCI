@@ -8,7 +8,7 @@ namespace NSCI.UI.Controls
     {
 
         [NDProperty.NDP]
-        protected virtual void OnStyleChanged(NDProperty.OnChangedArg<BorderStyle> arg)
+        protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<BorderStyle> arg)
         {
             var oldThickness = CalculateBorderThikness(arg.OldValue);
             var newThickness = CalculateBorderThikness(arg.NewValue);

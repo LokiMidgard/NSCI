@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using NDProperty;
+using NDProperty.Propertys;
 using NSCI.UI;
 using NSCI.UI.Controls;
 
@@ -25,8 +27,8 @@ namespace NSCI.UI
         public event Action BeforeStart;
 
         private int tabSelectedIndex;
-        [NDProperty.NDP(Settigns = NDProperty.NDPropertySettings.CallOnChangedHandlerOnEquals)]
-        protected virtual void OnActiveControlChanged(NDProperty.OnChangedArg<Control> arg)
+        [NDP(Settigns = NDPropertySettings.CallOnChangedHandlerOnEquals)]
+        protected virtual void OnActiveControlChanging(NDProperty.Propertys.OnChangingArg<Control> arg)
         {
             arg.ExecuteAfterChange += () =>
             {

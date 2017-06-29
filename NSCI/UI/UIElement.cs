@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using NDProperty;
+using NDProperty.Propertys;
 using NSCI.Widgets;
 
 namespace NSCI.UI
@@ -18,15 +19,15 @@ namespace NSCI.UI
         }
 
 
-        [NDP(IsReadOnly = true)]
-        protected virtual void OnRootWindowChanged(OnChangedArg<RootWindow> arg)
+        [NDP(Settigns = NDPropertySettings.ReadOnly )]
+        protected virtual void OnRootWindowChanging(OnChangingArg<RootWindow> arg)
         {
             if (this is RootWindow && arg.NewValue == null)
                 arg.MutatedValue = this as RootWindow;
         }
 
-        [NDP(IsParentReference = true)]
-        protected virtual void OnParentChanged(global::NDProperty.OnChangedArg<UIElement> arg)
+        [NDP(Settigns = NDPropertySettings.ParentReference)]
+        protected virtual void OnParentChanging(global::NDProperty.Propertys.OnChangingArg<UIElement> arg)
         {
             if (arg.NewValue != arg.OldValue)
             {
@@ -53,7 +54,7 @@ namespace NSCI.UI
         //     Stellt Randwerte für das Objekt bereit. Der Standardwert ist eine Standard-Windows.UI.Xaml.
         //     Breite gleich 0 alle Eigenschaften (Dimensionen).
         [NDP]
-        protected virtual void OnMarginChanged(OnChangedArg<Thickness> arg)
+        protected virtual void OnMarginChanging(OnChangingArg<Thickness> arg)
         {
             InvalidateMeasure();
         }
@@ -69,7 +70,7 @@ namespace NSCI.UI
         //     ist ** Stretch **.
         [NDP]
         [DefaultValue(VerticalAlignment.Strech)]
-        protected virtual void OnVerticalAlignmentChanged(OnChangedArg<VerticalAlignment> arg)
+        protected virtual void OnVerticalAlignmentChanging(OnChangingArg<VerticalAlignment> arg)
         {
             InvalidateArrange();
         }
@@ -86,7 +87,7 @@ namespace NSCI.UI
 
         [NDP]
         [DefaultValue(HorizontalAlignment.Strech)]
-        protected virtual void OnHorizontalAlignmentChanged(OnChangedArg<HorizontalAlignment> arg)
+        protected virtual void OnHorizontalAlignmentChanging(OnChangingArg<HorizontalAlignment> arg)
         {
             InvalidateArrange();
         }
@@ -101,8 +102,8 @@ namespace NSCI.UI
         /// </remarks>
 
 
-        [NDP(IsReadOnly = true)]
-        protected virtual void OnDepthChanged(global::NDProperty.OnChangedArg<int> arg)
+        [NDP(Settigns = NDPropertySettings.ReadOnly)]
+        protected virtual void OnDepthChanging(global::NDProperty.Propertys.OnChangingArg<int> arg)
         {
 
         }
@@ -111,7 +112,7 @@ namespace NSCI.UI
 
         [NDP]
         [DefaultValue(true)]
-        protected virtual void OnIsVisibleChanged(global::NDProperty.OnChangedArg<bool> arg)
+        protected virtual void OnIsVisibleChanging(global::NDProperty.Propertys.OnChangingArg<bool> arg)
         {
             InvalidateMeasure();
         }
@@ -185,7 +186,7 @@ namespace NSCI.UI
                     DesiredSize = desiredSize;
                     var p = Parent;
                     if (!p?.MeasureInProgress ?? false)
-                        p.OnChildDesiredSizeChanged(this);
+                        p.OnChildDesiredSizeChanging(this);
                 }
             }
             finally
@@ -305,7 +306,7 @@ namespace NSCI.UI
         /// <remarks>
         /// This method will only be called when Measure was not called by the Parent Measure.
         /// </remarks>
-        protected virtual void OnChildDesiredSizeChanged(UIElement child)
+        protected virtual void OnChildDesiredSizeChanging(UIElement child)
         {
             if (!MeasureDirty)
                 InvalidateMeasure();

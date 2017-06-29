@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using NDProperty;
+using NDProperty.Propertys;
 
 namespace NSCI.UI.Controls
 {
@@ -13,7 +14,7 @@ namespace NSCI.UI.Controls
 
         [NDP]
         [DefaultValue(false)]
-        protected virtual void OnIsCheckedChanged(OnChangedArg<bool?> arg)
+        protected virtual void OnIsCheckedChanging(OnChangingArg<bool?> arg)
         {
             if (!arg.NewValue.HasValue && !this.IsThreeState)
                 arg.Reject = true;
@@ -21,34 +22,34 @@ namespace NSCI.UI.Controls
                 InvalidateRender();
         }
         [NDP]
-        protected virtual void OnIsThreeStateChanged(OnChangedArg<bool> arg)
+        protected virtual void OnIsThreeStateChanging(OnChangingArg<bool> arg)
         {
             InvalidateRender();
         }
 
         [NDP]
         [DefaultValue(Characters.Misc.SQUARE_ROOT)]
-        protected virtual void OnCheckedCharacterChanged(OnChangedArg<char> arg)
+        protected virtual void OnCheckedCharacterChanging(OnChangingArg<char> arg)
         {
             InvalidateRender();
         }
         [NDP]
         [DefaultValue(' ')]
-        protected virtual void OnUnCheckedCharacterChanged(OnChangedArg<char> arg)
+        protected virtual void OnUnCheckedCharacterChanging(OnChangingArg<char> arg)
         {
             InvalidateRender();
         }
 
         [NDP]
         [DefaultValue(Characters.Misc.BLACK_SQUARE)]
-        protected virtual void OnThirdStateCharacterChanged(OnChangedArg<char> arg)
+        protected virtual void OnThirdStateCharacterChanging(OnChangingArg<char> arg)
         {
             InvalidateRender();
         }
 
         [NDP]
         [DefaultValue('[')]
-        protected virtual void OnOpenParenthiseChanged(OnChangedArg<char?> arg)
+        protected virtual void OnOpenParenthiseChanging(OnChangingArg<char?> arg)
         {
             if (arg.NewValue == null || arg.OldValue == null)
                 InvalidateMeasure();
@@ -58,7 +59,7 @@ namespace NSCI.UI.Controls
 
         [NDP]
         [DefaultValue(']')]
-        protected virtual void OnCloseParenthiseChanged(OnChangedArg<char?> arg)
+        protected virtual void OnCloseParenthiseChanging(OnChangingArg<char?> arg)
         {
             if (arg.NewValue == null || arg.OldValue == null)
                 InvalidateMeasure();

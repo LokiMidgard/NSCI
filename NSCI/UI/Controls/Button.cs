@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using NDProperty;
+using NDProperty.Propertys;
 
 namespace NSCI.UI.Controls
 {
@@ -12,7 +13,7 @@ namespace NSCI.UI.Controls
         private readonly Border border;
 
         [NDProperty.NDP]
-        protected virtual void OnTextChanged(NDProperty.OnChangedArg<string> arg)
+        protected virtual void OnTextChanging(NDProperty.Propertys.OnChangingArg<string> arg)
         {
             this.text.Text = arg.NewValue;
         }
@@ -21,7 +22,7 @@ namespace NSCI.UI.Controls
 
 
         [NDProperty.NDP]
-        protected virtual void OnTextColorChanged(NDProperty.OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnTextColorChanging(NDProperty.Propertys.OnChangingArg<ConsoleColor> arg)
         {
             if (arg.NewValue != arg.OldValue)
                 InvalidateRender();
@@ -52,9 +53,9 @@ namespace NSCI.UI.Controls
             this.border.Padding = new Thickness(2, 2, 0, 0);
         }
 
-        protected override void OnHasFocusChanged(OnChangedArg<bool> arg)
+        protected override void OnHasFocusChanging(OnChangingArg<bool> arg)
         {
-            base.OnHasFocusChanged(arg);
+            base.OnHasFocusChanging(arg);
             if (arg.NewValue)
                 this.text.Foreground = ConsoleColor.Red;
             else

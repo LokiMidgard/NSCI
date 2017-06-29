@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using NDProperty;
+using NDProperty.Propertys;
 
 namespace NSCI.UI
 {
@@ -20,7 +21,7 @@ namespace NSCI.UI
         //public int? Height { get; set; } = null;
         [NDP]
         [DefaultValue(float.NaN)]
-        protected virtual void OnHeightChanged(global::NDProperty.OnChangedArg<IntEx> arg) { }
+        protected virtual void OnHeightChanging(global::NDProperty.Propertys.OnChangingArg<IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -34,7 +35,7 @@ namespace NSCI.UI
         //public int MinHeight { get; set; } = 0;
         [DefaultValue(0)]
         [NDP]
-        protected virtual void OnMinHeightChanged(OnChangedArg<IntEx> arg) { }
+        protected virtual void OnMinHeightChanging(OnChangingArg<IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -48,7 +49,7 @@ namespace NSCI.UI
         //     Referenz). Der Standard ist eine leere Zeichenfolge.
         //public string Name { get; set; }
         [NDP]
-        protected virtual void OnNameChanged(OnChangedArg<string> arg) { }
+        protected virtual void OnNameChanging(OnChangingArg<string> arg) { }
 
         //
         // Zusammenfassung:
@@ -62,7 +63,7 @@ namespace NSCI.UI
         //public int MinWidth { get; set; } = 0;
         [DefaultValue(0)]
         [NDP]
-        protected virtual void OnMinWidthChanged(OnChangedArg<IntEx> arg) { }
+        protected virtual void OnMinWidthChanging(OnChangingArg<IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -77,7 +78,7 @@ namespace NSCI.UI
         //public int MaxWidth { get; set; } = int.MaxValue;
         [NDP]
         [DefaultValue(float.PositiveInfinity)]
-        protected virtual void OnMaxWidthChanged(global::NDProperty.OnChangedArg<IntEx> arg) { }
+        protected virtual void OnMaxWidthChanging(global::NDProperty.Propertys.OnChangingArg<IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -92,7 +93,7 @@ namespace NSCI.UI
         //public int MaxHeight { get; set; } = int.MaxValue;
         [NDP]
         [DefaultValue(float.PositiveInfinity)]
-        protected virtual void OnMaxHeightChanged(OnChangedArg<IntEx> arg) { }
+        protected virtual void OnMaxHeightChanging(OnChangingArg<IntEx> arg) { }
 
 
         //
@@ -106,7 +107,7 @@ namespace NSCI.UI
         //public int? Width { get; set; } = null;
         [NDP]
         [DefaultValue(float.NaN)]
-        protected virtual void OnWidthChanged(OnChangedArg<IntEx> arg) { }
+        protected virtual void OnWidthChanging(OnChangingArg<IntEx> arg) { }
 
 
 
@@ -120,7 +121,7 @@ namespace NSCI.UI
         //     keinen Standardwert.
         //public object Tag { get; set; }
         [NDP]
-        protected virtual void OnTagChanged(OnChangedArg<object> arg) { }
+        protected virtual void OnTagChanging(OnChangingArg<object> arg) { }
 
         //
         // Zusammenfassung:
@@ -131,8 +132,8 @@ namespace NSCI.UI
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
         //public int ActualHeight { get; private set; }
-        [NDP(IsReadOnly = true)]
-        protected virtual void OnActualHeightChanged(OnChangedArg<int> arg) { }
+        [NDP(Settigns = NDPropertySettings.ReadOnly)]
+        protected virtual void OnActualHeightChanging(OnChangingArg<int> arg) { }
 
         //
         // Zusammenfassung:
@@ -143,8 +144,8 @@ namespace NSCI.UI
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
         //public int ActualWidth { get; private set; }
-        [NDP(IsReadOnly = true)]
-        protected virtual void OnActualWidthChanged(OnChangedArg<int> arg) { }
+        [NDP(Settigns = NDPropertySettings.ReadOnly)]
+        protected virtual void OnActualWidthChanging(OnChangingArg<int> arg) { }
 
 
 
@@ -158,7 +159,7 @@ namespace NSCI.UI
         //     Der Standardwert ist eine Windows.UI.Xaml. Breite mit Werten von 0 auf allen
         //     vier Seiten.
         [NDP]
-        protected virtual void OnPaddingChanged(OnChangedArg<Thickness> arg)
+        protected virtual void OnPaddingChanging(OnChangingArg<Thickness> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateMeasure();
@@ -175,9 +176,9 @@ namespace NSCI.UI
         //private ConsoleColor foreground = ConsoleColor.Inherited;
 
 
-        [NDP(Inherited = true)]
+        [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.White)]
-        protected virtual void OnForegroundChanged(OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnForegroundChanging(OnChangingArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
@@ -194,55 +195,55 @@ namespace NSCI.UI
         //     Der Pinsel, der den Hintergrund des Steuerelements bereitstellt. Der Standardwert
         //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
         //     für das Rendern.
-        [NDP(Inherited = true)]
+        [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkBlue)]
-        protected virtual void OnBackgroundChanged(OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnBackgroundChanging(OnChangingArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
         }
 
-        [NDP(Inherited = true)]
+        [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkGray)]
-        protected virtual void OnBackgroundDisabledChanged(OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnBackgroundDisabledChanging(OnChangingArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
         }
 
-        [NDP(Inherited = true)]
+        [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Gray)]
-        protected virtual void OnForegroundDisabledChanged(OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnForegroundDisabledChanging(OnChangingArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
         }
 
-        [NDP(Inherited = true)]
+        [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Red)]
-        protected virtual void OnPrimaryColorChanged(OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnPrimaryColorChanging(OnChangingArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
         }
-        [NDP(Inherited = true)]
+        [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkRed)]
-        protected virtual void OnPrimaryColorDisabledChanged(OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnPrimaryColorDisabledChanging(OnChangingArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
         }
 
-        [NDP(Inherited = true)]
+        [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Cyan)]
-        protected virtual void OnSecondaryColorChanged(OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnSecondaryColorChanging(OnChangingArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();
         }
-        [NDP(Inherited = true)]
+        [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkCyan)]
-        protected virtual void OnSecondaryColorDisabledChanged(OnChangedArg<ConsoleColor> arg)
+        protected virtual void OnSecondaryColorDisabledChanging(OnChangingArg<ConsoleColor> arg)
         {
             if (arg.OldValue != arg.NewValue)
                 InvalidateRender();

@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using NDProperty;
+using NDProperty.Propertys;
 
 namespace NSCI.UI.Controls
 {
     public partial class ScrollView : ContentControl
     {
-        [NDP(IsReadOnly = true)]
-        protected void OnMaxScrollPositionChanged(OnChangedArg<int> arg) { }
+        [NDP(Settigns = NDProperty.Propertys.NDPropertySettings.ReadOnly)]
+        protected void OnMaxScrollPositionChanging(OnChangingArg<int> arg) { }
 
         [NDP]
         [DefaultValue(true)]
-        protected void OnScroolbarVisibleChanged(OnChangedArg<bool> arg)
+        protected void OnScroolbarVisibleChanging(OnChangingArg<bool> arg)
         {
             InvalidateMeasure();
         }
@@ -21,14 +22,14 @@ namespace NSCI.UI.Controls
         public override bool SupportSelection => true;
 
         [NDP]
-        private void OnScrollPositionChanged(OnChangedArg<int> arg)
+        private void OnScrollPositionChanging(OnChangingArg<int> arg)
         {
 
         }
 
-        protected override void OnHasFocusChanged(OnChangedArg<bool> arg)
+        protected override void OnHasFocusChanging(OnChangingArg<bool> arg)
         {
-            base.OnHasFocusChanged(arg);
+            base.OnHasFocusChanging(arg);
             InvalidateRender();
         }
 
