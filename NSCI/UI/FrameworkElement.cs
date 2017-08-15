@@ -21,7 +21,7 @@ namespace NSCI.UI
         //public int? Height { get; set; } = null;
         [NDP]
         [DefaultValue(float.NaN)]
-        protected virtual void OnHeightChanging(global::NDProperty.Propertys.OnChangingArg<IntEx> arg) { }
+        protected virtual void OnHeightChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -35,7 +35,7 @@ namespace NSCI.UI
         //public int MinHeight { get; set; } = 0;
         [DefaultValue(0)]
         [NDP]
-        protected virtual void OnMinHeightChanging(OnChangingArg<IntEx> arg) { }
+        protected virtual void OnMinHeightChanging(OnChangingArg<NDPConfiguration, IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -49,7 +49,7 @@ namespace NSCI.UI
         //     Referenz). Der Standard ist eine leere Zeichenfolge.
         //public string Name { get; set; }
         [NDP]
-        protected virtual void OnNameChanging(OnChangingArg<string> arg) { }
+        protected virtual void OnNameChanging(OnChangingArg<NDPConfiguration, string> arg) { }
 
         //
         // Zusammenfassung:
@@ -63,7 +63,7 @@ namespace NSCI.UI
         //public int MinWidth { get; set; } = 0;
         [DefaultValue(0)]
         [NDP]
-        protected virtual void OnMinWidthChanging(OnChangingArg<IntEx> arg) { }
+        protected virtual void OnMinWidthChanging(OnChangingArg<NDPConfiguration, IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -78,7 +78,7 @@ namespace NSCI.UI
         //public int MaxWidth { get; set; } = int.MaxValue;
         [NDP]
         [DefaultValue(float.PositiveInfinity)]
-        protected virtual void OnMaxWidthChanging(global::NDProperty.Propertys.OnChangingArg<IntEx> arg) { }
+        protected virtual void OnMaxWidthChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, IntEx> arg) { }
 
         //
         // Zusammenfassung:
@@ -93,7 +93,7 @@ namespace NSCI.UI
         //public int MaxHeight { get; set; } = int.MaxValue;
         [NDP]
         [DefaultValue(float.PositiveInfinity)]
-        protected virtual void OnMaxHeightChanging(OnChangingArg<IntEx> arg) { }
+        protected virtual void OnMaxHeightChanging(OnChangingArg<NDPConfiguration, IntEx> arg) { }
 
 
         //
@@ -107,7 +107,7 @@ namespace NSCI.UI
         //public int? Width { get; set; } = null;
         [NDP]
         [DefaultValue(float.NaN)]
-        protected virtual void OnWidthChanging(OnChangingArg<IntEx> arg) { }
+        protected virtual void OnWidthChanging(OnChangingArg<NDPConfiguration, IntEx> arg) { }
 
 
 
@@ -121,7 +121,7 @@ namespace NSCI.UI
         //     keinen Standardwert.
         //public object Tag { get; set; }
         [NDP]
-        protected virtual void OnTagChanging(OnChangingArg<object> arg) { }
+        protected virtual void OnTagChanging(OnChangingArg<NDPConfiguration, object> arg) { }
 
         //
         // Zusammenfassung:
@@ -133,7 +133,7 @@ namespace NSCI.UI
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
         //public int ActualHeight { get; private set; }
         [NDP(Settigns = NDPropertySettings.ReadOnly)]
-        protected virtual void OnActualHeightChanging(OnChangingArg<int> arg) { }
+        protected virtual void OnActualHeightChanging(OnChangingArg<NDPConfiguration, int> arg) { }
 
         //
         // Zusammenfassung:
@@ -145,7 +145,7 @@ namespace NSCI.UI
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
         //public int ActualWidth { get; private set; }
         [NDP(Settigns = NDPropertySettings.ReadOnly)]
-        protected virtual void OnActualWidthChanging(OnChangingArg<int> arg) { }
+        protected virtual void OnActualWidthChanging(OnChangingArg<NDPConfiguration, int> arg) { }
 
 
 
@@ -159,10 +159,13 @@ namespace NSCI.UI
         //     Der Standardwert ist eine Windows.UI.Xaml. Breite mit Werten von 0 auf allen
         //     vier Seiten.
         [NDP]
-        protected virtual void OnPaddingChanging(OnChangingArg<Thickness> arg)
+        protected virtual void OnPaddingChanging(OnChangingArg<NDPConfiguration, Thickness> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateMeasure();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+              {
+                  if (oldValue != newValue)
+                      InvalidateMeasure();
+              };
         }
 
         //
@@ -178,10 +181,13 @@ namespace NSCI.UI
 
         [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.White)]
-        protected virtual void OnForegroundChanging(OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnForegroundChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+                if (oldValue != newValue)
+                    InvalidateRender();
+            };
         }
 
 
@@ -197,56 +203,77 @@ namespace NSCI.UI
         //     für das Rendern.
         [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkBlue)]
-        protected virtual void OnBackgroundChanging(OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnBackgroundChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+                if (oldValue != newValue)
+                    InvalidateRender();
+            };
         }
 
         [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkGray)]
-        protected virtual void OnBackgroundDisabledChanging(OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnBackgroundDisabledChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+                if (oldValue != newValue)
+                    InvalidateRender();
+            };
         }
 
         [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Gray)]
-        protected virtual void OnForegroundDisabledChanging(OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnForegroundDisabledChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+                if (oldValue != newValue)
+                    InvalidateRender();
+            };
         }
 
         [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Red)]
-        protected virtual void OnPrimaryColorChanging(OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnPrimaryColorChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+                if (oldValue != newValue)
+                    InvalidateRender();
+            };
         }
         [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkRed)]
-        protected virtual void OnPrimaryColorDisabledChanging(OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnPrimaryColorDisabledChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+                if (oldValue != newValue)
+                    InvalidateRender();
+            };
         }
 
         [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Cyan)]
-        protected virtual void OnSecondaryColorChanging(OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnSecondaryColorChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+                if (oldValue != newValue)
+                    InvalidateRender();
+            };
         }
         [NDP(Settigns = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkCyan)]
-        protected virtual void OnSecondaryColorDisabledChanging(OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnSecondaryColorDisabledChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.OldValue != arg.NewValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+                if (oldValue != newValue)
+                    InvalidateRender();
+            };
         }
 
 

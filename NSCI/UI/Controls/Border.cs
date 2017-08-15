@@ -8,15 +8,19 @@ namespace NSCI.UI.Controls
     {
 
         [NDProperty.NDP]
-        protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<BorderStyle> arg)
+        protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, BorderStyle> arg)
         {
-            var oldThickness = CalculateBorderThikness(arg.OldValue);
-            var newThickness = CalculateBorderThikness(arg.NewValue);
-            if (oldThickness != newThickness)
-                InvalidateMeasure();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
 
-            // InvalidateMeasure not always results in invalidate Render!
-            InvalidateRender();
+                var oldThickness = CalculateBorderThikness(oldValue);
+                var newThickness = CalculateBorderThikness(newValue);
+                if (oldThickness != newThickness)
+                    InvalidateMeasure();
+
+                // InvalidateMeasure not always results in invalidate Render!
+                InvalidateRender();
+            };
         }
         public Thickness BorderThikness => CalculateBorderThikness(Style);
 

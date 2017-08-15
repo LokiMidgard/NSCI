@@ -13,7 +13,7 @@ namespace NSCI.UI.Controls
         private readonly Border border;
 
         [NDProperty.NDP]
-        protected virtual void OnTextChanging(NDProperty.Propertys.OnChangingArg<string> arg)
+        protected virtual void OnTextChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration,  string> arg)
         {
             this.text.Text = arg.NewValue;
         }
@@ -22,10 +22,14 @@ namespace NSCI.UI.Controls
 
 
         [NDProperty.NDP]
-        protected virtual void OnTextColorChanging(NDProperty.Propertys.OnChangingArg<ConsoleColor> arg)
+        protected virtual void OnTextColorChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
-            if (arg.NewValue != arg.OldValue)
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+
+                if (newValue != oldValue)
+                    InvalidateRender();
+            };
         }
 
 
@@ -53,7 +57,7 @@ namespace NSCI.UI.Controls
             this.border.Padding = new Thickness(2, 2, 0, 0);
         }
 
-        protected override void OnHasFocusChanging(OnChangingArg<bool> arg)
+        protected override void OnHasFocusChanging(OnChangingArg<NDPConfiguration, bool> arg)
         {
             base.OnHasFocusChanging(arg);
             if (arg.NewValue)

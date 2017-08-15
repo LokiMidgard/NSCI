@@ -20,7 +20,7 @@ namespace NSCI.UI.Controls
         //     Ein Wert, der die Reihenfolge für die logische Navigation für ein Gerät bestimmt.
         //     Der Standardwert ist [MaxValue](https://msdn.microsoft.com/library/System.int32.maxvalue.aspx).
         [NDProperty.NDP]
-        protected virtual void OnTabIndexChanging(NDProperty.Propertys.OnChangingArg<int> arg)
+        protected virtual void OnTabIndexChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, int> arg)
         {
 
         }
@@ -36,7 +36,7 @@ namespace NSCI.UI.Controls
         //     ** "true" ** Wenn ein deaktiviertes Steuerelement den Fokus erhalten kann; andernfalls
         //     ** "false" **.
         [NDProperty.NDP]
-        protected virtual void OnAllowFocusWhenDisabledChanging(global::NDProperty.Propertys.OnChangingArg<bool> arg)
+        protected virtual void OnAllowFocusWhenDisabledChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
 
         }
@@ -53,12 +53,12 @@ namespace NSCI.UI.Controls
 
 
         [NDProperty.NDP]
-        protected virtual void OnHasFocusChanging(NDProperty.Propertys.OnChangingArg<bool> arg)
+        protected virtual void OnHasFocusChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
             if (!SupportSelection || !IsEnabled)
                 arg.MutatedValue = false;
 
-            arg.ExecuteAfterChange += () =>
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
             {
                 if (arg.MutatedValue && RootWindow.ActiveControl != this)
                     RootWindow.ActiveControl = this;
@@ -78,7 +78,7 @@ namespace NSCI.UI.Controls
         //     ** "false" **.
         [NDP]
         [DefaultValue(true)]
-        protected virtual void OnIsEnabledChanging(global::NDProperty.Propertys.OnChangingArg<bool> arg)
+        protected virtual void OnIsEnabledChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
             if (SupportSelection)
             {
@@ -88,7 +88,7 @@ namespace NSCI.UI.Controls
                 }
                 else
                 {
-                    arg.ExecuteAfterChange += () =>
+                    arg.ExecuteAfterChange += (oldValue, newValue) =>
                     {
                         if ((RootWindow?.ActiveControl ?? null) == this)
                             RootWindow.ActiveControl = null;
@@ -99,17 +99,20 @@ namespace NSCI.UI.Controls
         }
 
 
-        protected override void OnRootWindowChanging(OnChangingArg<RootWindow> arg)
+        protected override void OnRootWindowChanging(OnChangingArg<NDPConfiguration, RootWindow> arg)
         {
-            if (SupportSelection && IsEnabled)
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
             {
-                if ((arg.OldValue?.ActiveControl ?? null) == this)
-                    arg.OldValue.ActiveControl = null;
-                arg.OldValue?.tabList.Remove(this);
-                arg.NewValue?.tabList.Add(this);
-            }
+                if (SupportSelection && IsEnabled)
+                {
+                    if ((oldValue?.ActiveControl ?? null) == this)
+                        oldValue.ActiveControl = null;
+                    oldValue?.tabList.Remove(this);
+                    newValue?.tabList.Add(this);
+                }
 
-            base.OnRootWindowChanging(arg);
+                base.OnRootWindowChanging(arg);
+            };
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace NSCI.UI.Controls
     {
 
         [NDProperty.NDP]
-        protected virtual void OnTextChanging(NDProperty.Propertys.OnChangingArg<string> arg)
+        protected virtual void OnTextChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, string> arg)
         {
             arg.MutatedValue = arg.NewValue?.Replace("\t", "    ").Replace("\r", "");
         }

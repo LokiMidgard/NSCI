@@ -15,33 +15,35 @@ namespace NSCI.UI
         public UIElement()
         {
             if (this is RootWindow)
-                RootWindow = this as RootWindow;
+                this.RootWindow = this as RootWindow;
         }
 
 
         [NDP(Settigns = NDPropertySettings.ReadOnly )]
-        protected virtual void OnRootWindowChanging(OnChangingArg<RootWindow> arg)
+        protected virtual void OnRootWindowChanging(OnChangingArg<NDPConfiguration, RootWindow> arg)
         {
             if (this is RootWindow && arg.NewValue == null)
                 arg.MutatedValue = this as RootWindow;
         }
 
         [NDP(Settigns = NDPropertySettings.ParentReference)]
-        protected virtual void OnParentChanging(global::NDProperty.Propertys.OnChangingArg<UIElement> arg)
+        protected virtual void OnParentChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
         {
-            if (arg.NewValue != arg.OldValue)
+            arg.ExecuteAfterChange += (oldValue, newValue) => {
+            if (newValue != oldValue)
             {
-                if (arg.OldValue != null)
-                    arg.OldValue.RootWindowChanged -= ParentRootChanged;
+                if (oldValue != null)
+                    oldValue.RootWindowChanged -= ParentRootChanged;
                 Depth = arg.NewValue?.Depth + 1 ?? 0;
 
                 if (arg.NewValue is RootWindow r)
                     RootWindow = r;
                 else
                     RootWindow = arg.NewValue?.RootWindow;
-                if (arg.NewValue != null)
-                    arg.NewValue.RootWindowChanged += ParentRootChanged;
+                if (newValue != null)
+                    newValue.RootWindowChanged += ParentRootChanged;
             }
+            };
 
         }
 
@@ -54,7 +56,7 @@ namespace NSCI.UI
         //     Stellt Randwerte für das Objekt bereit. Der Standardwert ist eine Standard-Windows.UI.Xaml.
         //     Breite gleich 0 alle Eigenschaften (Dimensionen).
         [NDP]
-        protected virtual void OnMarginChanging(OnChangingArg<Thickness> arg)
+        protected virtual void OnMarginChanging(OnChangingArg<NDPConfiguration, Thickness> arg)
         {
             InvalidateMeasure();
         }
@@ -70,7 +72,7 @@ namespace NSCI.UI
         //     ist ** Stretch **.
         [NDP]
         [DefaultValue(VerticalAlignment.Strech)]
-        protected virtual void OnVerticalAlignmentChanging(OnChangingArg<VerticalAlignment> arg)
+        protected virtual void OnVerticalAlignmentChanging(OnChangingArg<NDPConfiguration, VerticalAlignment> arg)
         {
             InvalidateArrange();
         }
@@ -87,7 +89,7 @@ namespace NSCI.UI
 
         [NDP]
         [DefaultValue(HorizontalAlignment.Strech)]
-        protected virtual void OnHorizontalAlignmentChanging(OnChangingArg<HorizontalAlignment> arg)
+        protected virtual void OnHorizontalAlignmentChanging(OnChangingArg<NDPConfiguration, HorizontalAlignment> arg)
         {
             InvalidateArrange();
         }
@@ -103,7 +105,7 @@ namespace NSCI.UI
 
 
         [NDP(Settigns = NDPropertySettings.ReadOnly)]
-        protected virtual void OnDepthChanging(global::NDProperty.Propertys.OnChangingArg<int> arg)
+        protected virtual void OnDepthChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, int> arg)
         {
 
         }
@@ -112,7 +114,7 @@ namespace NSCI.UI
 
         [NDP]
         [DefaultValue(true)]
-        protected virtual void OnIsVisibleChanging(global::NDProperty.Propertys.OnChangingArg<bool> arg)
+        protected virtual void OnIsVisibleChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
             InvalidateMeasure();
         }

@@ -14,7 +14,7 @@ namespace NSCI.UI.Controls
 
         [NDP]
         [DefaultValue(false)]
-        protected virtual void OnIsCheckedChanging(OnChangingArg<bool?> arg)
+        protected virtual void OnIsCheckedChanging(OnChangingArg<NDPConfiguration, bool?> arg)
         {
             if (!arg.NewValue.HasValue && !this.IsThreeState)
                 arg.Reject = true;
@@ -22,49 +22,57 @@ namespace NSCI.UI.Controls
                 InvalidateRender();
         }
         [NDP]
-        protected virtual void OnIsThreeStateChanging(OnChangingArg<bool> arg)
+        protected virtual void OnIsThreeStateChanging(OnChangingArg<NDPConfiguration, bool> arg)
         {
             InvalidateRender();
         }
 
         [NDP]
         [DefaultValue(Characters.Misc.SQUARE_ROOT)]
-        protected virtual void OnCheckedCharacterChanging(OnChangingArg<char> arg)
+        protected virtual void OnCheckedCharacterChanging(OnChangingArg<NDPConfiguration, char> arg)
         {
             InvalidateRender();
         }
         [NDP]
         [DefaultValue(' ')]
-        protected virtual void OnUnCheckedCharacterChanging(OnChangingArg<char> arg)
+        protected virtual void OnUnCheckedCharacterChanging(OnChangingArg<NDPConfiguration, char> arg)
         {
             InvalidateRender();
         }
 
         [NDP]
         [DefaultValue(Characters.Misc.BLACK_SQUARE)]
-        protected virtual void OnThirdStateCharacterChanging(OnChangingArg<char> arg)
+        protected virtual void OnThirdStateCharacterChanging(OnChangingArg<NDPConfiguration, char> arg)
         {
             InvalidateRender();
         }
 
         [NDP]
         [DefaultValue('[')]
-        protected virtual void OnOpenParenthiseChanging(OnChangingArg<char?> arg)
+        protected virtual void OnOpenParenthiseChanging(OnChangingArg<NDPConfiguration, char?> arg)
         {
-            if (arg.NewValue == null || arg.OldValue == null)
-                InvalidateMeasure();
-            else
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+
+                if (newValue == null || oldValue == null)
+                    InvalidateMeasure();
+                else
+                    InvalidateRender();
+            };
         }
 
         [NDP]
         [DefaultValue(']')]
-        protected virtual void OnCloseParenthiseChanging(OnChangingArg<char?> arg)
+        protected virtual void OnCloseParenthiseChanging(OnChangingArg<NDPConfiguration, char?> arg)
         {
-            if (arg.NewValue == null || arg.OldValue == null)
-                InvalidateMeasure();
-            else
-                InvalidateRender();
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            {
+
+                if (newValue == null || oldValue == null)
+                    InvalidateMeasure();
+                else
+                    InvalidateRender();
+            };
         }
 
         protected override Size MeasureOverride(Size availableSize)

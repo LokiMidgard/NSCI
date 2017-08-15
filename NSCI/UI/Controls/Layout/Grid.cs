@@ -12,16 +12,16 @@ namespace NSCI.UI.Controls.Layout
     public partial class Grid : ItemsControl
     {
         [NDPAttach]
-        private static void OnRowChanging(OnChangingArg<int, UIElement> arg) { }
+        private static void OnRowChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
         [NDPAttach]
-        private static void OnColumnChanging(OnChangingArg<int, UIElement> arg) { }
+        private static void OnColumnChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
 
         [DefaultValue(1)]
         [NDPAttach]
-        private static void OnRowSpanChanging(OnChangingArg<int, UIElement> arg) { }
+        private static void OnRowSpanChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
         [DefaultValue(1)]
         [NDPAttach]
-        private static void OnColumnSpanChanging(OnChangingArg<int, UIElement> arg) { }
+        private static void OnColumnSpanChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
 
         public ObservableCollection<ISizeDefinition> RowDefinitions { get; } = new ObservableCollection<ISizeDefinition>();
         public ObservableCollection<ISizeDefinition> ColumnDefinitions { get; } = new ObservableCollection<ISizeDefinition>();
@@ -30,6 +30,7 @@ namespace NSCI.UI.Controls.Layout
         {
             RowDefinitions.CollectionChanged += (sender, e) => InvalidateArrange();
             ColumnDefinitions.CollectionChanged += (sender, e) => InvalidateArrange();
+            
         }
 
         protected override Size MeasureOverride(Size availableSize)

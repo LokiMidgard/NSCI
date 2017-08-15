@@ -8,19 +8,22 @@ namespace NSCI.UI.Controls
     {
 
         [NDProperty.NDP]
-        protected virtual void OnContentChanging(NDProperty.Propertys.OnChangingArg<UIElement> arg)
+        protected virtual void OnContentChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
         {
-            if (arg.NewValue != arg.OldValue)
+            arg.ExecuteAfterChange += (oldValue, newValue) =>
             {
-                if (arg.NewValue.Parent != null)
-                    throw new ArgumentException($"The Element is already Chiled of {arg.NewValue.Parent}");
-                if (arg.OldValue != null)
-                    arg.OldValue.Parent = null;
-                if (arg.NewValue != null)
-                    arg.NewValue.Parent = this;
-                
-                InvalidateMeasure();
-            }
+                if (newValue != oldValue)
+                {
+                    if (arg.NewValue.Parent != null)
+                        throw new ArgumentException($"The Element is already Chiled of {arg.NewValue.Parent}");
+                    if (oldValue != null)
+                        oldValue.Parent = null;
+                    if (newValue != null)
+                        newValue.Parent = this;
+
+                    InvalidateMeasure();
+                }
+            };
         }
 
         protected override Size MeasureOverride(Size availableSize)

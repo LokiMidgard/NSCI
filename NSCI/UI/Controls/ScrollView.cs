@@ -10,11 +10,11 @@ namespace NSCI.UI.Controls
     public partial class ScrollView : ContentControl
     {
         [NDP(Settigns = NDProperty.Propertys.NDPropertySettings.ReadOnly)]
-        protected void OnMaxScrollPositionChanging(OnChangingArg<int> arg) { }
+        protected void OnMaxScrollPositionChanging(OnChangingArg<NDPConfiguration, int> arg) { }
 
         [NDP]
         [DefaultValue(true)]
-        protected void OnScroolbarVisibleChanging(OnChangingArg<bool> arg)
+        protected void OnScroolbarVisibleChanging(OnChangingArg<NDPConfiguration, bool> arg)
         {
             InvalidateMeasure();
         }
@@ -22,12 +22,12 @@ namespace NSCI.UI.Controls
         public override bool SupportSelection => true;
 
         [NDP]
-        private void OnScrollPositionChanging(OnChangingArg<int> arg)
+        private void OnScrollPositionChanging(OnChangingArg<NDPConfiguration, int> arg)
         {
 
         }
 
-        protected override void OnHasFocusChanging(OnChangingArg<bool> arg)
+        protected override void OnHasFocusChanging(OnChangingArg<NDPConfiguration, bool> arg)
         {
             base.OnHasFocusChanging(arg);
             InvalidateRender();
