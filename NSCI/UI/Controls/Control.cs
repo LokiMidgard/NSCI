@@ -26,6 +26,14 @@ namespace NSCI.UI.Controls
         }
 
 
+        [NDProperty.NDP]
+        protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Style> arg)
+        {
+
+        }
+
+
+
 
         //
         // Zusammenfassung:

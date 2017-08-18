@@ -5,6 +5,10 @@
     <Product>Net Standard Console Interface</Product>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Widget.cs" />
     <Compile Remove="Widgets\Border.cs" />
