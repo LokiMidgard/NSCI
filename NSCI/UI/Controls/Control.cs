@@ -27,9 +27,11 @@ namespace NSCI.UI.Controls
 
 
         [NDProperty.NDP]
-        protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Style> arg)
+        protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, IStyle> arg)
         {
-
+            var handlers = arg.NewValue.UpdateStyleProvider(this);
+            foreach (var handler in handlers)
+                arg.ExecuteAfterChange += handler;
         }
 
 
@@ -109,14 +111,14 @@ namespace NSCI.UI.Controls
 
         protected override void OnRootWindowChanging(OnChangingArg<NDPConfiguration, RootWindow> arg)
         {
-            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            arg.ExecuteAfterChange += (sender, args) =>
             {
                 if (SupportSelection && IsEnabled)
                 {
-                    if ((oldValue?.ActiveControl ?? null) == this)
-                        oldValue.ActiveControl = null;
-                    oldValue?.tabList.Remove(this);
-                    newValue?.tabList.Add(this);
+                    if ((args.OldValue?.ActiveControl ?? null) == this)
+                        args.OldValue.ActiveControl = null;
+                    args.OldValue?.tabList.Remove(this);
+                    args.NewValue?.tabList.Add(this);
                 }
 
                 base.OnRootWindowChanging(arg);

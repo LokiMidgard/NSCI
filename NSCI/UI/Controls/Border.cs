@@ -10,11 +10,11 @@ namespace NSCI.UI.Controls
         [NDProperty.NDP]
         protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, BorderStyle> arg)
         {
-            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            arg.ExecuteAfterChange += (sender, args) =>
             {
 
-                var oldThickness = CalculateBorderThikness(oldValue);
-                var newThickness = CalculateBorderThikness(newValue);
+                var oldThickness = CalculateBorderThikness(args.OldValue);
+                var newThickness = CalculateBorderThikness(args.NewValue);
                 if (oldThickness != newThickness)
                     InvalidateMeasure();
 

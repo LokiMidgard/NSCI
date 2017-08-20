@@ -30,15 +30,15 @@ namespace NSCI.UI
         [NDP(Settigns = NDPropertySettings.CallOnChangedHandlerOnEquals)]
         protected virtual void OnActiveControlChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Control> arg)
         {
-            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            arg.ExecuteAfterChange += (sender, args) =>
             {
                 int newindex;
                 if (this.tabSelectedIndex < this.tabList.Count && arg.NewValue == this.tabList[this.tabSelectedIndex])
                     newindex = this.tabSelectedIndex;
-                else if (arg.NewValue != null)
+                else if (args.NewValue != null)
                 {
 
-                    newindex = this.tabList.IndexOf(arg.NewValue);
+                    newindex = this.tabList.IndexOf(args.NewValue);
                     if (newindex == -1)
                         arg.Reject = true;
                 }
@@ -46,14 +46,14 @@ namespace NSCI.UI
                 {
                     newindex = -1;
                 }
-                if (oldValue != newValue)
+                if (args.OldValue != args.NewValue)
                 {
-                    if (oldValue != null)
-                        oldValue.HasFocus = false;
+                    if (args.OldValue != null)
+                        args.OldValue.HasFocus = false;
 
                     this.tabSelectedIndex = newindex;
-                    if (newValue != null)
-                        newValue.HasFocus = true;
+                    if (args.NewValue != null)
+                        args.NewValue.HasFocus = true;
                 }
             };
         }

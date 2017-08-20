@@ -29,19 +29,19 @@ namespace NSCI.UI
         [NDP(Settigns = NDPropertySettings.ParentReference)]
         protected virtual void OnParentChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
         {
-            arg.ExecuteAfterChange += (oldValue, newValue) => {
-            if (newValue != oldValue)
+            arg.ExecuteAfterChange += (sender, args) => {
+            if (args.NewValue != args.OldValue)
             {
-                if (oldValue != null)
-                    oldValue.RootWindowChanged -= ParentRootChanged;
-                Depth = arg.NewValue?.Depth + 1 ?? 0;
+                if (args.OldValue != null)
+                        args.OldValue.RootWindowChanged -= ParentRootChanged;
+                Depth = args.NewValue?.Depth + 1 ?? 0;
 
-                if (arg.NewValue is RootWindow r)
+                if (args.NewValue is RootWindow r)
                     RootWindow = r;
                 else
                     RootWindow = arg.NewValue?.RootWindow;
-                if (newValue != null)
-                    newValue.RootWindowChanged += ParentRootChanged;
+                if (args.NewValue != null)
+                        args.NewValue.RootWindowChanged += ParentRootChanged;
             }
             };
 

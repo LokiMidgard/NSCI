@@ -10,16 +10,16 @@ namespace NSCI.UI.Controls
         [NDProperty.NDP]
         protected virtual void OnContentChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
         {
-            arg.ExecuteAfterChange += (oldValue, newValue) =>
+            arg.ExecuteAfterChange += (sender, args) =>
             {
-                if (newValue != oldValue)
+                if (args.NewValue != args.OldValue)
                 {
                     if (arg.NewValue.Parent != null)
                         throw new ArgumentException($"The Element is already Chiled of {arg.NewValue.Parent}");
-                    if (oldValue != null)
-                        oldValue.Parent = null;
-                    if (newValue != null)
-                        newValue.Parent = this;
+                    if (args.OldValue != null)
+                        args.OldValue.Parent = null;
+                    if (args.NewValue != null)
+                        args.NewValue.Parent = this;
 
                     InvalidateMeasure();
                 }

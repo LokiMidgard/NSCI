@@ -1,5 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using NDProperty.Propertys;
 using NDProperty.Providers;
+using NSCI.UI.Controls;
 
 namespace NSCI
 {
@@ -24,5 +27,16 @@ namespace NSCI
             }
             return (default(TValue), false);
         }
+
+
+        internal new bool Update<TValue, TType, TPropertyType>(IStyle style, TType targetObject, TPropertyType property, TValue value, TValue oldValue, ValueProvider<NDPConfiguration> oldProvider)
+            where TType : class
+            where TPropertyType : NDReadOnlyPropertyKey<NDPConfiguration, TValue, TType>, INDProperty<NDPConfiguration, TValue, TType>
+        {
+            return base.Update(style, targetObject, property, value, oldValue, oldProvider);
+
+        }
+
+
     }
 }
