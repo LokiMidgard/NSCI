@@ -11,41 +11,6 @@
 
   <ItemGroup>
     <Compile Remove="Widget.cs" />
-    <Compile Remove="Widgets\Border.cs" />
-    <Compile Remove="Widgets\Button.cs" />
-    <Compile Remove="Widgets\Checkbox.cs" />
-    <Compile Remove="Widgets\Dialog.cs" />
-    <Compile Remove="Widgets\HorizontalBarGraph.cs" />
-    <Compile Remove="Widgets\HorizontalLine.cs" />
-    <Compile Remove="Widgets\HorizontalProgressBar.cs" />
-    <Compile Remove="Widgets\Label.cs" />
-    <Compile Remove="Widgets\ListBox.cs" />
-    <Compile Remove="Widgets\RadioButton.cs" />
-    <Compile Remove="Widgets\SingleLineTextbox.cs" />
-    <Compile Remove="Widgets\SlideToggle.cs" />
-    <Compile Remove="Widgets\Spinner.cs" />
-    <Compile Remove="Widgets\TinySpinner.cs" />
-    <Compile Remove="Widgets\VerticalLine.cs" />
-    <Compile Remove="Widgets\Widget.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Widgets\Widget.cs" />
-    <None Include="Widgets\Border.cs" />
-    <None Include="Widgets\Button.cs" />
-    <None Include="Widgets\Checkbox.cs" />
-    <None Include="Widgets\Dialog.cs" />
-    <None Include="Widgets\HorizontalBarGraph.cs" />
-    <None Include="Widgets\HorizontalLine.cs" />
-    <None Include="Widgets\HorizontalProgressBar.cs" />
-    <None Include="Widgets\Label.cs" />
-    <None Include="Widgets\ListBox.cs" />
-    <None Include="Widgets\RadioButton.cs" />
-    <None Include="Widgets\SingleLineTextbox.cs" />
-    <None Include="Widgets\SlideToggle.cs" />
-    <None Include="Widgets\Spinner.cs" />
-    <None Include="Widgets\TinySpinner.cs" />
-    <None Include="Widgets\VerticalLine.cs" />
   </ItemGroup>
 
   <ItemGroup>

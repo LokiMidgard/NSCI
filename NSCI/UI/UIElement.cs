@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using NDProperty;
 using NDProperty.Propertys;
-using NSCI.Widgets;
+
 
 namespace NSCI.UI
 {

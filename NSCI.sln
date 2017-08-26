@@ -1,18 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSCI", "NSCI\NSCI.csproj", "{68A04712-38F1-4C35-9CA7-F81888BBE88E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSCI", "NSCI\NSCI.csproj", "{68A04712-38F1-4C35-9CA7-F81888BBE88E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0B304290-B20E-414D-9A7D-123BF6CC1664}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		LICENSE.md = LICENSE.md
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHarness", "TestHarness\TestHarness.csproj", "{EF2D495F-7B92-49BE-B4E5-CB1BF47740C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestHarness", "TestHarness\TestHarness.csproj", "{EF2D495F-7B92-49BE-B4E5-CB1BF47740C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSCI.Characters", "NSCI.Characters\NSCI.Characters.csproj", "{F035E193-2C4C-4FDF-B934-4CE2507F3513}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSCI.Characters", "NSCI.Characters\NSCI.Characters.csproj", "{F035E193-2C4C-4FDF-B934-4CE2507F3513}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,5 +37,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B139F6B1-A47C-436E-AEDF-35F5EEA19F17}
 	EndGlobalSection
 EndGlobal

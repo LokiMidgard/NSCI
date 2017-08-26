@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using NDProperty;
 using NDProperty.Propertys;
-using NSCI.Widgets;
+
 
 namespace NSCI.UI.Controls
 {

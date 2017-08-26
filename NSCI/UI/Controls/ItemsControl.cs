@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using NSCI.Widgets;
+
 
 namespace NSCI.UI.Controls
 {

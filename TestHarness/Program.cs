@@ -108,7 +108,7 @@ namespace TestHarness
             stack.Items.Add(text2);
 
             root.Content = stack;
-
+            
             //root.BeforeStart += async () =>
             //  {
             //      var styles = (NSCI.UI.Controls.BorderStyle[])Enum.GetValues(typeof(NSCI.UI.Controls.BorderStyle));
