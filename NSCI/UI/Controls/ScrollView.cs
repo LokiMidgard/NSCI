@@ -129,7 +129,7 @@ namespace NSCI.UI.Controls
 
         }
 
-        public override bool PreviewHandleInput(Control originalTarget, ConsoleKeyInfo keyInfo)
+        public override bool PreviewHandleInput(FrameworkElement originalTarget, ConsoleKeyInfo keyInfo)
         {
             if (keyInfo.Key == ConsoleKey.UpArrow && keyInfo.Modifiers == ConsoleModifiers.Control || keyInfo.Key == ConsoleKey.DownArrow && keyInfo.Modifiers == ConsoleModifiers.Control)
             {

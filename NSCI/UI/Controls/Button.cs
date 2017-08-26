@@ -91,7 +91,7 @@ namespace NSCI.UI.Controls
         }
 
 
-        public override bool HandleInput(Control originalTarget,ConsoleKeyInfo k)
+        public override bool HandleInput(FrameworkElement originalTarget,ConsoleKeyInfo k)
         {
             if (k.Key == ConsoleKey.Enter)
             {

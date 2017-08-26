@@ -119,7 +119,7 @@ namespace NSCI.UI.Controls
             frame[OpenParenthise.HasValue ? 1 : 0, 0] = new ColoredKey(selectionChar, Foreground, Background);
         }
 
-        public override bool HandleInput(Control originalTarget, ConsoleKeyInfo keyInfo)
+        public override bool HandleInput(FrameworkElement originalTarget, ConsoleKeyInfo keyInfo)
         {
             if (keyInfo.Key == ConsoleKey.Enter || keyInfo.Key == ConsoleKey.Spacebar)
             {

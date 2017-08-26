@@ -16,7 +16,7 @@ namespace NSCI.UI
     public partial class RootWindow : UI.Controls.ContentControl
     {
 
-        internal readonly OrderedList<Control> tabList = new OrderedList<Control>(TabComparer.Instance);
+        internal readonly OrderedList<FrameworkElement> tabList = new OrderedList<FrameworkElement>(TabComparer.Instance);
 
         public RootWindow()
         {
@@ -28,7 +28,7 @@ namespace NSCI.UI
 
         private int tabSelectedIndex;
         [NDP(Settigns = NDPropertySettings.CallOnChangedHandlerOnEquals)]
-        protected virtual void OnActiveControlChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Control> arg)
+        protected virtual void OnActiveControlChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, FrameworkElement> arg)
         {
             arg.ExecuteAfterChange += (sender, args) =>
             {
@@ -175,7 +175,7 @@ namespace NSCI.UI
             }
         }
 
-        public override bool HandleInput(Control originalTarget, ConsoleKeyInfo keyInfo)
+        public override bool HandleInput(FrameworkElement originalTarget, ConsoleKeyInfo keyInfo)
         {
             switch (keyInfo.Key)
             {
@@ -283,7 +283,7 @@ namespace NSCI.UI
         }
 
 
-        private Control FindFocusableControl(Control from, SearchDirection direction)
+        private FrameworkElement FindFocusableControl(FrameworkElement from, SearchDirection direction)
         {
             // First search directly in the direction
             return FindFocusableControl(IntEx.PositiveInfinity, from, direction)
@@ -301,7 +301,7 @@ namespace NSCI.UI
             Right
         }
 
-        private Control FindFocusableControl(IntEx factor, Control from, SearchDirection direction)
+        private FrameworkElement FindFocusableControl(IntEx factor, FrameworkElement from, SearchDirection direction)
         {
             var fromLocation = GetLocation(from);
             var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
@@ -392,14 +392,14 @@ namespace NSCI.UI
             public static readonly DepthComparer Instance = new DepthComparer();
             public int Compare(UIElement x, UIElement y) => x.Depth.CompareTo(y.Depth);
         }
-        private class TabComparer : IComparer<Control>
+        private class TabComparer : IComparer<FrameworkElement>
         {
             private TabComparer()
             {
 
             }
             public static readonly TabComparer Instance = new TabComparer();
-            public int Compare(Control x, Control y)
+            public int Compare(FrameworkElement x, FrameworkElement y)
             {
                 var xChain = GetChainToRoot(x).Reverse();
                 var yChain = GetChainToRoot(y).Reverse();
@@ -415,12 +415,12 @@ namespace NSCI.UI
                 return compare;
             }
 
-            private IEnumerable<Control> GetChainToRoot(Control c)
+            private IEnumerable<FrameworkElement> GetChainToRoot(FrameworkElement c)
             {
                 while (c != null)
                 {
                     yield return c;
-                    c = c.Parent as Control;
+                    c = c.Parent as FrameworkElement;
                 }
             }
         }
