@@ -46,13 +46,13 @@ namespace NSCI.UI.Controls
 
         private void Up()
         {
-            this.border.Style = BorderStyle.DropShadowLight;
+            this.border.BorderStyle = BorderStyle.DropShadowLight;
             this.border.Foreground = ConsoleColor.Gray;
             this.border.Padding = new Thickness(1, 1, 0, 0);
         }
         private void Down()
         {
-            this.border.Style= BorderStyle.None;
+            this.border.BorderStyle = BorderStyle.None;
             this.border.Foreground = ConsoleColor.Gray;
             this.border.Padding = new Thickness(2, 2, 0, 0);
         }

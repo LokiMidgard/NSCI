@@ -29,7 +29,7 @@ namespace NSCI
         }
 
 
-        internal new bool Update<TValue, TType, TPropertyType>(IStyle style, TType targetObject, TPropertyType property, TValue value, TValue oldValue, ValueProvider<NDPConfiguration> oldProvider)
+        internal bool Update<TValue, TType, TPropertyType>(IStyle style, TType targetObject, TPropertyType property, TValue value, TValue oldValue, ValueProvider<NDPConfiguration> oldProvider)
             where TType : class
             where TPropertyType : NDReadOnlyPropertyKey<NDPConfiguration, TValue, TType>, INDProperty<NDPConfiguration, TValue, TType>
         {

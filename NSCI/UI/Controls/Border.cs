@@ -8,7 +8,7 @@ namespace NSCI.UI.Controls
     {
 
         [NDProperty.NDP]
-        protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, BorderStyle> arg)
+        protected virtual void OnBorderStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, BorderStyle> arg)
         {
             arg.ExecuteAfterChange += (sender, args) =>
             {
@@ -22,7 +22,7 @@ namespace NSCI.UI.Controls
                 InvalidateRender();
             };
         }
-        public Thickness BorderThikness => CalculateBorderThikness(Style);
+        public Thickness BorderThikness => CalculateBorderThikness(BorderStyle);
 
         private Thickness CalculateBorderThikness(BorderStyle style)
         {
@@ -39,7 +39,7 @@ namespace NSCI.UI.Controls
                 case BorderStyle.Block:
                     return new Thickness(1);
                 default:
-                    throw new NotImplementedException($"BoarderStyle {Style} not implemented.");
+                    throw new NotImplementedException($"BoarderStyle {BorderStyle} not implemented.");
             }
         }
 
@@ -99,7 +99,7 @@ namespace NSCI.UI.Controls
         private void RenderBorder(IRenderFrame frame)
         {
             RectPen borderPen;
-            switch (Style)
+            switch (BorderStyle)
             {
                 case BorderStyle.None:
                     return;
@@ -128,7 +128,7 @@ namespace NSCI.UI.Controls
         private void RenderDropShadow(IRenderFrame frame)
         {
             char shadowChar;
-            switch (Style)
+            switch (BorderStyle)
             {
                 case BorderStyle.DropShadowLight:
                     shadowChar = '░';

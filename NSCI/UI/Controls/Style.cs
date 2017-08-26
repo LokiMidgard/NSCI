@@ -41,7 +41,7 @@ namespace NSCI.UI.Controls
     public interface ISetter<TType, TValue> : ISetter<TType> where TType : class
     {
         void NotifyValueProvider(IStyle style, TType targetObject, TValue oldValue, NDProperty.Providers.ValueProvider<NDPConfiguration> oldProvider);
-        (TValue value, ValueProvider<NDPConfiguration> provider) GetCurrentValueAndProvider(TType control);
+        new (TValue value, ValueProvider<NDPConfiguration> provider) GetCurrentValueAndProvider(TType control);
     }
 
     public interface ISetter

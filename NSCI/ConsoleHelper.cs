@@ -101,7 +101,7 @@ namespace NSCI
             Console.BackgroundColor = bg;
             Console.ForegroundColor = fg;
 
-            var l = new String(ch, w);
+            var l = new string(ch, w);
 
             for (var i = 0; i < h - 1; i++)
             {
@@ -121,7 +121,7 @@ namespace NSCI
         internal static void DrawRectSolid(int x, int y, int w, int h, ConsoleColor c)
         {
             Console.BackgroundColor = c;
-            var l = new String(' ', w);
+            var l = new string(' ', w);
             for (var i = 0; i < h; i++)
             {
                 Console.SetCursorPosition(x, y + i);
@@ -136,7 +136,7 @@ namespace NSCI
 
             Console.SetCursorPosition(x, y);
             Console.Write("▄");
-            Console.Write(new String('█', w - 1));
+            Console.Write(new string('█', w - 1));
             Console.Write("▄");
 
             for (int i = 1; i < h - 1; i++)
@@ -149,7 +149,7 @@ namespace NSCI
 
             Console.SetCursorPosition(x, y + h - 1);
             Console.Write("▀");
-            Console.Write(new String('█', w - 1));
+            Console.Write(new string('█', w - 1));
             Console.Write("▀");
         }
 
@@ -159,7 +159,7 @@ namespace NSCI
 
             Console.SetCursorPosition(x, y);
             Console.Write("┌");
-            Console.Write(new String('─', w - 1));
+            Console.Write(new string('─', w - 1));
             Console.Write("┐");
 
             for (int i = 1; i < h - 1; i++)
@@ -172,7 +172,7 @@ namespace NSCI
 
             Console.SetCursorPosition(x, y + h - 1);
             Console.Write("└");
-            Console.Write(new String('─', w - 1));
+            Console.Write(new string('─', w - 1));
             Console.Write("┘");
         }
 
@@ -182,7 +182,7 @@ namespace NSCI
 
             Console.SetCursorPosition(x, y);
             Console.Write("╔");
-            Console.Write(new String('═', w - 1));
+            Console.Write(new string('═', w - 1));
             Console.Write("╗");
 
             for (int i = 1; i < h - 1; i++)
@@ -195,7 +195,7 @@ namespace NSCI
 
             Console.SetCursorPosition(x, y + h - 1);
             Console.Write("╚");
-            Console.Write(new String('═', w - 1));
+            Console.Write(new string('═', w - 1));
             Console.Write("╝");
         }
     }

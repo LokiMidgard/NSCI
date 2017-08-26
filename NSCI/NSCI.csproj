@@ -49,8 +49,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NDProperty" Version="0.0.10-Debug" />
-    <PackageReference Include="Nito.AsyncEx.Context" Version="5.0.0-pre-02" />
+    <PackageReference Include="NDProperty" Version="0.0.10" />
+    <PackageReference Include="Nito.AsyncEx.Context" Version="5.0.0-pre-03" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.4.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />

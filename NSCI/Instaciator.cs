@@ -9,11 +9,11 @@ using NDProperty;
 
 namespace NSCI
 {
-    public interface ITemplate<out TType> where TType : class, new()
+    public interface ITemplate<out TType> where TType : class
     {
         TType InstanciateObject();
     }
-    public class Template<TType> :ITemplate<TType>
+    public class Template<TType> : ITemplate<TType>
         where TType : class, new()
     {
         public IEnumerable<ITemplateSetter<TType>> Setter { get; set; }
@@ -27,6 +27,25 @@ namespace NSCI
         }
 
     }
+
+    public static class Setter
+    {
+
+        public static TemplateSetter<TValue, TType, TProperty> Create<TValue, TType, TProperty>(TProperty property, ITemplate<TValue> template)
+            where TType : class
+            where TValue : class, new()
+            where TProperty : NDReadOnlyPropertyKey<NDPConfiguration, TValue, TType>, INDProperty<NDPConfiguration, TValue, TType>
+        {
+            return new TemplateSetter<TValue, TType, TProperty>() { Property = property, ValueTemplate = template };
+        }
+        public static ValueSetter<TValue, TType, TProperty> Create<TValue, TType, TProperty>(TProperty property, TValue value)
+            where TType : class
+            where TProperty : NDReadOnlyPropertyKey<NDPConfiguration, TValue, TType>, INDProperty<NDPConfiguration, TValue, TType>
+        {
+            return new ValueSetter<TValue, TType, TProperty>() { Property = property, Value = value };
+        }
+    }
+
 
     public class TemplateSetter<TValue, TType, TProperty> : ITemplateSetter<TValue, TType, TProperty>
         where TType : class
