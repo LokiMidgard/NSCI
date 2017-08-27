@@ -17,7 +17,7 @@ namespace NSCI.UI.Controls
                 if (e.NewValue is UIElement uiElement)
                     DisplayContent = uiElement;
                 else
-                    DisplayContent = TemplateEngine.GetTemplate(e.NewValue).InstanciateObject();
+                    DisplayContent = Template.GetTemplate(e.NewValue, this).InstanciateObject();
             };
         }
 
@@ -34,9 +34,6 @@ namespace NSCI.UI.Controls
         }
 
         protected override void RenderOverride(IRenderFrame frame) => DisplayContent?.Render(frame);
-
-
-
 
     }
 }

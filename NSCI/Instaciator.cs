@@ -14,8 +14,15 @@ namespace NSCI
     {
         TType InstanciateObject();
     }
+    public static class Template
+    {
+        public static void SetDefaultTemplate<TType>(Template<TType> template) where TType : UI.UIElement, new() => Propertys.Provider.TemplateProvider.SetDefaultTemplate(template);
+
+        public static ITemplate<UI.UIElement> GetTemplate(object objectToTemplate, UI.UIElement parentObject) => Propertys.Provider.TemplateProvider.GetTemplate<UI.UIElement>(objectToTemplate, parentObject);
+        public static ITemplate<UI.UIElement> GetTemplate(object objectToTemplate) => Propertys.Provider.TemplateProvider.GetTemplate<UI.UIElement>(objectToTemplate, null);
+    }
     public class Template<TType> : ITemplate<TType>
-        where TType : class, new()
+        where TType : UI.UIElement, new()
     {
         public IEnumerable<ITemplateSetter<TType>> Setter { get; set; }
         public TType InstanciateObject()
@@ -29,18 +36,17 @@ namespace NSCI
 
     }
 
-    public static class Setter
+    public static class Setter<TType>
+            where TType : class
     {
 
-        public static TemplateSetter<TValue, TType, TProperty> Create<TValue, TType, TProperty>(TProperty property, ITemplate<TValue> template)
-            where TType : class
+        public static TemplateSetter<TValue, TType, TProperty> Create<TValue, TProperty>(TProperty property, ITemplate<TValue> template)
             where TValue : class, new()
             where TProperty : NDReadOnlyPropertyKey<NDPConfiguration, TValue, TType>, INDProperty<NDPConfiguration, TValue, TType>
         {
             return new TemplateSetter<TValue, TType, TProperty>() { Property = property, ValueTemplate = template };
         }
-        public static ValueSetter<TValue, TType, TProperty> Create<TValue, TType, TProperty>(TProperty property, TValue value)
-            where TType : class
+        public static ValueSetter<TValue, TType, TProperty> Create<TValue, TProperty>(TProperty property, TValue value)
             where TProperty : NDReadOnlyPropertyKey<NDPConfiguration, TValue, TType>, INDProperty<NDPConfiguration, TValue, TType>
         {
             return new ValueSetter<TValue, TType, TProperty>() { Property = property, Value = value };
