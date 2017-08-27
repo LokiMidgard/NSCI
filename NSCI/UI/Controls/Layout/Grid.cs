@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using NDProperty;
 using NDProperty.Propertys;
+using NSCI.Propertys;
 
 namespace NSCI.UI.Controls.Layout
 {
-    public partial class Grid : ItemsControl
+    public partial class Grid : Panel
     {
         [NDPAttach]
         private static void OnRowChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
@@ -37,7 +38,7 @@ namespace NSCI.UI.Controls.Layout
         {
             availableSize = EnsureMinMaxWidthHeight(availableSize);
 
-            foreach (var item in Items)
+            foreach (var item in Children)
                 item.Measure(availableSize);
 
 
@@ -59,7 +60,7 @@ namespace NSCI.UI.Controls.Layout
                 else
                 {
 
-                    var singelSpanElements = Items
+                    var singelSpanElements = Children
                         .Where(x => Grid.ColumnSpan[x].Value == 1 && Grid.Column[x].Value == i);
                     columnWidth[i] = (int)(singelSpanElements.Any() ? singelSpanElements.Max(x => x.DesiredSize.Width) : 0);
                 }
@@ -71,14 +72,14 @@ namespace NSCI.UI.Controls.Layout
                 else
                 {
 
-                    var singelSpanElements = Items
+                    var singelSpanElements = Children
                         .Where(x => Grid.RowSpan[x].Value == 1 && Grid.Row[x].Value == i);
                     rowHeight[i] = (int)(singelSpanElements.Any() ? singelSpanElements.Max(x => x.DesiredSize.Height) : 0);
                 }
             }
 
             // calculate multispan items
-            foreach (var item in Items)
+            foreach (var item in Children)
             {
 
                 var row = Grid.Row[item].Value;
@@ -204,7 +205,7 @@ namespace NSCI.UI.Controls.Layout
                 if (columns[i] is AutoSizeDefinition a)
                 {
 
-                    var viableElements = Items.Where(x => Column[x].Value == i && ColumnSpan[x].Value == 1);
+                    var viableElements = Children.Where(x => Column[x].Value == i && ColumnSpan[x].Value == 1);
 
                     var desiredWidth = viableElements.Any() ? viableElements.Max(x => x.DesiredSize.Width) : 0;
                     if (availableWidth > desiredWidth)
@@ -264,7 +265,7 @@ namespace NSCI.UI.Controls.Layout
             for (int i = 0; i < rowHeight.Length; i++)
                 if (rows[i] is AutoSizeDefinition a)
                 {
-                    var validElements = Items.Where(x => Row[x].Value == i && RowSpan[x].Value == 1);
+                    var validElements = Children.Where(x => Row[x].Value == i && RowSpan[x].Value == 1);
                     var desiredHeight = validElements.Any() ? validElements.Max(x => x.DesiredSize.Height) : 0;
                     if (availableHeight > desiredHeight)
                     {
@@ -302,7 +303,7 @@ namespace NSCI.UI.Controls.Layout
             }
             ///////////////////////////
 
-            foreach (var item in Items)
+            foreach (var item in Children)
             {
                 var row = Grid.Row[item].Value;
                 var column = Grid.Column[item].Value;

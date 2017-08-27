@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using NDProperty;
 using NDProperty.Propertys;
+using NSCI.Propertys;
 using NSCI.UI;
 using NSCI.UI.Controls;
 

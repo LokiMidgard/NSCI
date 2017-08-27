@@ -4,7 +4,7 @@ using NDProperty.Propertys;
 using NDProperty.Providers;
 using NSCI.UI.Controls;
 
-namespace NSCI
+namespace NSCI.Propertys.Provider
 {
     internal class StyleValueProvider : ValueProvider<NDPConfiguration>
     {

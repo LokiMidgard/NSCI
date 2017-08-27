@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NSCI.Propertys;
 
 namespace NSCI.UI.Controls
 {
-    public partial class TextBlock : Control
+    public partial class TextBlock : FrameworkElement
     {
 
         [NDProperty.NDP]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using NDProperty.Propertys;
+using NSCI.Propertys;
 
 namespace NSCI.UI.Controls
 {

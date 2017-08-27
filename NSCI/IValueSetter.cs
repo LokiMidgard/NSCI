@@ -1,4 +1,5 @@
 ﻿using NDProperty.Propertys;
+using NSCI.Propertys;
 
 namespace NSCI
 {

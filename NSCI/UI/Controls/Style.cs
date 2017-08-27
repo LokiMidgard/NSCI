@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using NDProperty;
 using NDProperty.Propertys;
 using NDProperty.Providers;
+using NSCI.Propertys;
+using NSCI.Propertys.Provider;
 
 namespace NSCI.UI.Controls
 {

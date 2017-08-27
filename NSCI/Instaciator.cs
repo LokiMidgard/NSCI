@@ -6,6 +6,7 @@ using NSCI.UI.Controls;
 using System.Linq;
 using NDProperty.Propertys;
 using NDProperty;
+using NSCI.Propertys;
 
 namespace NSCI
 {

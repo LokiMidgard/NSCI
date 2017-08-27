@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using NSCI.Propertys;
 
 namespace NSCI.UI.Controls
 {
-    public partial class Border : ContentControl
+    public partial class Border : FrameworkElement
     {
+
+        [NDProperty.NDP]
+        protected virtual void OnChildChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
+        {
+
+        }
+
 
         [NDProperty.NDP]
         protected virtual void OnBorderStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, BorderStyle> arg)
@@ -52,15 +60,15 @@ namespace NSCI.UI.Controls
             var boarderWith = boarderThikness.Left + boarderThikness.Right;
             var boarderHeight = boarderThikness.Top + boarderThikness.Bottom;
 
-            Content?.Measure(new Size(availableSize.Width - boarderWith, availableSize.Height - boarderHeight));
+            Child?.Measure(new Size(availableSize.Width - boarderWith, availableSize.Height - boarderHeight));
 
-            var desiredSize = Content?.DesiredSize ?? Size.Empty;
+            var desiredSize = Child?.DesiredSize ?? Size.Empty;
             return new Size(desiredSize.Width + boarderWith, desiredSize.Height + boarderHeight);
         }
 
         protected override void ArrangeOverride(Size finalSize)
         {
-            if (Content == null)
+            if (Child == null)
                 return;
             var borderThikness = BorderThikness;
             var borderWith = borderThikness.Left + borderThikness.Right;
@@ -74,18 +82,18 @@ namespace NSCI.UI.Controls
                 MathEx.Max(0, borderThikness.Top),
                 MathEx.Max(0, finalSize.Width - borderWith),
                 MathEx.Max(0, finalSize.Height - borderHeight));
-            Content.Arrange(finalRect);
+            Child.Arrange(finalRect);
         }
 
         protected override void RenderOverride(IRenderFrame frame)
         {
             RenderBorder(frame);
-            if (Content != null)
+            if (Child != null)
             {
                 var borderThikness = BorderThikness;
                 var borderWith = borderThikness.Left + borderThikness.Right;
                 var borderHeight = borderThikness.Top + borderThikness.Bottom;
-                Content.Render(frame.GetGraphicsBuffer(new Rect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight), frame.Clip));
+                Child.Render(frame.GetGraphicsBuffer(new Rect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight), frame.Clip));
             }
             else
             {
@@ -119,7 +127,7 @@ namespace NSCI.UI.Controls
                     borderPen = Pen.BlockLine;
                     break;
                 default:
-                    throw new NotImplementedException($"BoarderStyle {Style} not implemented.");
+                    throw new NotImplementedException($"BoarderStyle {BorderStyle} not implemented.");
             }
 
             frame.DrawRect(0, 0, frame.Width, frame.Height, Foreground, Background, borderPen);
@@ -140,7 +148,7 @@ namespace NSCI.UI.Controls
                     shadowChar = '▓';
                     break;
                 default:
-                    throw new NotImplementedException($"BoarderStyle {Style} is not a shadow.");
+                    throw new NotImplementedException($"BoarderStyle {BorderStyle} is not a shadow.");
             }
             frame[frame.Width - 1, 0] = new ColoredKey(' ', Foreground, Background);
             frame[0, frame.Height - 1] = new ColoredKey(' ', Foreground, Background);

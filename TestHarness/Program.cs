@@ -47,7 +47,7 @@ namespace TestHarness
 
             var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!", Height = 3 };
             var border = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.Block, Background = ConsoleColor.Green, Foreground = ConsoleColor.Black };
-            border.Content = text;
+            border.Child = text;
             var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" };
 
             var button1 = new Button() { Width = 40, HorizontalAlignment = HorizontalAlignment.Left };
@@ -73,10 +73,10 @@ namespace TestHarness
             grid.RowDefinitions.Add(new AutoSizeDefinition());
             grid.RowDefinitions.Add(new AutoSizeDefinition());
 
-            grid.Items.Add(button1);
-            grid.Items.Add(button2);
-            grid.Items.Add(button3);
-            grid.Items.Add(scroll);
+            grid.Children.Add(button1);
+            grid.Children.Add(button2);
+            grid.Children.Add(button3);
+            grid.Children.Add(scroll);
 
             Grid.Column[button1].Value = 0;
             Grid.Column[button2].Value = 1;
@@ -96,16 +96,16 @@ namespace TestHarness
 
             var stack = new StackPanel();
 
-            stack.Items.Add(checkbox);
-            stack.Items.Add(border);
-            stack.Items.Add(grid);
+            stack.Children.Add(checkbox);
+            stack.Children.Add(border);
+            stack.Children.Add(grid);
             //stack.Items.Add(/*grid*/);
             //stack.Items.Add(button1);
             //stack.Items.Add(button2);
 
 
 
-            stack.Items.Add(text2);
+            stack.Children.Add(text2);
 
             root.Content = stack;
             

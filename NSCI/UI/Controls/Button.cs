@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NDProperty;
 using NDProperty.Propertys;
+using NSCI.Propertys;
 
 namespace NSCI.UI.Controls
 {
@@ -39,7 +40,7 @@ namespace NSCI.UI.Controls
         {
             this.border = new Border();
             this.text = new TextBlock() { Background = ConsoleColor.Yellow, Height = 3, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            this.border.Content = this.text;
+            this.border.Child = this.text;
             this.border.Parent = this;
             Up();
         }

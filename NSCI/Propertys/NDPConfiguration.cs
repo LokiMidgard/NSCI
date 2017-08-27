@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using NDProperty.Providers;
+using NSCI.Propertys.Provider;
 
-namespace NSCI
+namespace NSCI.Propertys
 {
     public class NDPConfiguration : NDProperty.IInitilizer<NDPConfiguration>
     {
