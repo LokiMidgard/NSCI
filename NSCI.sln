@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSCI", "NSCI\NSCI.csproj", "{68A04712-38F1-4C35-9CA7-F81888BBE88E}"
 EndProject
@@ -15,6 +15,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestHarness", "TestHarness\TestHarness.csproj", "{EF2D495F-7B92-49BE-B4E5-CB1BF47740C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSCI.Characters", "NSCI.Characters\NSCI.Characters.csproj", "{F035E193-2C4C-4FDF-B934-4CE2507F3513}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSCI.Sample", "NSCI.Sample\NSCI.Sample.csproj", "{1E9991A1-BB31-476C-8B73-ACC3CA8EA5D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{F035E193-2C4C-4FDF-B934-4CE2507F3513}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F035E193-2C4C-4FDF-B934-4CE2507F3513}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F035E193-2C4C-4FDF-B934-4CE2507F3513}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E9991A1-BB31-476C-8B73-ACC3CA8EA5D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E9991A1-BB31-476C-8B73-ACC3CA8EA5D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E9991A1-BB31-476C-8B73-ACC3CA8EA5D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E9991A1-BB31-476C-8B73-ACC3CA8EA5D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

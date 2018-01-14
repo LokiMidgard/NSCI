@@ -69,7 +69,7 @@ namespace NSCI.UI.Controls
             if (finalSize.Width <= 0 || finalSize.Height <= 0)
                 return;// nothing to do :(
             var stringbuffer = new StringBuilder();
-            var text = Text;
+            var text = Text ?? string.Empty;
             for (int i = 0; i < text.Length; i++)
             {
                 if (i != 0 && i % finalSize.Width == 0 && text[i] != '\n')

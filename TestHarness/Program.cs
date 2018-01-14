@@ -116,6 +116,12 @@ namespace TestHarness
             stack.Children.Add(checkbox);
             stack.Children.Add(border);
             stack.Children.Add(grid);
+
+            var textblock = new TextBlock() { Background = ConsoleColor.DarkRed, Width = 40, Height = 1 , Text = "HEY"};
+            var textbox = new TextBox() { Background = ConsoleColor.DarkRed, Width = 40, Height = 1 };
+
+            stack.Children.Add(textbox);
+            stack.Children.Add(textblock);
             //stack.Items.Add(/*grid*/);
             //stack.Items.Add(button1);
             //stack.Items.Add(button2);

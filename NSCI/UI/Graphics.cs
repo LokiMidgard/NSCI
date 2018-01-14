@@ -228,9 +228,14 @@ namespace NSCI.UI
                             && this.currentBuffer.BackgroundBuffer[i + j + k] == this.currentBuffer.BackgroundBuffer[i])
                             j += k;
                         else
+                        {
+                            //if (i + j >= this.currentBuffer.Length)
+                            //    j -= i + j - this.currentBuffer.Length + 1;
                             break;
+                        }
                     }
                     bool increasedBuffer = false;
+                    System.Diagnostics.Debug.Assert(i + j < this.currentBuffer.Length, "We try to write over our buffer :(");
                     if (i + j == this.currentBuffer.Length - 1)
                     {
                         // we will write the last char, this will result in a line break that will delets the first line
@@ -241,14 +246,14 @@ namespace NSCI.UI
 
                     var (left, top) = GetXYFromIndex(i);
                     Console.SetCursorPosition(left, top);
-
-                    Console.Write(this.currentBuffer.CharacterBuffer, i, j);
+                    if (!increasedBuffer)
+                        Console.Write(this.currentBuffer.CharacterBuffer, i, j);
                     if (increasedBuffer)
                     {
                         Console.SetCursorPosition(0, 0);
                         Console.BufferHeight -= 1;
                     }
-                    i += j - 1; // minus 1 because off the ++ in the for loop.
+                    i += j-1;
                 }
             }
             else

@@ -7,7 +7,7 @@ using NDProperty.Propertys;
 using NSCI.Propertys;
 
 namespace NSCI.UI
-{ 
+{
     public abstract partial class
         FrameworkElement : UIElement
     {
@@ -343,12 +343,13 @@ namespace NSCI.UI
         // Rückgabewerte:
         //     ** "true" ** Wenn der Benutzer mit dem Steuerelement interagieren kann; andernfalls
         //     ** "false" **.
-        [NDP]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(true)]
         protected virtual void OnIsEnabledChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
             if (SupportSelection && arg.Property.IsObjectValueChanging)
             {
+                InvalidateRender();
                 if (arg.Property.NewValue)
                 {
                     RootWindow?.tabList.Add(this);

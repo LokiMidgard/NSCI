@@ -10,7 +10,7 @@ namespace NSCI.UI.Controls
 
         public Border()
         {
-       
+
         }
 
         [NDProperty.NDP]
@@ -118,7 +118,7 @@ namespace NSCI.UI.Controls
                 var borderThikness = BorderThikness;
                 var borderWith = borderThikness.Left + borderThikness.Right;
                 var borderHeight = borderThikness.Top + borderThikness.Bottom;
-                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, Foreground, Background, (char)SpecialChars.Fill);
+                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, IsEnabled ? Foreground : ForegroundDisabled, IsEnabled ? Background : BackgroundDisabled, (char)SpecialChars.Fill);
             }
         }
 
@@ -148,7 +148,7 @@ namespace NSCI.UI.Controls
                     throw new NotImplementedException($"BoarderStyle {BorderStyle} not implemented.");
             }
 
-            frame.DrawRect(0, 0, frame.Width, frame.Height, Foreground, Background, borderPen);
+            frame.DrawRect(0, 0, frame.Width, frame.Height, IsEnabled ? Foreground : ForegroundDisabled, IsEnabled ? Background : BackgroundDisabled, borderPen);
         }
 
         private void RenderDropShadow(IRenderFrame frame)

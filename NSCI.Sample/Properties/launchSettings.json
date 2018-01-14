@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NSCI.Sample": {
+      "commandName": "Project",
+      "workingDirectory": "bin"
+    }
+  }
+}

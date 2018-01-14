@@ -38,7 +38,7 @@ namespace NSCI
         public new int IndexOf(T item)
         {
             var foundIndex = GetInsertIndex(item);
-            if (foundIndex < 0 || Count == 0) // No element found
+            if (foundIndex < 0 || Count == 0 || foundIndex >= Count) // No element found
                 return -1;
 
             //we found one Item that has the same Size, but this must not be the equals to the searched object.
@@ -76,7 +76,7 @@ namespace NSCI
         }
 
 
-        
+
 
     }
 
