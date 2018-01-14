@@ -8,13 +8,13 @@ namespace NSCI.Propertys
     public static partial class X
     {
         [NDProperty.NDPAttach]
-        private static void OnValuesChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Resources, object> arg) { }
+        private static void OnResourcesChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, object, Resources> arg) { }
 
         [NDProperty.NDPAttach]
-        private static void OnKeyChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, string, object> arg) { }
+        private static void OnKeyChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, object, string> arg) { }
 
         [NDProperty.NDPAttach]
-        private static void OnTargetTypeChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Type, object> arg) { }
+        private static void OnTargetTypeChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, object, Type> arg) { }
 
     }
 
@@ -49,6 +49,22 @@ namespace NSCI.Propertys
             }
         }
 
+        public static object SearchForKey(UI.UIElement element, string key)
+        {
+            var currentObject = element;
+            while (currentObject != null) 
+            {
+                var context = X.Resources[currentObject].Value;
+                if (context != null)
+                {
+                    var foundTemplate = context[key];
+                    if (foundTemplate != null)
+                        return foundTemplate;
+                }
+                currentObject = currentObject.VisualParent;
+            }
+            throw new KeyNotFoundException($"The Key {key} was not found.");
+        }
 
         public Resources()
         {

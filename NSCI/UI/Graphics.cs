@@ -113,7 +113,7 @@ namespace NSCI.UI
             }
             public ColoredKey this[int index]
             {
-                get => new ColoredKey(buffer[index], forground[index], background[index]);
+                get => new ColoredKey(this.buffer[index], this.forground[index], this.background[index]);
                 set
                 {
                     this.buffer[index] = value.Character;
@@ -155,9 +155,9 @@ namespace NSCI.UI
                 var size = width * height;
                 Width = width;
                 Height = height;
-                Array.Resize(ref buffer, size);
-                Array.Resize(ref background, size);
-                Array.Resize(ref forground, size);
+                Array.Resize(ref this.buffer, size);
+                Array.Resize(ref this.background, size);
+                Array.Resize(ref this.forground, size);
             }
         }
 

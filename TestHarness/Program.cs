@@ -7,6 +7,7 @@ using NSCI.UI;
 using NSCI.UI.Controls.Layout;
 using System.Reflection;
 using System.Linq;
+using NDProperty.Providers.Binding;
 
 namespace TestHarness
 {
@@ -43,24 +44,40 @@ namespace TestHarness
             //Console.ReadKey(true);
 
 
+
             var root = new NSCI.UI.RootWindow();
 
-            var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!", Height = 3 };
-            var border = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.Block, Background = ConsoleColor.Green, Foreground = ConsoleColor.Black };
+
+
+            var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!1", Height = 3 };
+            var border = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.Block, Foreground = ConsoleColor.Black };
             border.Child = text;
-            var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!" };
+            //var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!2" };
+
+            ////TextBlock.TextProperty.Bind(text2,
+            ////    ContentControl.ContentProperty
+            ////    .Of(root)
+            ////    .Over(UIElement.DepthReadOnlyProperty)
+            ////    .ConvertOneWay(x => x.ToString())
+            ////    );
+            ////TextBlock.TextProperty.Bind(text,
+            ////    ContentControl.ContentProperty
+            ////    .Of(root)
+            ////    .Over(UIElement.IsVisibleProperty)
+            ////    .ConvertTwoWay(x => x.ToString(), x => bool.Parse(x))
+            ////    );
 
             var button1 = new Button() { Width = 40, HorizontalAlignment = HorizontalAlignment.Left };
             var button2 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
             var button3 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
 
-            button1.Text = "Button 1";
-            button2.Text = "Button 2";
-            button3.Text = "Button 3";
+            button1.Content = "Button 1";
+            button2.Content = "Button 2";
+            button3.Content = "Button 3";
 
-            var scroll = new ScrollView();
-            var text3 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World! Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n\nDuis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.Lorem ipsum dolor sit amet,\nconsectetuer adipiscing elit,\nsed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.\n\nUt wisi enim ad minim veniam,\nquis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\n\nNam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer" };
-            scroll.Content = text3;
+            ////var scroll = new ScrollView();
+            ////var text3 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World! Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n\nDuis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.Lorem ipsum dolor sit amet,\nconsectetuer adipiscing elit,\nsed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.\n\nUt wisi enim ad minim veniam,\nquis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\n\nNam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer" };
+            ////scroll.Content = text3;
 
             var grid = new Grid();
 
@@ -76,7 +93,7 @@ namespace TestHarness
             grid.Children.Add(button1);
             grid.Children.Add(button2);
             grid.Children.Add(button3);
-            grid.Children.Add(scroll);
+            //grid.Children.Add(scroll);
 
             Grid.Column[button1].Value = 0;
             Grid.Column[button2].Value = 1;
@@ -87,8 +104,8 @@ namespace TestHarness
             Grid.Row[button1].Value = 1;
             Grid.Row[button2].Value = 1;
 
-            Grid.ColumnSpan[scroll].Value = 2;
-            Grid.Row[scroll].Value = 0;
+            //Grid.ColumnSpan[scroll].Value = 2;
+            //Grid.Row[scroll].Value = 0;
 
             var checkbox = new CheckBox();
 
@@ -105,10 +122,9 @@ namespace TestHarness
 
 
 
-            stack.Children.Add(text2);
 
             root.Content = stack;
-            
+
             //root.BeforeStart += async () =>
             //  {
             //      var styles = (NSCI.UI.Controls.BorderStyle[])Enum.GetValues(typeof(NSCI.UI.Controls.BorderStyle));

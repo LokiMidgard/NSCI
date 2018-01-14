@@ -28,35 +28,31 @@ namespace NSCI.UI
         public event Action BeforeStart;
 
         private int tabSelectedIndex;
-        [NDP(Settigns = NDPropertySettings.CallOnChangedHandlerOnEquals)]
+        [NDP(Settings = NDPropertySettings.CallOnChangedHandlerOnEquals)]
         protected virtual void OnActiveControlChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, FrameworkElement> arg)
         {
-            arg.ExecuteAfterChange += (sender, args) =>
+            if (arg.Provider.HasNewValue && arg.Provider.NewValue != null)
             {
-                int newindex;
-                if (this.tabSelectedIndex < this.tabList.Count && arg.NewValue == this.tabList[this.tabSelectedIndex])
-                    newindex = this.tabSelectedIndex;
-                else if (args.NewValue != null)
-                {
+                var indexToCheck = this.tabList.IndexOf(arg.Provider.NewValue);
+                if (indexToCheck == -1)
+                    arg.Provider.Reject = true;
+            }
 
-                    newindex = this.tabList.IndexOf(args.NewValue);
-                    if (newindex == -1)
-                        arg.Reject = true;
-                }
-                else
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, args) =>
                 {
-                    newindex = -1;
-                }
-                if (args.OldValue != args.NewValue)
-                {
-                    if (args.OldValue != null)
-                        args.OldValue.HasFocus = false;
+                    var newindex = this.tabList.IndexOf(arg.Provider.NewValue);
+                    if (newindex == -1 && args.Property.NewValue != null)
+                        throw new ArgumentException("No valid ActiveControl");
+
+
+                    if (args.Property.OldValue != null)
+                        args.Property.OldValue.HasFocus = false;
 
                     this.tabSelectedIndex = newindex;
-                    if (args.NewValue != null)
-                        args.NewValue.HasFocus = true;
-                }
-            };
+                    if (args.Property.NewValue != null)
+                        args.Property.NewValue.HasFocus = true;
+                };
         }
 
 
@@ -81,7 +77,7 @@ namespace NSCI.UI
             this.running = true;
             Console.CursorVisible = false;
             Console.TreatControlCAsInput = true;
-            
+
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -150,7 +146,7 @@ namespace NSCI.UI
                 while (this.running && inputQueue.TryDequeue(out var k))
                 {
                     Console.CursorVisible = false;
-                    
+
                     var active = ActiveControl;
                     if (active != null)
                     {
@@ -236,7 +232,7 @@ namespace NSCI.UI
                 this.tabSelectedIndex = (this.tabSelectedIndex - 1 + this.tabList.Count) % this.tabList.Count;
             ActiveControl = this.tabList[this.tabSelectedIndex];
         }
-        
+
         internal void UnRegisterArrangeDirty(UIElement uIElement)
         {
             this.elementsArrangeDirty.Remove(uIElement);
@@ -421,7 +417,7 @@ namespace NSCI.UI
                 while (c != null)
                 {
                     yield return c;
-                    c = c.Parent as FrameworkElement;
+                    c = c.VisualParent as FrameworkElement;
                 }
             }
         }

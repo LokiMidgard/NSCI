@@ -12,17 +12,26 @@ namespace NSCI.UI.Controls
         [NDProperty.NDP]
         protected void OnContentChanging(OnChangingArg<NDPConfiguration, object> arg)
         {
-            arg.ExecuteAfterChange += (sender, e) =>
-            {
-                if (e.NewValue is UIElement uiElement)
-                    DisplayContent = uiElement;
-                else
-                    DisplayContent = Template.GetTemplate(e.NewValue, this).InstanciateObject();
-            };
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, e) =>
+                {
+                    DisplayContent = Template.InstanciateFromDefaultDataTemplate(e.Property.NewValue);
+                };
         }
 
-        [NDProperty.NDP(Settigns = NDProperty.Propertys.NDPropertySettings.ReadOnly)]
-        protected void OnDisplayContentChanging(OnChangingArg<NDPConfiguration, UIElement> arg) => arg.ExecuteAfterChange += (sender, e) => InvalidateMeasure();
+        [NDProperty.NDP(Settings = NDProperty.Propertys.NDPropertySettings.ReadOnly)]
+        protected void OnDisplayContentChanging(OnChangingArg<NDPConfiguration, UIElement> arg)
+        {
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, e) =>
+                {
+                    if (e.Property.OldValue != null)
+                        e.Property.OldValue.VisualParent = null;
+                    if (e.Property.NewValue != null)
+                        e.Property.NewValue.VisualParent = this;
+                    InvalidateMeasure();
+                };
+        }
 
 
         protected override void ArrangeOverride(Size finalSize) => DisplayContent?.Arrange(new Rect(Point.Empty, finalSize));

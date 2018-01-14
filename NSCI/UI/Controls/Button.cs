@@ -4,95 +4,61 @@ using System.Text;
 using System.Threading.Tasks;
 using NDProperty;
 using NDProperty.Propertys;
+using NDProperty.Providers.Binding;
 using NSCI.Propertys;
 
 namespace NSCI.UI.Controls
 {
-    public partial class Button : Control
+    public partial class Button : ContentControl
     {
-        private readonly TextBlock text;
-        private readonly Border border;
-
-        [NDProperty.NDP]
-        protected virtual void OnTextChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration,  string> arg)
+        static Button()
         {
-            this.text.Text = arg.NewValue;
+            Template.SetDefaultControlTemplate(Template.CreateControlTemplate((Button b) =>
+            {
+                var outerBorder = new Border
+                {
+                    Foreground = ConsoleColor.Gray
+                };
+
+                var innerBorder = new Border() { BorderStyle = BorderStyle.SingelLined , Background = ConsoleColor.DarkRed};
+                outerBorder.Child = innerBorder;
+
+                var contentPresenter = new ContentPresenter() { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                innerBorder.Child = contentPresenter;
+
+                Border.ForegroundProperty.Bind(innerBorder as FrameworkElement, HasFocusProperty.Of(b).ConvertOneWay(state => state ?  ConsoleColor.Yellow : ConsoleColor.White));
+
+                //Border.BackgroundProperty.Bind(innerBorder as FrameworkElement, Button.IsPressedProperty.Of(b).ConvertOneWay(state => state ? ConsoleColor.Red : ConsoleColor.DarkRed));
+                Border.PaddingProperty.Bind(outerBorder as FrameworkElement, Button.IsPressedProperty.Of(b).ConvertOneWay(state => state ? new Thickness(2, 2, 0, 0) : new Thickness(1, 1, 0, 0)));
+                Border.BorderStyleProperty.Bind(outerBorder, Button.IsPressedProperty.Of(b).ConvertOneWay(state => state ? BorderStyle.None : BorderStyle.DropShadowLight));
+
+
+                return outerBorder;
+            }));
         }
 
         public override bool SupportSelection => true;
-
-
-        [NDProperty.NDP]
-        protected virtual void OnTextColorChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, ConsoleColor> arg)
-        {
-            arg.ExecuteAfterChange += (oldValue, newValue) =>
-            {
-
-                if (newValue != oldValue)
-                    InvalidateRender();
-            };
-        }
-
 
         public event EventHandler ButtonPressed;
 
         public Button()
         {
-            this.border = new Border();
-            this.text = new TextBlock() { Background = ConsoleColor.Yellow, Height = 3, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            this.border.Child = this.text;
-            this.border.Parent = this;
             Up();
         }
 
-        private void Up()
-        {
-            this.border.BorderStyle = BorderStyle.DropShadowLight;
-            this.border.Foreground = ConsoleColor.Gray;
-            this.border.Padding = new Thickness(1, 1, 0, 0);
-        }
-        private void Down()
-        {
-            this.border.BorderStyle = BorderStyle.None;
-            this.border.Foreground = ConsoleColor.Gray;
-            this.border.Padding = new Thickness(2, 2, 0, 0);
-        }
+        private void Up() => IsPressed = false;
+        private void Down() => IsPressed = true;
 
-        protected override void OnHasFocusChanging(OnChangingArg<NDPConfiguration, bool> arg)
+
+
+        [NDP(Settings = NDPropertySettings.ReadOnly)]
+        protected virtual void OnIsPressedChanging(OnChangingArg<NDPConfiguration, bool> arg)
         {
-            base.OnHasFocusChanging(arg);
-            if (arg.NewValue)
-                this.text.Foreground = ConsoleColor.Red;
-            else
-                this.text.Foreground = ConsoleColor.Green;
-    }
 
-    protected override Size MeasureOverride(Size availableSize)
-        {
-            var marginWidth = Margin.Left + Margin.Right;
-            var marginHeight = Margin.Top + Margin.Bottom;
-
-            var pardingWidth = Margin.Left + Margin.Right;
-            var pardingHeight = Margin.Top + Margin.Bottom;
-
-            this.border.Measure(base.MeasureOverride(availableSize));
-            var desiredSize = this.border.DesiredSize;
-            return base.MeasureOverride(desiredSize);
-        }
-
-        protected override void ArrangeOverride(Size finalSize)
-        {
-            base.ArrangeOverride(finalSize);
-            this.border.Arrange(new Rect(Point.Empty, finalSize));
-        }
-
-        protected override void RenderOverride(IRenderFrame frame)
-        {
-            this.border.Render(frame);
         }
 
 
-        public override bool HandleInput(FrameworkElement originalTarget,ConsoleKeyInfo k)
+        public override bool HandleInput(FrameworkElement originalTarget, ConsoleKeyInfo k)
         {
             if (k.Key == ConsoleKey.Enter)
             {

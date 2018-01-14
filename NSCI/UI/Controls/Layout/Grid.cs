@@ -10,19 +10,19 @@ using NSCI.Propertys;
 
 namespace NSCI.UI.Controls.Layout
 {
-    public partial class Grid : Panel
+    public partial class Grid : Panel  
     {
         [NDPAttach]
-        private static void OnRowChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
+        private static void OnRowChanging(OnChangingArg<NDPConfiguration, UIElement, int> arg) { }
         [NDPAttach]
-        private static void OnColumnChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
+        private static void OnColumnChanging(OnChangingArg<NDPConfiguration, UIElement, int> arg) { }
 
         [DefaultValue(1)]
         [NDPAttach]
-        private static void OnRowSpanChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
+        private static void OnRowSpanChanging(OnChangingArg<NDPConfiguration, UIElement, int> arg) { }
         [DefaultValue(1)]
         [NDPAttach]
-        private static void OnColumnSpanChanging(OnChangingArg<NDPConfiguration, int, UIElement> arg) { }
+        private static void OnColumnSpanChanging(OnChangingArg<NDPConfiguration, UIElement, int> arg) { }
 
         public ObservableCollection<ISizeDefinition> RowDefinitions { get; } = new ObservableCollection<ISizeDefinition>();
         public ObservableCollection<ISizeDefinition> ColumnDefinitions { get; } = new ObservableCollection<ISizeDefinition>();
@@ -337,6 +337,14 @@ namespace NSCI.UI.Controls.Layout
         protected override void RenderOverride(IRenderFrame frame)
         {
             frame.FillRect(0, 0, frame.Width, frame.Height, Foreground, Background, (char) SpecialChars.Fill);
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var location = GetLocation(Children[i]);
+                Children[i].Render(frame.GetGraphicsBuffer(location));
+             
+            }
+
             base.RenderOverride(frame);
         }
     }

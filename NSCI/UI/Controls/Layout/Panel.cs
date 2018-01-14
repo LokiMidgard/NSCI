@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NSCI.UI.Controls.Layout
 {
-    public class Panel :FrameworkElement
+    public class Panel : FrameworkElement
     {
 
         public ObservableCollection<UIElement> Children { get; } = new ObservableCollection<UIElement>();
@@ -13,15 +13,21 @@ namespace NSCI.UI.Controls.Layout
 
         public Panel()
         {
-            this.Children.CollectionChanged += (s, e) =>
+            Children.CollectionChanged += (s, e) =>
             {
-                this.InvalidateArrange();
+                InvalidateArrange();
                 if (e.NewItems != null)
                     foreach (UIElement uielement in e.NewItems)
-                        uielement.Parent = this;
+                    {
+                        uielement.LogicalParent = this;
+                        uielement.VisualParent = this;
+                    }
                 if (e.OldItems != null)
                     foreach (UIElement uielement in e.OldItems)
-                        uielement.Parent = null;
+                    {
+                        uielement.LogicalParent = null;
+                        uielement.VisualParent = null;
+                    }
             };
         }
 

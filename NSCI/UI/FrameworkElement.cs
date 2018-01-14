@@ -7,7 +7,7 @@ using NDProperty.Propertys;
 using NSCI.Propertys;
 
 namespace NSCI.UI
-{
+{ 
     public abstract partial class
         FrameworkElement : UIElement
     {
@@ -133,7 +133,7 @@ namespace NSCI.UI
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
         //public int ActualHeight { get; private set; }
-        [NDP(Settigns = NDPropertySettings.ReadOnly)]
+        [NDP(Settings = NDPropertySettings.ReadOnly)]
         protected virtual void OnActualHeightChanging(OnChangingArg<NDPConfiguration, int> arg) { }
 
         //
@@ -145,7 +145,7 @@ namespace NSCI.UI
         //     möglicherweise gefunden, wenn das Objekt nicht geladen wurde und noch nicht Teil
         //     einer Layoutübergabe war, die die Benutzeroberfläche rendert.
         //public int ActualWidth { get; private set; }
-        [NDP(Settigns = NDPropertySettings.ReadOnly)]
+        [NDP(Settings = NDPropertySettings.ReadOnly)]
         protected virtual void OnActualWidthChanging(OnChangingArg<NDPConfiguration, int> arg) { }
 
 
@@ -180,7 +180,7 @@ namespace NSCI.UI
         //private ConsoleColor foreground = ConsoleColor.Inherited;
 
 
-        [NDP(Settigns = NDPropertySettings.Inherited)]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.White)]
         protected virtual void OnForegroundChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
@@ -202,7 +202,7 @@ namespace NSCI.UI
         //     Der Pinsel, der den Hintergrund des Steuerelements bereitstellt. Der Standardwert
         //     ist ** Null ** (ein null-Pinsel) der als Windows.UI ausgewertet wird. Colors.Transparent
         //     für das Rendern.
-        [NDP(Settigns = NDPropertySettings.Inherited)]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkBlue)]
         protected virtual void OnBackgroundChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
@@ -213,7 +213,7 @@ namespace NSCI.UI
             };
         }
 
-        [NDP(Settigns = NDPropertySettings.Inherited)]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkGray)]
         protected virtual void OnBackgroundDisabledChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
@@ -224,7 +224,7 @@ namespace NSCI.UI
             };
         }
 
-        [NDP(Settigns = NDPropertySettings.Inherited)]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Gray)]
         protected virtual void OnForegroundDisabledChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
@@ -235,7 +235,7 @@ namespace NSCI.UI
             };
         }
 
-        [NDP(Settigns = NDPropertySettings.Inherited)]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Red)]
         protected virtual void OnPrimaryColorChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
@@ -245,7 +245,7 @@ namespace NSCI.UI
                     InvalidateRender();
             };
         }
-        [NDP(Settigns = NDPropertySettings.Inherited)]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkRed)]
         protected virtual void OnPrimaryColorDisabledChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
@@ -256,7 +256,7 @@ namespace NSCI.UI
             };
         }
 
-        [NDP(Settigns = NDPropertySettings.Inherited)]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.Cyan)]
         protected virtual void OnSecondaryColorChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
@@ -266,7 +266,7 @@ namespace NSCI.UI
                     InvalidateRender();
             };
         }
-        [NDP(Settigns = NDPropertySettings.Inherited)]
+        [NDP(Settings = NDPropertySettings.Inherited)]
         [DefaultValue(ConsoleColor.DarkCyan)]
         protected virtual void OnSecondaryColorDisabledChanging(OnChangingArg<NDPConfiguration, ConsoleColor> arg)
         {
@@ -322,15 +322,16 @@ namespace NSCI.UI
         protected virtual void OnHasFocusChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
             if (!SupportSelection || !IsEnabled)
-                arg.MutatedValue = false;
+                arg.Provider.MutatedValue = false;
 
-            arg.ExecuteAfterChange += (oldValue, newValue) =>
-            {
-                if (arg.MutatedValue && RootWindow.ActiveControl != this)
-                    RootWindow.ActiveControl = this;
-                else if (!arg.MutatedValue && RootWindow.ActiveControl == this)
-                    RootWindow.ActiveControl = null;
-            };
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (oldValue, newValue) =>
+                {
+                    if (arg.Property.NewValue && RootWindow.ActiveControl != this)
+                        RootWindow.ActiveControl = this;
+                    else if (!arg.Property.NewValue && RootWindow.ActiveControl == this)
+                        RootWindow.ActiveControl = null;
+                };
 
         }
 
@@ -346,15 +347,15 @@ namespace NSCI.UI
         [DefaultValue(true)]
         protected virtual void OnIsEnabledChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
-            if (SupportSelection)
+            if (SupportSelection && arg.Property.IsObjectValueChanging)
             {
-                if (arg.NewValue)
+                if (arg.Property.NewValue)
                 {
                     RootWindow?.tabList.Add(this);
                 }
                 else
                 {
-                    arg.ExecuteAfterChange += (oldValue, newValue) =>
+                    arg.ExecuteAfterChange += (sender, args) =>
                     {
                         if ((RootWindow?.ActiveControl ?? null) == this)
                             RootWindow.ActiveControl = null;
@@ -367,18 +368,19 @@ namespace NSCI.UI
 
         protected override void OnRootWindowChanging(OnChangingArg<NDPConfiguration, RootWindow> arg)
         {
-            arg.ExecuteAfterChange += (sender, args) =>
-            {
-                if (SupportSelection && IsEnabled)
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, args) =>
                 {
-                    if ((args.OldValue?.ActiveControl ?? null) == this)
-                        args.OldValue.ActiveControl = null;
-                    args.OldValue?.tabList.Remove(this);
-                    args.NewValue?.tabList.Add(this);
-                }
+                    if (SupportSelection && IsEnabled)
+                    {
+                        if ((args.Property.OldValue?.ActiveControl ?? null) == this)
+                            args.Property.OldValue.ActiveControl = null;
+                        args.Property.OldValue?.tabList.Remove(this);
+                        args.Property.NewValue?.tabList.Add(this);
+                    }
 
-                base.OnRootWindowChanging(arg);
-            };
+                    base.OnRootWindowChanging(arg);
+                };
         }
 
         /// <summary>
@@ -401,7 +403,7 @@ namespace NSCI.UI
             {
                 if (current is FrameworkElement c)
                     yield return c;
-                current = current.Parent;
+                current = current.VisualParent;
             }
         }
 

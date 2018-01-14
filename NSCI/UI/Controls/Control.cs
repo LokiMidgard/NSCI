@@ -12,52 +12,88 @@ namespace NSCI.UI.Controls
 {
     public abstract partial class Control : FrameworkElement
     {
+        private Func<UIElement> templateInstanciator;
 
         public Control()
         {
 
         }
 
-        [NDProperty.NDP]
-        protected virtual void OnStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, IStyle> arg)
+        protected UIElement InstanciateDefaultTemplate()
         {
-            var handlers = arg.NewValue.UpdateStyleProvider(this);
-            foreach (var handler in handlers)
-                arg.ExecuteAfterChange += handler;
+            var getDefaultControlTemplateMethod = typeof(Template).GetMethod(nameof(Template.GetDefaultControlTemplate));
+            getDefaultControlTemplateMethod = getDefaultControlTemplateMethod.MakeGenericMethod(new Type[] { GetType() });
+            var emptyArgumentList = new object[0];
+            var controlTemplate = getDefaultControlTemplateMethod.Invoke(null, emptyArgumentList);
+            var instance = (UIElement)typeof(IControlTemplate<,>)
+                .MakeGenericType(typeof(object), GetType())
+                .GetMethod(nameof(IControlTemplate<object, Control>.InstanciateObject), BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Public)
+                .Invoke(controlTemplate, new object[] { this });
+            return instance;
         }
 
-        
-        [NDProperty.NDP]
-        protected void OnContentTemplateChanging(OnChangingArg<NDPConfiguration, ITemplate<FrameworkElement>> arg)
+        public void SetControlTemplate<TThis>(IControlTemplate<UIElement, TThis> template)
+                where TThis : Control
         {
-            if (arg.NewValue != null && !typeof(ITemplate<>).MakeGenericType(this.GetType()).IsAssignableFrom(arg.NewValue.GetType()))
+            if (this is TThis me)
             {
-                arg.Reject = true;
-                return;
-            }
-
-            arg.ExecuteAfterChange += (sender, e) =>
-            {
-                if (e.NewValue is UIElement uiElement)
-                    DisplayContent = uiElement;
+                if (template == null)
+                    this.templateInstanciator = null;
                 else
-                    DisplayContent = TemplateEngine.GetTemplate(e.NewValue).InstanciateObject();
-            };
+                    this.templateInstanciator = () => template.InstanciateObject(me);
+                DisplayContent = GetControlTemplatedInstance();
+            }
+            else
+                throw new ArgumentException($"{nameof(TThis)} must be of type {this.GetType().FullName} or assinable to it.", nameof(TThis));
         }
 
-        [NDProperty.NDP(Settigns = NDProperty.Propertys.NDPropertySettings.ReadOnly)]
-        protected void OnDisplayContentChanging(OnChangingArg<NDPConfiguration, UIElement> arg) => arg.ExecuteAfterChange += (sender, e) => InvalidateMeasure();
-
-
-        protected override void ArrangeOverride(Size finalSize) => DisplayContent?.Arrange(new Rect(Point.Empty, finalSize));
-
-        protected override Size MeasureOverride(Size availableSize)
+        private UIElement GetControlTemplatedInstance()
         {
+            if (this.templateInstanciator != null)
+                return this.templateInstanciator();
+
+            return InstanciateDefaultTemplate();
+        }
+
+
+        [NDProperty.NDP(Settings = NDProperty.Propertys.NDPropertySettings.ReadOnly)]
+        protected void OnDisplayContentChanging(OnChangingArg<NDPConfiguration, UIElement> arg)
+        {
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, e) =>
+                {
+                    if (e.Property.OldValue != null && e.Property.OldValue.VisualParent == this)
+                        e.Property.OldValue.VisualParent = null;
+                    if (e.Property.NewValue != null)
+                        e.Property.NewValue.VisualParent = this;
+                    InvalidateMeasure();
+                };
+        }
+
+        protected sealed override void ArrangeOverride(Size finalSize)
+        {
+            if (DisplayContent == null)
+                DisplayContent = GetControlTemplatedInstance();
+
+            DisplayContent?.Arrange(new Rect(Point.Empty, finalSize));
+        }
+
+        protected sealed override Size MeasureOverride(Size availableSize)
+        {
+            if (DisplayContent == null)
+                DisplayContent = GetControlTemplatedInstance();
+
             DisplayContent?.Measure(availableSize);
             return DisplayContent?.DesiredSize ?? Size.Empty;
         }
 
-        protected override void RenderOverride(IRenderFrame frame) => DisplayContent?.Render(frame);
+        protected sealed override void RenderOverride(IRenderFrame frame)
+        {
+            if (DisplayContent == null)
+                DisplayContent = GetControlTemplatedInstance();
+
+            DisplayContent.Render(frame);
+        }
 
 
 

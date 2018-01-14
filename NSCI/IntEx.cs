@@ -406,6 +406,13 @@ namespace NSCI
                 i += j;
             return i;
         }
+        public static IntEx Sum<T>(this IEnumerable<T> source, Func<T, IntEx> select)
+        {
+            IntEx i = 0;
+            foreach (var j in source)
+                i += select(j);
+            return i;
+        }
 
 
         public static T Min<T>(params T[] a) where T : IComparable

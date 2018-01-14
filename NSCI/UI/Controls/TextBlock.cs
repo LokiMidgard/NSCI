@@ -12,7 +12,17 @@ namespace NSCI.UI.Controls
         [NDProperty.NDP]
         protected virtual void OnTextChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, string> arg)
         {
-            arg.MutatedValue = arg.NewValue?.Replace("\t", "    ").Replace("\r", "");
+            arg.Provider.MutatedValue = arg.Provider.NewValue?.Replace("\t", "    ").Replace("\r", "");
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, e) =>
+                {
+                    var (_, oldWidht, oldHeight) = GetTextDimensions(e.Property.OldValue);
+                    var (_, newWidht, newHeight) = GetTextDimensions(e.Property.NewValue);
+                    if (oldHeight != newHeight || oldWidht != newWidht)
+                        InvalidateMeasure();
+                    else
+                        InvalidateArrange();
+                };
         }
 
 
@@ -23,10 +33,7 @@ namespace NSCI.UI.Controls
         {
             availableSize = base.MeasureOverride(availableSize);
 
-
-            var lines = Text?.Split('\n') ?? new string[0];
-            var maxLineLength = lines.Max(x => x.Length);
-            int lineheight = lines.Length;
+            var (lines, maxLineLength, lineheight) = GetTextDimensions(Text);
             if (maxLineLength > availableSize.Width)
             {
                 maxLineLength = (int)availableSize.Width;
@@ -44,6 +51,16 @@ namespace NSCI.UI.Controls
             }
 
             return new Size(maxLineLength, lineheight);
+        }
+
+        private static (string[] lines, int width, int height) GetTextDimensions(string text)
+        {
+            if (text == null)
+                return (new string[0], 0, 0);
+            var lines = text.Split('\n');
+            var maxLineLength = lines.Max(x => x.Length);
+            var lineheight = lines.Length;
+            return (lines, maxLineLength, lineheight);
         }
 
         protected override void ArrangeOverride(Size finalSize)

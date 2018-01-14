@@ -1,49 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using NDProperty;
 using NDProperty.Propertys;
 using NSCI.Propertys;
 
 namespace NSCI.UI
-{
+{ 
     public abstract partial class UIElement
     {
         private Size lastAvailableSize;
         private IRenderFrame lastFrame;
+        private readonly ObservableCollection<UIElement> visualChildrean = new ObservableCollection<UIElement>();
+        public ReadOnlyObservableCollection<UIElement> VisualChildrean { get; }
+
+        private readonly ObservableCollection<UIElement> logicalChildrean = new ObservableCollection<UIElement>();
+        public ReadOnlyObservableCollection<UIElement> LogicalChildrean { get; }
 
         public UIElement()
         {
+            VisualChildrean = new ReadOnlyObservableCollection<UIElement>(this.visualChildrean);
+            LogicalChildrean = new ReadOnlyObservableCollection<UIElement>(this.logicalChildrean);
+
             if (this is RootWindow)
-                this.RootWindow = this as RootWindow;
+                RootWindow = this as RootWindow;
+
         }
 
 
-        [NDP(Settigns = NDPropertySettings.ReadOnly )]
+        [NDP(Settings = NDPropertySettings.ReadOnly)]
         protected virtual void OnRootWindowChanging(OnChangingArg<NDPConfiguration, RootWindow> arg)
         {
-            if (this is RootWindow && arg.NewValue == null)
-                arg.MutatedValue = this as RootWindow;
+            if (this is RootWindow && arg.Provider.NewValue == null)
+                arg.Provider.MutatedValue = this as RootWindow;
         }
 
-        [NDP(Settigns = NDPropertySettings.ParentReference)]
-        protected virtual void OnParentChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
+        [NDP(Settings = NDPropertySettings.ParentReference)]
+        protected virtual void OnVisualParentChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
         {
-            arg.ExecuteAfterChange += (sender, args) => {
-            if (args.NewValue != args.OldValue)
-            {
-                if (args.OldValue != null)
-                        args.OldValue.RootWindowChanged -= ParentRootChanged;
-                Depth = args.NewValue?.Depth + 1 ?? 0;
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, args) =>
+                {
+                    if (args.Property.OldValue != null)
+                    {
+                        args.Property.OldValue.RootWindowChanged -= ParentRootChanged;
+                        args.Property.OldValue.visualChildrean.Remove(this);
+                    }
+                    Depth = args.Property.NewValue?.Depth + 1 ?? 0;
 
-                if (args.NewValue is RootWindow r)
-                    RootWindow = r;
-                else
-                    RootWindow = arg.NewValue?.RootWindow;
-                if (args.NewValue != null)
-                        args.NewValue.RootWindowChanged += ParentRootChanged;
-            }
-            };
+                    if (args.Property.NewValue is RootWindow r)
+                        RootWindow = r;
+                    else
+                        RootWindow = arg.Property.NewValue?.RootWindow;
+                    if (args.Property.NewValue != null)
+                    {
+                        args.Property.NewValue.RootWindowChanged += ParentRootChanged;
+                        args.Property.NewValue.visualChildrean.Add(this);
+                    }
+                };
+
+        }
+
+        [NDP]
+        protected virtual void OnLogicalParentChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
+        {
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, args) =>
+                {
+                    if (args.Property.OldValue != null)
+                        args.Property.OldValue.logicalChildrean.Remove(this);
+                    if (args.Property.NewValue != null)
+                        args.Property.NewValue.logicalChildrean.Add(this);
+                };
 
         }
 
@@ -104,7 +133,7 @@ namespace NSCI.UI
         /// </remarks>
 
 
-        [NDP(Settigns = NDPropertySettings.ReadOnly)]
+        [NDP(Settings = NDPropertySettings.ReadOnly)]
         protected virtual void OnDepthChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, int> arg)
         {
 
@@ -186,7 +215,7 @@ namespace NSCI.UI
                     System.Diagnostics.Debug.Assert(desiredSize.Height >= 0 && desiredSize.Height.IsNumber);
                     System.Diagnostics.Debug.Assert(desiredSize.Width >= 0 && desiredSize.Width.IsNumber);
                     DesiredSize = desiredSize;
-                    var p = Parent;
+                    var p = VisualParent;
                     if (!p?.MeasureInProgress ?? false)
                         p.OnChildDesiredSizeChanging(this);
                 }
@@ -281,7 +310,7 @@ namespace NSCI.UI
         /// <returns></returns>
         public Rect GetLocation(UIElement uIElement)
         {
-            if (uIElement.Parent == this)
+            if (uIElement.VisualParent == this)
                 return uIElement.ArrangedPosition;
 
             var translation = GetTranslation(uIElement);
@@ -297,7 +326,7 @@ namespace NSCI.UI
 
         internal void RenderWithLastAvailableSize()
         {
-            if (lastFrame != null)
+            if (this.lastFrame != null)
                 Render(this.lastFrame);
         }
 
@@ -326,7 +355,7 @@ namespace NSCI.UI
 
         }
 
-        private void ParentRootChanged(object sender, ChangedEventArgs<RootWindow, UIElement> e)
+        private void ParentRootChanged(object sender, ChangedEventArgs<NDPConfiguration, UIElement, RootWindow> e)
         {
             RootWindow = e.NewValue;
         }
@@ -336,10 +365,10 @@ namespace NSCI.UI
             var commoneAcestor = FindCommonAcestor(uIElement);
 
             var negativeTranslation = Point.Empty;
-            for (var current = this; current != commoneAcestor; current = current.Parent)
+            for (var current = this; current != commoneAcestor; current = current.VisualParent)
                 negativeTranslation += (Size)current.ArrangedPosition.Location;
             var positiveTranslation = Point.Empty;
-            for (var current = this; current != commoneAcestor; current = current.Parent)
+            for (var current = this; current != commoneAcestor; current = current.VisualParent)
                 positiveTranslation += (Size)current.ArrangedPosition.Location;
 
             var translation = positiveTranslation - (Size)negativeTranslation;
@@ -353,20 +382,20 @@ namespace NSCI.UI
 
             // first get to the same depth or it can't be working.
             while (currentOther.Depth > currentThis.Depth)
-                currentOther = currentOther.Parent;
+                currentOther = currentOther.VisualParent;
             while (currentThis.Depth > currentOther.Depth)
-                currentThis = currentThis.Parent;
+                currentThis = currentThis.VisualParent;
 
             while (currentThis != currentOther)
             {
-                currentThis = currentThis.Parent;
-                currentOther = currentOther.Parent;
+                currentThis = currentThis.VisualParent;
+                currentOther = currentOther.VisualParent;
             }
 
             return currentOther ?? throw new ArgumentException("No Common Acestor found.");
         }
 
-       
+
 
     }
 }

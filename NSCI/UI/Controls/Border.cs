@@ -8,27 +8,45 @@ namespace NSCI.UI.Controls
     public partial class Border : FrameworkElement
     {
 
+        public Border()
+        {
+       
+        }
+
         [NDProperty.NDP]
         protected virtual void OnChildChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
         {
-
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, e) =>
+                {
+                    if (e.Property.OldValue?.VisualParent == this)
+                    {
+                        e.Property.OldValue.LogicalParent = null;
+                        e.Property.OldValue.VisualParent = null;
+                    }
+                    if (e.Property.NewValue != null)
+                    {
+                        e.Property.NewValue.VisualParent = this;
+                        e.Property.NewValue.LogicalParent = this;
+                    }
+                    InvalidateMeasure();
+                };
         }
 
 
         [NDProperty.NDP]
         protected virtual void OnBorderStyleChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, BorderStyle> arg)
         {
-            arg.ExecuteAfterChange += (sender, args) =>
-            {
-
-                var oldThickness = CalculateBorderThikness(args.OldValue);
-                var newThickness = CalculateBorderThikness(args.NewValue);
-                if (oldThickness != newThickness)
-                    InvalidateMeasure();
-
-                // InvalidateMeasure not always results in invalidate Render!
-                InvalidateRender();
-            };
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, args) =>
+                {
+                    var oldThickness = CalculateBorderThikness(args.Property.OldValue);
+                    var newThickness = CalculateBorderThikness(args.Property.NewValue);
+                    if (oldThickness != newThickness)
+                        InvalidateMeasure();
+                    // InvalidateMeasure not always results in invalidate Render!
+                    InvalidateRender();
+                };
         }
         public Thickness BorderThikness => CalculateBorderThikness(BorderStyle);
 

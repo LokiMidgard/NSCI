@@ -9,7 +9,18 @@ namespace NSCI.UI.Controls.Layout
     {
         protected override Size MeasureOverride(Size availableSize)
         {
-            return base.MeasureOverride(availableSize);
+            availableSize = base.MeasureOverride(availableSize);
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var uIElement = Children[i];
+                uIElement.Measure(availableSize);
+            }
+
+            var childHightSum = Children.Sum(x => x.DesiredSize.Height);
+            availableSize = base.EnsureMinMaxWidthHeight(new Size(availableSize.Width, childHightSum));
+            return availableSize;
+
         }
 
         protected override void ArrangeOverride(Size finalSize)

@@ -7,50 +7,50 @@ using System.Text;
 
 namespace NSCI.UI.Controls
 {
-    public class ItemsControl : Control
-    {
-        public ObservableCollection<UIElement> Items { get; } = new ObservableCollection<UIElement>();
+    //public class ItemsControl : Control
+    //{
+    //    public ObservableCollection<UIElement> Items { get; } = new ObservableCollection<UIElement>();
 
-        public ItemsControl()
-        {
-            this.Items.CollectionChanged += (s, e) =>
-            {
-                this.InvalidateArrange();
-                if (e.NewItems != null)
-                    foreach (UIElement uielement in e.NewItems)
-                        uielement.Parent = this;
-                if (e.OldItems != null)
-                    foreach (UIElement uielement in e.OldItems)
-                        uielement.Parent = null;
-            };
-        }
+    //    public ItemsControl()
+    //    {
+    //        this.Items.CollectionChanged += (s, e) =>
+    //        {
+    //            this.InvalidateArrange();
+    //            if (e.NewItems != null)
+    //                foreach (UIElement uielement in e.NewItems)
+    //                    uielement.VisualParent = this;
+    //            if (e.OldItems != null)
+    //                foreach (UIElement uielement in e.OldItems)
+    //                    uielement.VisualParent = null;
+    //        };
+    //    }
 
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            availableSize = base.MeasureOverride(availableSize);
-            foreach (var item in Items)
-                item.Measure(availableSize);
+    //    protected override Size MeasureOverride(Size availableSize)
+    //    {
+    //        availableSize = base.MeasureOverride(availableSize);
+    //        foreach (var item in Items)
+    //            item.Measure(availableSize);
 
-            var desiredWidth = Items.Max(x => x.DesiredSize.Width);
-            var desiredHeight = Items.Max(x => x.DesiredSize.Height);
-            return new Size(desiredWidth, desiredHeight);
-        }
+    //        var desiredWidth = Items.Max(x => x.DesiredSize.Width);
+    //        var desiredHeight = Items.Max(x => x.DesiredSize.Height);
+    //        return new Size(desiredWidth, desiredHeight);
+    //    }
 
-        protected override void ArrangeOverride(Size finalSize)
-        {
-            base.ArrangeOverride(finalSize);
-            foreach (var item in Items)
-                item.Arrange(new Rect(Point.Empty, finalSize));
-        }
+    //    protected override void ArrangeOverride(Size finalSize)
+    //    {
+    //        base.ArrangeOverride(finalSize);
+    //        foreach (var item in Items)
+    //            item.Arrange(new Rect(Point.Empty, finalSize));
+    //    }
 
-        protected override void RenderOverride(IRenderFrame frame)
-        {
-            foreach (var item in Items)
-            {
-                var location = GetLocation(item);
-                item.Render(frame.GetGraphicsBuffer(location));
-            }
-        }
+    //    protected override void RenderOverride(IRenderFrame frame)
+    //    {
+    //        foreach (var item in Items)
+    //        {
+    //            var location = GetLocation(item);
+    //            item.Render(frame.GetGraphicsBuffer(location));
+    //        }
+    //    }
 
-    }
+    //}
 }
