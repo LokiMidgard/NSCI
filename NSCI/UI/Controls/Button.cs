@@ -20,13 +20,13 @@ namespace NSCI.UI.Controls
                     Foreground = ConsoleColor.Gray
                 };
 
-                var innerBorder = new Border() { BorderStyle = BorderStyle.SingelLined , Background = ConsoleColor.DarkRed};
+                var innerBorder = new Border() { BorderStyle = BorderStyle.SingelLined, Background = ConsoleColor.DarkRed };
                 outerBorder.Child = innerBorder;
 
                 var contentPresenter = new ContentPresenter() { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
                 innerBorder.Child = contentPresenter;
 
-                Border.ForegroundProperty.Bind(innerBorder as FrameworkElement, HasFocusProperty.Of(b).ConvertOneWay(state => state ?  ConsoleColor.Yellow : ConsoleColor.White));
+                Border.ForegroundProperty.Bind(innerBorder as FrameworkElement, HasFocusProperty.Of(b).ConvertOneWay(state => state ? ConsoleColor.Yellow : ConsoleColor.White));
 
                 //Border.BackgroundProperty.Bind(innerBorder as FrameworkElement, Button.IsPressedProperty.Of(b).ConvertOneWay(state => state ? ConsoleColor.Red : ConsoleColor.DarkRed));
                 Border.PaddingProperty.Bind(outerBorder as FrameworkElement, Button.IsPressedProperty.Of(b).ConvertOneWay(state => state ? new Thickness(2, 2, 0, 0) : new Thickness(1, 1, 0, 0)));
@@ -44,6 +44,10 @@ namespace NSCI.UI.Controls
         public Button()
         {
             Up();
+
+            // HACK
+            IsEnabledChanged += (sender, e) => InvalidateRender();
+
         }
 
         private void Up() => IsPressed = false;

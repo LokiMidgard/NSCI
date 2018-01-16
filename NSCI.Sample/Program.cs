@@ -42,29 +42,106 @@ namespace NSCI.Sample
                 form.RowDefinitions.Add(new AutoSizeDefinition());
                 form.RowDefinitions.Add(new AutoSizeDefinition());
                 form.RowDefinitions.Add(new AutoSizeDefinition());
+                form.RowDefinitions.Add(new AutoSizeDefinition());
                 form.RowDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
 
                 form.ColumnDefinitions.Add(new AutoSizeDefinition());
                 form.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
 
 
-                var title = new TextBlock();
+                var title = new TextBlock()
+                {
+                    Margin = new Thickness(1, 1, 0, 3)
+                };
                 TextBlock.TextProperty.Bind(title, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.NameReadOnlyProperty).OneWay());
                 Grid.ColumnSpan[title].Value = 2;
                 Grid.Row[title].Value = 0;
                 form.Children.Add(title);
 
 
+                var surNameLable = new TextBlock()
+                {
+                    Height = 1
+                };
+                Grid.Column[surNameLable].Value = 0;
+                Grid.Row[surNameLable].Value = 1;
+                surNameLable.Text = "Sure Name";
+                form.Children.Add(surNameLable);
+
                 var surNameEdit = new TextBox()
                 {
-                    Background = ConsoleColor.DarkGray,
-                    Foreground = ConsoleColor.White,
+                    Margin = new Thickness(2,1,0,1),
                     Height = 1
                 };
                 Grid.Column[surNameEdit].Value = 1;
                 Grid.Row[surNameEdit].Value = 1;
                 TextBox.TextProperty.Bind(surNameEdit, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.SureNameProperty).TwoWay());
                 form.Children.Add(surNameEdit);
+
+
+
+                var firstNameLable = new TextBlock()
+                {
+                    Height = 1
+                };
+                Grid.Column[firstNameLable].Value = 0;
+                Grid.Row[firstNameLable].Value = 2;
+                firstNameLable.Text = "First Name";
+                form.Children.Add(firstNameLable);
+
+                var firstNameEdit = new TextBox()
+                {
+                    Margin = new Thickness(2,1,0,1),
+                    Height = 1
+                };
+                Grid.Column[firstNameEdit].Value = 1;
+                Grid.Row[firstNameEdit].Value = 2;
+                TextBox.TextProperty.Bind(firstNameEdit, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.FirstNameProperty).TwoWay());
+                form.Children.Add(firstNameEdit);
+
+
+
+
+                var streetLable = new TextBlock()
+                {
+                    Height = 1
+                };
+                Grid.Column[streetLable].Value = 0;
+                Grid.Row[streetLable].Value = 3;
+                streetLable.Text = "Street";
+                form.Children.Add(streetLable);
+
+                var streetEdit = new TextBox()
+                {
+                    Margin = new Thickness(2,1,0,1),
+                    Height = 1
+                };
+                Grid.Column[streetEdit].Value = 1;
+                Grid.Row[streetEdit].Value = 3;
+                TextBox.TextProperty.Bind(streetEdit, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.StreetProperty).TwoWay());
+                form.Children.Add(streetEdit);
+
+
+
+
+                var cityLable = new TextBlock()
+                {
+                    Height = 1
+                };
+                Grid.Column[cityLable].Value = 0;
+                Grid.Row[cityLable].Value = 4;
+                cityLable.Text = "City";
+                form.Children.Add(cityLable);
+
+                var cityEdit = new TextBox()
+                {
+                    Margin = new Thickness(2,1,0,1),
+                    Height = 1
+                };
+                Grid.Column[cityEdit].Value = 1;
+                Grid.Row[cityEdit].Value = 4;
+                TextBox.TextProperty.Bind(cityEdit, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.CityProperty).TwoWay());
+                form.Children.Add(cityEdit);
 
 
 

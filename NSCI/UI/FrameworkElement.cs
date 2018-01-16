@@ -349,7 +349,6 @@ namespace NSCI.UI
         {
             if (SupportSelection && arg.Property.IsObjectValueChanging)
             {
-                InvalidateRender();
                 if (arg.Property.NewValue)
                 {
                     RootWindow?.tabList.Add(this);

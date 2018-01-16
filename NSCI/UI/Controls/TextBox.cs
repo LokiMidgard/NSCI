@@ -17,10 +17,16 @@ namespace NSCI.UI.Controls
                 var textblock = new TextBlock() { MinHeight = 1 };
 
                 TextBlock.TextProperty.Bind(textblock, TextBox.TextProperty.Of(textBox).OneWay());
-                FrameworkElement.ForegroundProperty.Bind(textblock as FrameworkElement, TextBox.HasFocusProperty.Of(textBox).ConvertOneWay(state => state ? ConsoleColor.Yellow : ConsoleColor.White));
+                //FrameworkElement.ForegroundProperty.Bind(textblock as FrameworkElement, TextBox.HasFocusProperty.Of(textBox).ConvertOneWay(state => state ? ConsoleColor.Yellow : ConsoleColor.White));
+                FrameworkElement.BackgroundProperty.Bind(textblock as FrameworkElement, TextBox.HasFocusProperty.Of(textBox).ConvertOneWay(state => state ? ConsoleColor.Cyan : ConsoleColor.Gray));
                 return textblock;
             }));
 
+        }
+
+        public TextBox()
+        {
+            IsEnabledChanged += (sender, e) => InvalidateRender();
         }
 
         [NDP]
