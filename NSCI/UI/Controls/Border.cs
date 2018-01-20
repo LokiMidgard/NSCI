@@ -10,8 +10,10 @@ namespace NSCI.UI.Controls
 
         public Border()
         {
-
+            IsDisabledChanged += (sender, e) => InvalidateRender();
         }
+
+
 
         [NDProperty.NDP]
         protected virtual void OnChildChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, UIElement> arg)
@@ -118,7 +120,7 @@ namespace NSCI.UI.Controls
                 var borderThikness = BorderThikness;
                 var borderWith = borderThikness.Left + borderThikness.Right;
                 var borderHeight = borderThikness.Top + borderThikness.Bottom;
-                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, IsEnabled ? Foreground : ForegroundDisabled, IsEnabled ? Background : BackgroundDisabled, (char)SpecialChars.Fill);
+                frame.FillRect(borderThikness.Left, borderThikness.Top, frame.Width - borderWith, frame.Height - borderHeight, IsDisabled ? ForegroundDisabled : Foreground, IsDisabled ? BackgroundDisabled : Background, (char)SpecialChars.Fill);
             }
         }
 
@@ -148,7 +150,7 @@ namespace NSCI.UI.Controls
                     throw new NotImplementedException($"BoarderStyle {BorderStyle} not implemented.");
             }
 
-            frame.DrawRect(0, 0, frame.Width, frame.Height, IsEnabled ? Foreground : ForegroundDisabled, IsEnabled ? Background : BackgroundDisabled, borderPen);
+            frame.DrawRect(0, 0, frame.Width, frame.Height, IsDisabled ?ForegroundDisabled: Foreground  , IsDisabled ?BackgroundDisabled: Background  , borderPen);
         }
 
         private void RenderDropShadow(IRenderFrame frame)

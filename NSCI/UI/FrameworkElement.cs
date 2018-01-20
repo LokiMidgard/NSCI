@@ -11,6 +11,12 @@ namespace NSCI.UI
     public abstract partial class
         FrameworkElement : UIElement
     {
+
+        public FrameworkElement()
+        {
+            IsDisabled = !IsEnabled;
+        }
+
         //
         // Zusammenfassung:
         //     Abgerufen oder die vorgeschlagene Höhe einer Windows.UI.Xaml festgelegt. FrameworkElement.
@@ -321,7 +327,7 @@ namespace NSCI.UI
         [NDProperty.NDP]
         protected virtual void OnHasFocusChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
-            if (!SupportSelection || !IsEnabled)
+            if (!SupportSelection || IsDisabled)
                 arg.Provider.MutatedValue = false;
 
             if (arg.Property.IsObjectValueChanging)
@@ -343,13 +349,32 @@ namespace NSCI.UI
         // Rückgabewerte:
         //     ** "true" ** Wenn der Benutzer mit dem Steuerelement interagieren kann; andernfalls
         //     ** "false" **.
-        [NDP(Settings = NDPropertySettings.Inherited)]
+        [NDP]
         [DefaultValue(true)]
         protected virtual void OnIsEnabledChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {
+            if (arg.Property.IsObjectValueChanging)
+            {
+                IsDisabled = !arg.Property.NewValue;
+            }
+        }
+
+        [NDP(Settings = NDPropertySettings.Inherited | NDPropertySettings.ReadOnly)]
+        [DefaultValue(false)]
+        protected virtual void OnIsDisabledChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
+        {
+            if (arg.Provider.ChangingProvider == NDProperty.Providers.LocalValueProvider<NDPConfiguration>.Instance)
+            {
+                if (arg.Provider.HasNewValue && arg.Provider.NewValue == false)
+                {
+                    arg.Provider.Reject = true;
+                    NDProperty.Providers.LocalValueProvider<NDPConfiguration>.Instance.RemoveValue(IsDisabledProperty, this);
+                    return;
+                }
+            }
             if (SupportSelection && arg.Property.IsObjectValueChanging)
             {
-                if (arg.Property.NewValue)
+                if (!arg.Property.NewValue)
                 {
                     RootWindow?.tabList.Add(this);
                 }
@@ -366,12 +391,13 @@ namespace NSCI.UI
         }
 
 
+
         protected override void OnRootWindowChanging(OnChangingArg<NDPConfiguration, RootWindow> arg)
         {
             if (arg.Property.IsObjectValueChanging)
                 arg.ExecuteAfterChange += (sender, args) =>
                 {
-                    if (SupportSelection && IsEnabled)
+                    if (SupportSelection && !IsDisabled)
                     {
                         if ((args.Property.OldValue?.ActiveControl ?? null) == this)
                             args.Property.OldValue.ActiveControl = null;

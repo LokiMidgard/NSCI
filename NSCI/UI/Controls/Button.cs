@@ -44,10 +44,6 @@ namespace NSCI.UI.Controls
         public Button()
         {
             Up();
-
-            // HACK
-            IsEnabledChanged += (sender, e) => InvalidateRender();
-
         }
 
         private void Up() => IsPressed = false;

@@ -26,7 +26,7 @@ namespace NSCI.UI.Controls
 
         public TextBox()
         {
-            IsEnabledChanged += (sender, e) => InvalidateRender();
+            
         }
 
         [NDP]

@@ -301,8 +301,25 @@ namespace NSCI.UI
         private FrameworkElement FindFocusableControl(IntEx factor, FrameworkElement from, SearchDirection direction)
         {
             var fromLocation = GetLocation(from);
-            var locationLost = this.tabList.Select(c => new { Location = GetLocation(c), Control = c }).ToArray();
-            return locationLost.Where(c =>
+            return this.tabList
+                .Select(c => new { Location = GetLocation(c), Control = c })
+                .OrderBy(x=> {
+                switch (direction)
+                {
+                    case SearchDirection.Left:
+                        return -x.Location.Right;
+                    case SearchDirection.Top:
+                        return -x.Location.Bottom;
+                    case SearchDirection.Bottom:
+                        return x.Location.Top;
+                    case SearchDirection.Right:
+                        return x.Location.Left;
+                    default:
+                        throw new ArgumentException();
+
+                }
+            })
+            .Where(c =>
             {
                 switch (direction)
                 {
@@ -375,7 +392,6 @@ namespace NSCI.UI
                         throw new ArgumentException();
                 }
             })
-            .OrderBy(c => c.Location.Center.X)
             .FirstOrDefault()?.Control;
         }
 

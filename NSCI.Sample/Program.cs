@@ -33,6 +33,7 @@ namespace NSCI.Sample
                 Grid.Row[contentPane].Value = 1;
                 Grid.ColumnSpan[contentPane].Value = 3;
                 grid.Children.Add(contentPane);
+                FrameworkElement.IsEnabledProperty.Bind(contentPane as FrameworkElement, PersonList.CurrentReadOnlyProperty.Of(model).ConvertOneWay(x => x != null));
 
 
                 var form = new Grid();
@@ -70,7 +71,7 @@ namespace NSCI.Sample
 
                 var surNameEdit = new TextBox()
                 {
-                    Margin = new Thickness(2,1,0,1),
+                    Margin = new Thickness(2, 1, 0, 1),
                     Height = 1
                 };
                 Grid.Column[surNameEdit].Value = 1;
@@ -91,7 +92,7 @@ namespace NSCI.Sample
 
                 var firstNameEdit = new TextBox()
                 {
-                    Margin = new Thickness(2,1,0,1),
+                    Margin = new Thickness(2, 1, 0, 1),
                     Height = 1
                 };
                 Grid.Column[firstNameEdit].Value = 1;
@@ -113,7 +114,7 @@ namespace NSCI.Sample
 
                 var streetEdit = new TextBox()
                 {
-                    Margin = new Thickness(2,1,0,1),
+                    Margin = new Thickness(2, 1, 0, 1),
                     Height = 1
                 };
                 Grid.Column[streetEdit].Value = 1;
@@ -135,7 +136,7 @@ namespace NSCI.Sample
 
                 var cityEdit = new TextBox()
                 {
-                    Margin = new Thickness(2,1,0,1),
+                    Margin = new Thickness(2, 1, 0, 1),
                     Height = 1
                 };
                 Grid.Column[cityEdit].Value = 1;
