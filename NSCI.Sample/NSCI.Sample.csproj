@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NDProperty" Version="0.13.3-Debug" />
+    <PackageReference Include="NDProperty" Version="0.13.3" />
   </ItemGroup>
 
   <ItemGroup>

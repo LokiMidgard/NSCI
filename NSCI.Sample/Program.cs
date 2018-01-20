@@ -11,13 +11,19 @@ namespace NSCI.Sample
     {
         public static void Main(string[] args)
         {
-            var model = Viewmodel.PersonList.Load(new System.IO.FileInfo("test.xml"));
 
+            // the Root window is the root for our drawing. It will later start the ui thread.
             var root = new NSCI.UI.RootWindow();
 
+            // The root window can only have one child, the Content. So we need another control that will hold more elements.
             var grid = new Grid();
             root.Content = grid;
 
+            // Like in WPF grid has Rows and Colums. 
+            // There are 3 diferent row/column-definitions:
+            // + AutoSizeDefinition coresponds to WPF "Auto"
+            // + FixSizeDefinition corespondens to WPF "3"
+            // + RelativSizeDefinition coresponds to WPF "3*"
             grid.RowDefinitions.Add(new AutoSizeDefinition());
             grid.RowDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
             grid.RowDefinitions.Add(new AutoSizeDefinition());
@@ -27,20 +33,72 @@ namespace NSCI.Sample
             grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
             grid.ColumnDefinitions.Add(new AutoSizeDefinition());
 
-            // Form
+
+            // You should not forget to set the Size Property on RelativeSizeDefinition.
+            // otherwise the row or column will have always a size of zero
+
+            // This Application will let you show edit and store Addresses in an XML.
+            // You will be able to add new entrys browse existing ones and persist changes
+            // to the XML.
+
+            // Here we store our data.
+            var model = Viewmodel.PersonList.Load(new System.IO.FileInfo("test.xml"));
+            // This initialy loads the XML or creates it if not existent.
+            // It will allow us to add new entrys get data from already existing
+            // and persisting changes.
+            // The Model PersonList will contains a short explination how to create
+            // your own models that are compatiple with this FrameWork.
+
+
+            // In the nex block creates the parts of the View that will show the information to one address
+            // and alowes us to change it.
             {
+                // We will show the Address in a box that is decorated with a double lined Border.
                 var contentPane = new Border()
                 {
                     BorderStyle = BorderStyle.DoubleLined,
                     TabIndex = 4,
                     Background = ConsoleColor.DarkCyan
                 };
+                // We will add this contentPane to our grid.
+                // Like in WPF we need to set the Row and Column 
+                // Property for the contentPane in order to draw
+                // it at the correct Position.
+                // We use Static Propertys on the Grid to dor this.
                 Grid.Row[contentPane].Value = 1;
                 Grid.ColumnSpan[contentPane].Value = 3;
+                // We also need to actually add the contentPane to our grid.
                 grid.Children.Add(contentPane);
+
+                // initially there won't be any Address so we want to disable all address related fields.
+                // There are two propertys on FrameworkElements that control the enabled/disabled state.
+                // IsEnabled and IsDisabled. IsEnabled is a writable property that tells if this control 
+                // was explicitly enabled or disabled. IsDisabled however tells us if a control is actual
+                // disabled. 
+                // If we set the IsEnabled property on contentPane to false, the IsDisabled property will be true.
+                // For all children of contentPane the IsEnabled property is still true, because they were not 
+                // explicitly disabled. However the IsDisabled property on all childrean is also true, because
+                // this property is enhireted from its parent. The Naming is far from good and will change in
+                // the future.
+                // The following line will initiate the binding of the IsEnabled property to the Current property
+                // of our model.
                 FrameworkElement.IsEnabledProperty.Bind(contentPane as FrameworkElement, PersonList.CurrentReadOnlyProperty.Of(model).ConvertOneWay(x => x != null));
+                // This Framework uses the NDProperty framework. This allows for Binding, inheritance
+                // and some other neat features. For every Property there is an static field with "<PropertyName>Property" 
+                // or "<PropertyName>ReadonlyProperty".  On this object we can call the Extension Method Bind(...).
+                // The first parameter will be the Object on which the property exists we Bind. The seccond Parameter is 
+                // a BindingConfiguration. This is simular to the Path property in WPF Binding. We use the
+                // Of(...) extneions method on another NDProperty. 
+                // In our case this is the CurrentReadOnlyProperty of model. Because we try to Bind an object of type 
+                // Person to bool we need a Converter. If the types would be compatible we could just call the 
+                // mehtod OneWay(...).
+
+                // Because of generics, we need to cast our contentPane to the Type where IsEnabledProperty is defined.
+                // Thats why we need the "as FrameworkElement".
 
 
+                // Agian Border can only have one child, so we need a grid to put in multiple elements.
+                // We call it form:
                 var form = new Grid();
                 contentPane.Child = form;
 
@@ -60,6 +118,14 @@ namespace NSCI.Sample
                     Height = 1,
                     Margin = new Thickness(1, 1, 0, 2)
                 };
+                // The following will Bind to the Name property of a Person stored in our modl.
+                // The Path for binding starts always with the Of(...) method and ends with:
+                // + OneWay()
+                // + OneWayConvert(...)
+                // + TwoWay()
+                // + TwoWayConvert(...)
+                // To change different Propertys together we can use the Over method. This Binding
+                // would be model.Current.Name
                 TextBlock.TextProperty.Bind(title, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.NameReadOnlyProperty).OneWay());
                 Grid.ColumnSpan[title].Value = 2;
                 Grid.Row[title].Value = 0;
@@ -84,6 +150,9 @@ namespace NSCI.Sample
                 };
                 Grid.Column[surNameEdit].Value = 1;
                 Grid.Row[surNameEdit].Value = 1;
+                // This will bind the Property TwoWay. When changes are applied to the TextProperty
+                // those will be set on the SureNameProperty as Local Values. Changes in SureNameProeprty
+                // however will not result in the change of the local Value of TextProperty but the Binding Value
                 TextBox.TextProperty.Bind(surNameEdit, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.SureNameProperty).TwoWay());
                 form.Children.Add(surNameEdit);
 
@@ -157,208 +226,70 @@ namespace NSCI.Sample
                 Grid.Row[cityEdit].Value = 4;
                 TextBox.TextProperty.Bind(cityEdit, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.CityProperty).TwoWay());
                 form.Children.Add(cityEdit);
-
-
-
-
             }
 
 
             // Previous Button
+            var previousButton = new Button()
             {
-                var previousButton = new Button()
-                {
-                    TabIndex = 0,
-                    Content = "Prev.",
-                    Margin = new Thickness(1)
-                };
-                Grid.Row[previousButton].Value = 0;
-                Grid.Column[previousButton].Value = 0;
-                grid.Children.Add(previousButton);
-                FrameworkElement.IsEnabledProperty.Bind(previousButton as FrameworkElement, Viewmodel.PersonList.HasPreviousReadOnlyProperty.Of(model).OneWay());
-                previousButton.ButtonPressed += (sender, e) => model.CurrentSelectedIndex--;
-            }
+                TabIndex = 0,
+                Content = "Prev.",
+                Margin = new Thickness(1)
+            };
+            Grid.Row[previousButton].Value = 0;
+            Grid.Column[previousButton].Value = 0;
+            grid.Children.Add(previousButton);
+
+            // Currently there is no command Pattern. So we need to enable the Button via binding
+            FrameworkElement.IsEnabledProperty.Bind(previousButton as FrameworkElement, Viewmodel.PersonList.HasPreviousReadOnlyProperty.Of(model).OneWay());
+            // and subscripe to events the old way
+            previousButton.ButtonPressed += (sender, e) => model.CurrentSelectedIndex--;
 
             // next Button
+            var nextButton = new Button()
             {
-                var nextButton = new Button()
-                {
-                    TabIndex = 2,
-                    Content = "next",
-                    Margin = new Thickness(1)
+                TabIndex = 2,
+                Content = "next",
+                Margin = new Thickness(1)
 
-                };
-                Grid.Row[nextButton].Value = 0;
-                Grid.Column[nextButton].Value = 2;
-                grid.Children.Add(nextButton);
-                FrameworkElement.IsEnabledProperty.Bind(nextButton as FrameworkElement, Viewmodel.PersonList.HasNextReadOnlyProperty.Of(model).OneWay());
-                nextButton.ButtonPressed += (sender, e) => model.CurrentSelectedIndex++;
-            }
+            };
+            Grid.Row[nextButton].Value = 0;
+            Grid.Column[nextButton].Value = 2;
+            grid.Children.Add(nextButton);
+            FrameworkElement.IsEnabledProperty.Bind(nextButton as FrameworkElement, Viewmodel.PersonList.HasNextReadOnlyProperty.Of(model).OneWay());
+            nextButton.ButtonPressed += (sender, e) => model.CurrentSelectedIndex++;
 
             // new Button
+            var newButton = new Button()
             {
-                var nextButton = new Button()
-                {
-                    TabIndex = 1,
-                    Content = "new",
-                    Margin = new Thickness(1)
+                TabIndex = 1,
+                Content = "new",
+                Margin = new Thickness(1)
 
-                };
-                Grid.Row[nextButton].Value = 0;
-                Grid.Column[nextButton].Value = 1;
-                grid.Children.Add(nextButton);
+            };
+            Grid.Row[newButton].Value = 0;
+            Grid.Column[newButton].Value = 1;
+            grid.Children.Add(newButton);
 
-                nextButton.ButtonPressed += (sender, e) => model.NewPerson();
-            }
+            newButton.ButtonPressed += (sender, e) => model.NewPerson();
 
             // new Persist
+            var persistButton = new Button()
             {
-                var persistButton = new Button()
-                {
-                    TabIndex = 7,
-                    Content = "Save",
-                    Margin = new Thickness(1)
+                TabIndex = 7,
+                Content = "Save",
+                Margin = new Thickness(1)
 
-                };
-                Grid.Row[persistButton].Value = 2;
-                Grid.ColumnSpan[persistButton].Value = 3;
-                grid.Children.Add(persistButton);
+            };
+            Grid.Row[persistButton].Value = 2;
+            Grid.ColumnSpan[persistButton].Value = 3;
+            grid.Children.Add(persistButton);
+            persistButton.ButtonPressed += (sender, e) => model.Persist();
 
-                persistButton.ButtonPressed += (sender, e) => model.Persist();
-            }
-
+            // This is the last thing we'll do. This starts the event loop and blocks untill the UI is terminated
+            // You should no longer call any Consol methods because these could corupt your UI.
             root.Run();
 
-
-            //var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!1", Height = 3 };
-            //var border = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.Block, Foreground = ConsoleColor.Black };
-            //border.Child = text;
-            ////var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!2" };
-
-            //////TextBlock.TextProperty.Bind(text2,
-            //////    ContentControl.ContentProperty
-            //////    .Of(root)
-            //////    .Over(UIElement.DepthReadOnlyProperty)
-            //////    .ConvertOneWay(x => x.ToString())
-            //////    );
-            //////TextBlock.TextProperty.Bind(text,
-            //////    ContentControl.ContentProperty
-            //////    .Of(root)
-            //////    .Over(UIElement.IsVisibleProperty)
-            //////    .ConvertTwoWay(x => x.ToString(), x => bool.Parse(x))
-            //////    );
-
-            //var button1 = new Button() { Width = 40, HorizontalAlignment = HorizontalAlignment.Left };
-            //var button2 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
-            //var button3 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
-
-            //button1.Content = "Button 1";
-            //button2.Content = "Button 2";
-            //button3.Content = "Button 3";
-
-            //////var scroll = new ScrollView();
-            //////var text3 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World! Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n\nDuis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.Lorem ipsum dolor sit amet,\nconsectetuer adipiscing elit,\nsed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.\n\nUt wisi enim ad minim veniam,\nquis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\n\nNam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer" };
-            //////scroll.Content = text3;
-
-            //var grid = new Grid();
-
-            //grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
-            //grid.ColumnDefinitions.Add(new FixSizeDefinition() { Size = 20 });
-            //grid.ColumnDefinitions.Add(new AutoSizeDefinition());
-            //grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
-
-            //grid.RowDefinitions.Add(new FixSizeDefinition() { Size = 5 });
-            //grid.RowDefinitions.Add(new AutoSizeDefinition());
-            //grid.RowDefinitions.Add(new AutoSizeDefinition());
-
-            //grid.Children.Add(button1);
-            //grid.Children.Add(button2);
-            //grid.Children.Add(button3);
-            ////grid.Children.Add(scroll);
-
-            //Grid.Column[button1].Value = 0;
-            //Grid.Column[button2].Value = 1;
-
-            //Grid.Column[button3].Value = 0;
-            //Grid.ColumnSpan[button3].Value = 2;
-            //Grid.Row[button3].Value = 2;
-            //Grid.Row[button1].Value = 1;
-            //Grid.Row[button2].Value = 1;
-
-            ////Grid.ColumnSpan[scroll].Value = 2;
-            ////Grid.Row[scroll].Value = 0;
-
-            //var checkbox = new CheckBox();
-
-            //checkbox.Content = new TextBlock() { Text = "Test Slection" };
-
-            //var stack = new StackPanel();
-
-            //stack.Children.Add(checkbox);
-            //stack.Children.Add(border);
-            //stack.Children.Add(grid);
-
-            //var textblock = new TextBlock() { Background = ConsoleColor.DarkRed, Width = 40, Height = 1, Text = "HEY" };
-            //var textbox = new TextBox() { Background = ConsoleColor.DarkRed, Width = 40, Height = 1 };
-
-            //stack.Children.Add(textbox);
-            //stack.Children.Add(textblock);
-            ////stack.Items.Add(/*grid*/);
-            ////stack.Items.Add(button1);
-            ////stack.Items.Add(button2);
-
-
-
-
-            //root.Content = stack;
-
-            ////root.BeforeStart += async () =>
-            ////  {
-            ////      var styles = (NSCI.UI.Controls.BorderStyle[])Enum.GetValues(typeof(NSCI.UI.Controls.BorderStyle));
-            ////      while (root.Running) // this endless loop would prevent the App from quitting :/ Need to handle on framework level.
-            ////      {
-            ////          foreach (var s in styles)
-            ////          {
-            ////              if (!root.Running)
-            ////                  break;
-            ////              await Task.Delay(1000);
-            ////              border.Style = s;
-            ////          }
-            ////      }
-            ////  };
-
-            ////var dialog = new Dialog(root) { Text = "Hello World!", Width = 60, Height = 32, Top = 4, Left = 4, Border = BorderStyle.Thick };
-            ////new Label(dialog) { Text = "This is a dialog!", Top = 2, Left = 2 };
-            ////var button = new Button(dialog) { Text = "Oooooh", Top = 4, Left = 6 };
-            ////var button2 = new Button(dialog) { Text = "Click", Top = 4, Left = 18 };
-            ////var list = new ListBox(dialog) { Top = 10, Left = 4, Width = 32, Height = 6, Border = BorderStyle.Thin };
-            ////var line = new VerticalLine(dialog) { Top = 4, Left = 40, Width = 1, Height = 6, Border = BorderStyle.Thick };
-
-            ////var dialog2 = new Dialog(root) { Text = "ooooh", Width = 32, Height = 10, Top = 6, Left = 6, Border = BorderStyle.Thick, Visible = false };
-            ////var button3 = new Button(dialog2) { Text = "Bye!", Width = 8, Height = 3, Top = 1, Left = 1 };
-
-            ////var text = new NSCI.Widgets.SingleLineTextbox(dialog2) { Width = 28, Height = 3, Top = 5, Left = 1 };
-
-
-
-            ////button3.Clicked += (s, e) => { dialog2.Hide(); dialog.Show(); };
-            ////button2.Clicked += (s, e) => { dialog.Hide(); dialog2.Show(); };
-
-            ////for (var i = 0; i < 25; i++)
-            ////{
-            ////    list.Items.Add("Item " + i.ToString());
-            ////}
-
-            ////button.Clicked += button_Clicked;
-
-
-
-
-            //root.Run();
         }
-        //static void button_Clicked(object sender, EventArgs e)
-        //{
-        //    (sender as Button).RootWindow.Detach();
-        //}
     }
 }

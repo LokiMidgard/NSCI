@@ -13,6 +13,21 @@ namespace NSCI.Sample.Viewmodel
     partial class PersonList
     {
 
+        // This Object uses like the UI NDPropertys.
+        // This is necesarry to use Binding. Currently POCO objects are not supported
+        // If you wan't to create your own NDPropertys, you should add the 
+        // NDProperty nuget package explicitly. This will include buildtime generators
+        // in you project that will normaly not added if it will referenced via 
+        // another dependency. While you don't need this generator it will make things
+        // easier. To add an NDProperty you need to implement a OnChangeing method.
+        // for example the CurrentSelectedIndexProeprty has following callback;
+        // private void OnCurrentSelectedIndexChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, int> arg)
+        // The first TypeArgument sets the configuration for the PropertySystem and must be
+        // the same as in the NSCI project. The seccond TypeArgument is the Type of the Proeprty.
+        // The last thing you need to do is add the [NDP] Attribute to the Method and the rest will
+        // be generated.
+
+
         private readonly ObservableCollection<Person> persons;
         private readonly FileInfo databaseFile;
 
