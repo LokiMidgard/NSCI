@@ -26,14 +26,26 @@ namespace NSCI.UI.Controls
 
         public TextBox()
         {
-            
+
         }
 
         [NDP]
         protected virtual void OnTextChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, string> arg)
         {
-
+            if (arg.Property.IsObjectValueChanging)
+                arg.ExecuteAfterChange += (sender, e) =>
+                {
+                    CurserPosition = Math.Min(CurserPosition, arg.Property.NewValue.Length);
+                };
         }
+
+        [NDP]
+        protected virtual void OnCurserPositionChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, int> arg)
+        {
+            if (arg.Provider.HasNewValue)
+                arg.Provider.MutatedValue = Math.Max(0, Math.Min(Text.Length, arg.Provider.NewValue));
+        }
+
 
         [NDP]
         protected virtual void OnAcceptReturnChanging(global::NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
@@ -55,11 +67,35 @@ namespace NSCI.UI.Controls
             if (Text == null)
                 Text = string.Empty;
             if (AcceptReturn && keyInfo.Key == ConsoleKey.Enter)
-                Text += "\n";
-            if (AcceptTab && keyInfo.Key == ConsoleKey.Tab)
-                Text += "\t";
+            {
+                Text = Text.Insert(CurserPosition, "\n");
+                CurserPosition++;
+            }
+            else if (AcceptTab && keyInfo.Key == ConsoleKey.Tab)
+            {
+                Text = Text.Insert(CurserPosition, "\t");
+                CurserPosition++;
+            }
+            else if (keyInfo.Key == ConsoleKey.Backspace)
+            {
+                if (CurserPosition > 0)
+                {
+                    bool currentPositionIsLast = CurserPosition == Text.Length;
+                    Text = Text.Remove(CurserPosition - 1, 1);
+                    if (!currentPositionIsLast)
+                        CurserPosition--; // when we were already at the last position, changing the text will update curserPosition.
+                }
+            }
+            else if (keyInfo.Key == ConsoleKey.Delete)
+            {
+                if (CurserPosition < Text.Length)
+                    Text = Text.Remove(CurserPosition, 1);
+            }
             else if (!char.IsControl(keyInfo.KeyChar))
-                Text += keyInfo.KeyChar;
+            {
+                Text = Text.Insert(CurserPosition, keyInfo.KeyChar.ToString());
+                CurserPosition++;
+            }
             else
                 return false;
             return true;
