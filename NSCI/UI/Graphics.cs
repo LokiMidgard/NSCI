@@ -197,92 +197,104 @@ namespace NSCI.UI
 
         internal void Draw()
         {
-            if (this.previousBufferValid)
+            do
             {
-                Console.SetCursorPosition(0, 0);
-
-                for (int i = 0; i < this.currentBuffer.Length; i++)
+                try
                 {
-                    if (this.currentBuffer[i] == this.previousBuffer[i])
-                        continue;
-
-                    Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
-                    Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
-                    int j = 0;
-                    while (true)
+                    if (this.previousBufferValid)
                     {
-                        int k = 0;
-                        while (i + j < this.currentBuffer.Length
-                            && this.currentBuffer.ForgroundBuffer[i + j] == this.currentBuffer.ForgroundBuffer[i]
-                            && this.currentBuffer.BackgroundBuffer[i + j] == this.currentBuffer.BackgroundBuffer[i]
-                            && this.currentBuffer[i + j] != this.previousBuffer[i + j])
-                            ++j;
-                        while (i + j + k < this.currentBuffer.Length
-                            && this.currentBuffer.ForgroundBuffer[i + j + k] == this.currentBuffer.ForgroundBuffer[i]
-                            && this.currentBuffer.BackgroundBuffer[i + j + k] == this.currentBuffer.BackgroundBuffer[i]
-                            && this.currentBuffer[i + j + k] == this.previousBuffer[i + j + k])
-                            ++k;
+                        Console.SetCursorPosition(0, 0);
 
-                        if (i + j + k < this.currentBuffer.Length
-                            && this.currentBuffer.ForgroundBuffer[i + j + k] == this.currentBuffer.ForgroundBuffer[i]
-                            && this.currentBuffer.BackgroundBuffer[i + j + k] == this.currentBuffer.BackgroundBuffer[i])
-                            j += k;
-                        else
+                        for (int i = 0; i < this.currentBuffer.Length; i++)
                         {
-                            //if (i + j >= this.currentBuffer.Length)
-                            //    j -= i + j - this.currentBuffer.Length + 1;
-                            break;
+                            if (this.currentBuffer[i] == this.previousBuffer[i])
+                                continue;
+
+                            Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
+                            Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
+                            int j = 0;
+                            while (true)
+                            {
+                                int k = 0;
+                                while (i + j < this.currentBuffer.Length
+                                    && this.currentBuffer.ForgroundBuffer[i + j] == this.currentBuffer.ForgroundBuffer[i]
+                                    && this.currentBuffer.BackgroundBuffer[i + j] == this.currentBuffer.BackgroundBuffer[i]
+                                    && this.currentBuffer[i + j] != this.previousBuffer[i + j])
+                                    ++j;
+                                while (i + j + k < this.currentBuffer.Length
+                                    && this.currentBuffer.ForgroundBuffer[i + j + k] == this.currentBuffer.ForgroundBuffer[i]
+                                    && this.currentBuffer.BackgroundBuffer[i + j + k] == this.currentBuffer.BackgroundBuffer[i]
+                                    && this.currentBuffer[i + j + k] == this.previousBuffer[i + j + k])
+                                    ++k;
+
+                                if (i + j + k < this.currentBuffer.Length
+                                    && this.currentBuffer.ForgroundBuffer[i + j + k] == this.currentBuffer.ForgroundBuffer[i]
+                                    && this.currentBuffer.BackgroundBuffer[i + j + k] == this.currentBuffer.BackgroundBuffer[i])
+                                    j += k;
+                                else
+                                {
+                                    //if (i + j >= this.currentBuffer.Length)
+                                    //    j -= i + j - this.currentBuffer.Length + 1;
+                                    break;
+                                }
+                            }
+                            bool increasedBuffer = false;
+                            System.Diagnostics.Debug.Assert(i + j < this.currentBuffer.Length, "We try to write over our buffer :(");
+                            if (i + j == this.currentBuffer.Length - 1)
+                            {
+                                // we will write the last char, this will result in a line break that will delets the first line
+                                // to prevent this we must temporary increase the buffer Size.
+                                Console.BufferHeight += 1;
+                                increasedBuffer = true;
+                            }
+
+                            var (left, top) = GetXYFromIndex(i);
+                            Console.SetCursorPosition(left, top);
+                            if (!increasedBuffer)
+                                Console.Write(this.currentBuffer.CharacterBuffer, i, j);
+                            if (increasedBuffer)
+                            {
+                                Console.SetCursorPosition(0, 0);
+                                Console.BufferHeight -= 1;
+                            }
+                            i += j - 1;
                         }
                     }
-                    bool increasedBuffer = false;
-                    System.Diagnostics.Debug.Assert(i + j < this.currentBuffer.Length, "We try to write over our buffer :(");
-                    if (i + j == this.currentBuffer.Length - 1)
+                    else
                     {
-                        // we will write the last char, this will result in a line break that will delets the first line
-                        // to prevent this we must temporary increase the buffer Size.
-                        Console.BufferHeight += 1;
-                        increasedBuffer = true;
-                    }
 
-                    var (left, top) = GetXYFromIndex(i);
-                    Console.SetCursorPosition(left, top);
-                    if (!increasedBuffer)
-                        Console.Write(this.currentBuffer.CharacterBuffer, i, j);
-                    if (increasedBuffer)
-                    {
+                        Console.BufferHeight += 1;
+                        Console.SetCursorPosition(0, 0);
+                        for (int i = 0, j = 0; i < this.currentBuffer.Length; i += j)
+                        {
+
+                            Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
+                            Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
+                            j = 1;
+                            while (i + j < this.currentBuffer.Length
+                                && this.currentBuffer.ForgroundBuffer[i + j] == this.currentBuffer.ForgroundBuffer[i]
+                                && this.currentBuffer.BackgroundBuffer[i + j] == this.currentBuffer.BackgroundBuffer[i])
+                                ++j;
+
+                            Console.Write(this.currentBuffer.CharacterBuffer, i, j);
+                        }
+
                         Console.SetCursorPosition(0, 0);
                         Console.BufferHeight -= 1;
                     }
-                    i += j-1;
-                }
-            }
-            else
-            {
 
-                Console.BufferHeight += 1;
-                Console.SetCursorPosition(0, 0);
-                for (int i = 0, j = 0; i < this.currentBuffer.Length; i += j)
+                    Console.ResetColor(); // We do not want to have spooky colors
+                    this.previousBuffer.CopyFrom(this.currentBuffer);
+                    this.previousBufferValid = true;
+                    Console.SetCursorPosition(0, 0);
+                }
+                catch (ArgumentOutOfRangeException)
                 {
-
-                    Console.ForegroundColor = this.currentBuffer.ForgroundBuffer[i];
-                    Console.BackgroundColor = this.currentBuffer.BackgroundBuffer[i];
-                    j = 1;
-                    while (i + j < this.currentBuffer.Length
-                        && this.currentBuffer.ForgroundBuffer[i + j] == this.currentBuffer.ForgroundBuffer[i]
-                        && this.currentBuffer.BackgroundBuffer[i + j] == this.currentBuffer.BackgroundBuffer[i])
-                        ++j;
-
-                    Console.Write(this.currentBuffer.CharacterBuffer, i, j);
+                    // when resizing the window we get problems with the buffer. 
+                    // We need to try again and again until the resize is finished.
+                    this.previousBufferValid = false;
                 }
-
-                Console.SetCursorPosition(0, 0);
-                Console.BufferHeight -= 1;
-            }
-
-            Console.ResetColor(); // We do not want to have spooky colors
-            this.previousBuffer.CopyFrom(this.currentBuffer);
-            this.previousBufferValid = true;
-            Console.SetCursorPosition(0, 0);
+            } while (!this.previousBufferValid);
 
         }
 
