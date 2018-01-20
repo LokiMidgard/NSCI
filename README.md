@@ -6,6 +6,8 @@ Inspired by WPF It uses similar mechanics. It has its own kind of dependency pro
 
 It started as a fork of [CLRCLI](https://github.com/PhonicUK/CLRCLI). But no longer shares code with this framework besids some class names like ```RootWindow```.
 
+![screen reccord](Doku/Images/screen-reccord.gif)
+
 ## Getting Started
 
 **This Project is still in an early stage!** _So don't expect it to work and support everything that is needed._
@@ -24,20 +26,29 @@ See the TestHarness app for a short 'Hello World' example.
 
 It is planed to support following controls:
 
-- [ ] Root Window
+- [x] Root Window
 - [ ] Dialog
-- [ ] Button
-- [ ] Label
-- [ ] Checkbox
+- [x] Button
+- [x] Label
+- [x] Checkbox
 - [ ] Slider
-- [ ] Listbox
 - [ ] Listbox
 - [ ] Scrollview 
 - [ ] Horizontal and vertical lines
-- [ ] Borders
+- [x] Borders
 - [ ] Progress bar
 - [ ] Spinners
-- [ ] Page
+- [x] Grid
+- [x] StackPanel
+
+
+And following features:
+
+- [x] Templates
+- [x] Binding
+- [ ] Styles
+- [ ] XML based markup language like XAML
+
 
 Because the underlining system will undergo heavy changes, no controle is currently considerd finished.
 
