@@ -166,7 +166,7 @@ namespace NSCI.Sample.Viewmodel
                 root.AppendChild(e);
             }
 
-            using (var stream = this.databaseFile.OpenWrite())
+            using (var stream = this.databaseFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
                 doc.Save(stream);
         }
 
