@@ -10,7 +10,7 @@ using NSCI.Propertys;
 
 namespace NSCI.UI.Controls.Layout
 {
-    public partial class Grid : Panel  
+    public partial class Grid : Panel
     {
         [NDPAttach]
         private static void OnRowChanging(OnChangingArg<NDPConfiguration, UIElement, int> arg) { }
@@ -31,7 +31,7 @@ namespace NSCI.UI.Controls.Layout
         {
             RowDefinitions.CollectionChanged += (sender, e) => InvalidateArrange();
             ColumnDefinitions.CollectionChanged += (sender, e) => InvalidateArrange();
-            
+
         }
 
         protected override Size MeasureOverride(Size availableSize)
@@ -62,7 +62,7 @@ namespace NSCI.UI.Controls.Layout
 
                     var singelSpanElements = Children
                         .Where(x => Grid.ColumnSpan[x].Value == 1 && Grid.Column[x].Value == i);
-                    columnWidth[i] = (int)(singelSpanElements.Any() ? singelSpanElements.Max(x => x.DesiredSize.Width) : 0);
+                    columnWidth[i] = (int)(singelSpanElements.Any() ? singelSpanElements.Max(x => x.MarginAndDesiredSize.Width) : 0);
                 }
             }
             for (int i = 0; i < rowHeight.Length; i++)
@@ -74,7 +74,7 @@ namespace NSCI.UI.Controls.Layout
 
                     var singelSpanElements = Children
                         .Where(x => Grid.RowSpan[x].Value == 1 && Grid.Row[x].Value == i);
-                    rowHeight[i] = (int)(singelSpanElements.Any() ? singelSpanElements.Max(x => x.DesiredSize.Height) : 0);
+                    rowHeight[i] = (int)(singelSpanElements.Any() ? singelSpanElements.Max(x => x.MarginAndDesiredSize.Height) : 0);
                 }
             }
 
@@ -98,12 +98,12 @@ namespace NSCI.UI.Controls.Layout
                 var usedWidth = columnWidth.Skip(xFrom).Take(columnSpan).Sum();
                 var usedHeight = rowHeight.Skip(yFrom).Take(rowSpan).Sum();
 
-                if (usedWidth > item.DesiredSize.Width && columnSpan != 1) // we need more space from relativ Size Elements
+                if (usedWidth > item.MarginAndDesiredSize.Width && columnSpan != 1) // we need more space from relativ Size Elements
                 {
                     var totalRelativSizeColumns = columns.Skip(xFrom).Take(columnSpan).OfType<RelativSizeDefinition>().Sum(x => x.Size);
                     if (totalRelativSizeColumns > 0)
                     {
-                        var missingWidth = item.DesiredSize.Width - usedWidth;
+                        var missingWidth = item.MarginAndDesiredSize.Width - usedWidth;
 
                         for (int x = xFrom; x < xTo; x++)
                             if (columns[x] is RelativSizeDefinition r)
@@ -111,12 +111,12 @@ namespace NSCI.UI.Controls.Layout
                     }
                 }
 
-                if (usedHeight > item.DesiredSize.Height && rowSpan != 1) // we need more space from relativ Size Elements
+                if (usedHeight > item.MarginAndDesiredSize.Height && rowSpan != 1) // we need more space from relativ Size Elements
                 {
                     var totalRelativSizeColumns = rows.Skip(yFrom).Take(rowSpan).OfType<RelativSizeDefinition>().Sum(x => x.Size);
                     if (totalRelativSizeColumns > 0)
                     {
-                        var missingHeight = item.DesiredSize.Height - usedHeight;
+                        var missingHeight = item.MarginAndDesiredSize.Height - usedHeight;
 
                         for (int y = yFrom; y < yTo; y++)
                             if (rows[y] is RelativSizeDefinition r)
@@ -207,7 +207,7 @@ namespace NSCI.UI.Controls.Layout
 
                     var viableElements = Children.Where(x => Column[x].Value == i && ColumnSpan[x].Value == 1);
 
-                    var desiredWidth = viableElements.Any() ? viableElements.Max(x => x.DesiredSize.Width) : 0;
+                    var desiredWidth = viableElements.Any() ? viableElements.Max(x => x.MarginAndDesiredSize.Width) : 0;
                     if (availableWidth > desiredWidth)
                     {
                         columnWidth[i] = (int)desiredWidth;
@@ -266,7 +266,7 @@ namespace NSCI.UI.Controls.Layout
                 if (rows[i] is AutoSizeDefinition a)
                 {
                     var validElements = Children.Where(x => Row[x].Value == i && RowSpan[x].Value == 1);
-                    var desiredHeight = validElements.Any() ? validElements.Max(x => x.DesiredSize.Height) : 0;
+                    var desiredHeight = validElements.Any() ? validElements.Max(x => x.MarginAndDesiredSize.Height) : 0;
                     if (availableHeight > desiredHeight)
                     {
                         rowHeight[i] = (int)desiredHeight;
@@ -329,6 +329,63 @@ namespace NSCI.UI.Controls.Layout
                 for (int i = 0; i < yFrom; i++)
                     y += rowHeight[i];
 
+
+                if (item.MarginAndDesiredSize.Width < width)
+                {
+                    int diff = width - (int)item.MarginAndDesiredSize.Width;
+                    switch (item.HorizontalAlignment)
+                    {
+                        case HorizontalAlignment.Left:
+                            width -= diff;
+                            break;
+                        case HorizontalAlignment.Right:
+                            x += diff;
+                            break;
+                        case HorizontalAlignment.Center:
+                            x += (int)Math.Floor(diff / 2.0);
+                            width -= (int)Math.Ceiling(diff / 2.0);
+                            break;
+                        case HorizontalAlignment.Strech:
+                        default:
+                            break;
+                    }
+                }
+                if (item.MarginAndDesiredSize.Height < height)
+                {
+                    int diff = height - (int)item.MarginAndDesiredSize.Height;
+                    switch (item.VerticalAlignment)
+                    {
+                        case VerticalAlignment.Top:
+                            height -= diff;
+                            break;
+                        case VerticalAlignment.Bottom:
+                            y += diff;
+                            break;
+                        case VerticalAlignment.Center:
+                            y += (int)Math.Floor(diff / 2.0);
+                            height -= (int)Math.Ceiling(diff / 2.0);
+                            break;
+                        case VerticalAlignment.Strech:
+                        default:
+                            break;
+                    }
+                }
+                if (height > item.DesiredSize.Height)
+                {
+                    y += item.Margin.Top;
+                    height -= (item.Margin.Bottom + item.Margin.Top);
+                }
+
+                if (width > item.DesiredSize.Width)
+                {
+                    x += item.Margin.Left;
+                    width -= (item.Margin.Left + item.Margin.Right);
+                }
+
+                width = Math.Max(0, width);
+                height = Math.Max(0, height);
+
+
                 item.Arrange(new Rect(x, y, width, height));
 
             }
@@ -336,13 +393,13 @@ namespace NSCI.UI.Controls.Layout
 
         protected override void RenderOverride(IRenderFrame frame)
         {
-            frame.FillRect(0, 0, frame.Width, frame.Height, Foreground, Background, (char) SpecialChars.Fill);
+            frame.FillRect(0, 0, frame.Width, frame.Height, Foreground, Background, (char)SpecialChars.Fill);
 
             for (int i = 0; i < Children.Count; i++)
             {
                 var location = GetLocation(Children[i]);
                 Children[i].Render(frame.GetGraphicsBuffer(location));
-             
+
             }
 
             base.RenderOverride(frame);

@@ -7,7 +7,7 @@ using NDProperty.Propertys;
 using NSCI.Propertys;
 
 namespace NSCI.UI
-{ 
+{
     public abstract partial class UIElement
     {
         private Size lastAvailableSize;
@@ -167,6 +167,8 @@ namespace NSCI.UI
         //     Die Größe, die diese Windows.UI.Xaml. UIElement berechnet, der während des messdurchlaufs
         //     des Layoutvorgangs.
         public Size DesiredSize { get; private set; }
+
+        public Size MarginAndDesiredSize => DesiredSize + new Size(Margin.Left + Margin.Right, Margin.Top + Margin.Bottom);
 
 
 

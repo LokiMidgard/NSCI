@@ -29,7 +29,12 @@ namespace NSCI.Sample
 
             // Form
             {
-                var contentPane = new Border() { BorderStyle = BorderStyle.DoubleLined, Background = ConsoleColor.DarkCyan };
+                var contentPane = new Border()
+                {
+                    BorderStyle = BorderStyle.DoubleLined,
+                    TabIndex = 4,
+                    Background = ConsoleColor.DarkCyan
+                };
                 Grid.Row[contentPane].Value = 1;
                 Grid.ColumnSpan[contentPane].Value = 3;
                 grid.Children.Add(contentPane);
@@ -52,7 +57,8 @@ namespace NSCI.Sample
 
                 var title = new TextBlock()
                 {
-                    Margin = new Thickness(1, 1, 0, 3)
+                    Height = 1,
+                    Margin = new Thickness(1, 1, 0, 2)
                 };
                 TextBlock.TextProperty.Bind(title, PersonList.CurrentReadOnlyProperty.Of(model).Over(Person.NameReadOnlyProperty).OneWay());
                 Grid.ColumnSpan[title].Value = 2;
@@ -62,7 +68,8 @@ namespace NSCI.Sample
 
                 var surNameLable = new TextBlock()
                 {
-                    Height = 1
+                    Height = 1,
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 Grid.Column[surNameLable].Value = 0;
                 Grid.Row[surNameLable].Value = 1;
@@ -71,6 +78,7 @@ namespace NSCI.Sample
 
                 var surNameEdit = new TextBox()
                 {
+                    TabIndex = 3,
                     Margin = new Thickness(2, 1, 0, 1),
                     Height = 1
                 };
@@ -83,7 +91,8 @@ namespace NSCI.Sample
 
                 var firstNameLable = new TextBlock()
                 {
-                    Height = 1
+                    Height = 1,
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 Grid.Column[firstNameLable].Value = 0;
                 Grid.Row[firstNameLable].Value = 2;
@@ -92,6 +101,7 @@ namespace NSCI.Sample
 
                 var firstNameEdit = new TextBox()
                 {
+                    TabIndex = 4,
                     Margin = new Thickness(2, 1, 0, 1),
                     Height = 1
                 };
@@ -105,7 +115,8 @@ namespace NSCI.Sample
 
                 var streetLable = new TextBlock()
                 {
-                    Height = 1
+                    Height = 1,
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 Grid.Column[streetLable].Value = 0;
                 Grid.Row[streetLable].Value = 3;
@@ -114,6 +125,7 @@ namespace NSCI.Sample
 
                 var streetEdit = new TextBox()
                 {
+                    TabIndex = 5,
                     Margin = new Thickness(2, 1, 0, 1),
                     Height = 1
                 };
@@ -127,7 +139,8 @@ namespace NSCI.Sample
 
                 var cityLable = new TextBlock()
                 {
-                    Height = 1
+                    Height = 1,
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 Grid.Column[cityLable].Value = 0;
                 Grid.Row[cityLable].Value = 4;
@@ -136,6 +149,7 @@ namespace NSCI.Sample
 
                 var cityEdit = new TextBox()
                 {
+                    TabIndex = 6,
                     Margin = new Thickness(2, 1, 0, 1),
                     Height = 1
                 };
@@ -154,6 +168,7 @@ namespace NSCI.Sample
             {
                 var previousButton = new Button()
                 {
+                    TabIndex = 0,
                     Content = "Prev.",
                     Margin = new Thickness(1)
                 };
@@ -168,6 +183,7 @@ namespace NSCI.Sample
             {
                 var nextButton = new Button()
                 {
+                    TabIndex = 2,
                     Content = "next",
                     Margin = new Thickness(1)
 
@@ -183,6 +199,7 @@ namespace NSCI.Sample
             {
                 var nextButton = new Button()
                 {
+                    TabIndex = 1,
                     Content = "new",
                     Margin = new Thickness(1)
 
@@ -192,6 +209,22 @@ namespace NSCI.Sample
                 grid.Children.Add(nextButton);
 
                 nextButton.ButtonPressed += (sender, e) => model.NewPerson();
+            }
+
+            // new Persist
+            {
+                var persistButton = new Button()
+                {
+                    TabIndex = 7,
+                    Content = "Save",
+                    Margin = new Thickness(1)
+
+                };
+                Grid.Row[persistButton].Value = 2;
+                Grid.ColumnSpan[persistButton].Value = 3;
+                grid.Children.Add(persistButton);
+
+                persistButton.ButtonPressed += (sender, e) => model.Persist();
             }
 
             root.Run();
