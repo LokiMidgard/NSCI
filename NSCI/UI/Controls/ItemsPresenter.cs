@@ -15,14 +15,8 @@ namespace NSCI.UI.Controls
 
         }
 
-        internal void Add(object item)
-        {
-            throw new NotImplementedException();
-        }
+        internal void Add(UIElement item) => Panel?.Children.Add(item);
 
-        internal void Clear()
-        {
-            throw new NotImplementedException();
-        }
+        internal void Clear() => Panel?.Children.Clear();
     }
 }
