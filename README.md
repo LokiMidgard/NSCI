@@ -32,7 +32,7 @@ It is planed to support following controls:
 - [x] Label
 - [x] Checkbox
 - [ ] Slider
-- [ ] Listbox
+- [x] Listbox (*SingelSelctionItemsControl*)
 - [ ] Scrollview 
 - [ ] Horizontal and vertical lines
 - [x] Borders
@@ -57,4 +57,10 @@ Because this will be a pure c# implementation that should run not only on Window
 - Image
 - Multiple Windows
 - Mouse controle
+
+## Limitations
+
+- *The damned last character*  
+  I haven't found a reliable way yet to set the last character (bottom right corner) without getting a line
+  break that delets the first row of the buffer. For now this character will not be used.
 

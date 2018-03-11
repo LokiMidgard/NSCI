@@ -130,7 +130,7 @@ namespace NSCI.UI
             public ConsoleColor[] ForgroundBuffer => this.forground;
             public ConsoleColor[] BackgroundBuffer => this.background;
 
-            public int Length => this.buffer.Length;
+            public int Length => this.buffer.Length - 1;
 
             public int Width { get; private set; }
 
@@ -238,32 +238,16 @@ namespace NSCI.UI
                                     break;
                                 }
                             }
-                            bool increasedBuffer = false;
                             System.Diagnostics.Debug.Assert(i + j < this.currentBuffer.Length, "We try to write over our buffer :(");
-                            if (i + j == this.currentBuffer.Length - 1)
-                            {
-                                // we will write the last char, this will result in a line break that will delets the first line
-                                // to prevent this we must temporary increase the buffer Size.
-                                Console.BufferHeight += 1;
-                                increasedBuffer = true;
-                            }
 
                             var (left, top) = GetXYFromIndex(i);
                             Console.SetCursorPosition(left, top);
-                            if (!increasedBuffer)
-                                Console.Write(this.currentBuffer.CharacterBuffer, i, j);
-                            if (increasedBuffer)
-                            {
-                                Console.SetCursorPosition(0, 0);
-                                Console.BufferHeight -= 1;
-                            }
+                            Console.Write(this.currentBuffer.CharacterBuffer, i, j);
                             i += j - 1;
                         }
                     }
                     else
                     {
-
-                        Console.BufferHeight += 1;
                         Console.SetCursorPosition(0, 0);
                         for (int i = 0, j = 0; i < this.currentBuffer.Length; i += j)
                         {
@@ -280,7 +264,6 @@ namespace NSCI.UI
                         }
 
                         Console.SetCursorPosition(0, 0);
-                        Console.BufferHeight -= 1;
                     }
 
                     Console.ResetColor(); // We do not want to have spooky colors
