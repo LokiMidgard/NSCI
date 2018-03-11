@@ -10,7 +10,7 @@ It started as a fork of [CLRCLI](https://github.com/PhonicUK/CLRCLI). But no lon
 
 ## Getting Started
 
-**This Project is still in an early stage!** _So don't expect it to work and support everything that is needed._
+**This Project is still in an early stage!** _So don't expect it supports every feature that is needed._
 
 Your starting point is the RootWindow. You only have one instance per 
 application. The RootWindow can have one and only one child element. You can use Controls like Grid or Stackpanel to add multiple elements to the window. Just like you would do in WPF.
@@ -50,8 +50,6 @@ And following features:
 - [ ] Styles
 - [ ] XML based markup language like XAML
 
-
-Because the underlining system will undergo heavy changes, no controle is currently considerd finished.
 
 ### Most likly not supported controls
 Because this will be a pure c# implementation that should run not only on Windows, we can't use P/Invoke to call Methods on the console that are not available in the Managed console wraper provided by .Net. This means some functunality can't be provided by this project.
