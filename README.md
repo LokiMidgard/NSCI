@@ -27,8 +27,9 @@ See the TestHarness app for a short 'Hello World' example.
 It is planed to support following controls:
 
 - [x] Root Window
-- [ ] Dialog
+- [ ] Dialog (no real new window but rendered in the console)
 - [x] Button
+- [x] TextBox
 - [x] Label
 - [x] Checkbox
 - [ ] Slider

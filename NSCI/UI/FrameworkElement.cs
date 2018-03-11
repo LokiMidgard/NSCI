@@ -324,6 +324,15 @@ namespace NSCI.UI
         public virtual bool SupportSelection => false;
 
 
+        [NDP(Settings = NDPropertySettings.ReadOnly)]
+        protected virtual void OnCurserPositionChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Point?> arg)
+        {
+
+        }
+
+        protected void SetCurserPosition(Point? p) => CurserPosition = p;
+
+
         [NDProperty.NDP]
         protected virtual void OnHasFocusChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, bool> arg)
         {

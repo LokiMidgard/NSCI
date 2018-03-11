@@ -201,10 +201,10 @@ namespace NSCI.UI
             {
                 try
                 {
+                    Console.CursorVisible = false;
+                    Console.SetCursorPosition(0, 0);
                     if (this.previousBufferValid)
                     {
-                        Console.SetCursorPosition(0, 0);
-
                         for (int i = 0; i < this.currentBuffer.Length; i++)
                         {
                             if (this.currentBuffer[i] == this.previousBuffer[i])
@@ -248,7 +248,6 @@ namespace NSCI.UI
                     }
                     else
                     {
-                        Console.SetCursorPosition(0, 0);
                         for (int i = 0, j = 0; i < this.currentBuffer.Length; i += j)
                         {
 
@@ -269,7 +268,16 @@ namespace NSCI.UI
                     Console.ResetColor(); // We do not want to have spooky colors
                     this.previousBuffer.CopyFrom(this.currentBuffer);
                     this.previousBufferValid = true;
-                    Console.SetCursorPosition(0, 0);
+                    if (this.rootwindow.RootCurserPosition.HasValue)
+                    {
+                        var value = this.rootwindow.RootCurserPosition.Value;
+                        value = this.rootwindow.GetLocation(this.rootwindow.ActiveControl).Location + (Size)value;
+
+                        Console.SetCursorPosition((int)value.X, (int)value.Y);
+                        Console.CursorVisible = true;
+                    }
+                    else
+                        Console.SetCursorPosition(0, 0);
                 }
                 catch (ArgumentOutOfRangeException)
                 {

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using NDProperty;
 using NDProperty.Propertys;
+using NDProperty.Providers.Binding;
 using NSCI.Propertys;
 using NSCI.UI;
 using NSCI.UI.Controls;
@@ -23,9 +24,36 @@ namespace NSCI.UI
         {
             Width = Console.WindowWidth;
             Height = Console.WindowHeight;
+
+            RootCurserPositionProperty.Bind(this, ActiveControlProperty.Of(this).Over(FrameworkElement.CurserPositionReadOnlyProperty).ConvertOneWay(p => p));
+
         }
 
         public event Action BeforeStart;
+
+        [NDP(Settings = NDPropertySettings.ReadOnly|  NDPropertySettings.CallOnChangedHandlerOnEquals)]
+        protected virtual void OnRootCurserPositionChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Point?> arg)
+        {
+            //if (arg.Property.IsObjectValueChanging)
+            {
+                arg.ExecuteAfterChange += (sender, v) =>
+                {
+
+                    if (arg.Property.NewValue.HasValue)
+                    {
+                        var newPosition = arg.Property.NewValue.Value;
+                        newPosition = this.GetLocation(ActiveControl).Location + (Size)newPosition;
+                        Console.SetCursorPosition((int)newPosition.X, (int)newPosition.Y);
+                        Console.CursorVisible = true;
+                    }
+                    else
+                    {
+                        Console.CursorVisible = false;
+                    }
+                };
+            }
+        }
+
 
         private int tabSelectedIndex;
         [NDP(Settings = NDPropertySettings.CallOnChangedHandlerOnEquals)]
@@ -145,7 +173,7 @@ namespace NSCI.UI
                 await Task.Delay(100);
                 while (this.running && inputQueue.TryDequeue(out var k))
                 {
-                    Console.CursorVisible = false;
+
 
                     var active = ActiveControl;
                     if (active != null)
@@ -303,22 +331,23 @@ namespace NSCI.UI
             var fromLocation = GetLocation(from);
             return this.tabList
                 .Select(c => new { Location = GetLocation(c), Control = c })
-                .OrderBy(x=> {
-                switch (direction)
+                .OrderBy(x =>
                 {
-                    case SearchDirection.Left:
-                        return -x.Location.Right;
-                    case SearchDirection.Top:
-                        return -x.Location.Bottom;
-                    case SearchDirection.Bottom:
-                        return x.Location.Top;
-                    case SearchDirection.Right:
-                        return x.Location.Left;
-                    default:
-                        throw new ArgumentException();
+                    switch (direction)
+                    {
+                        case SearchDirection.Left:
+                            return -x.Location.Right;
+                        case SearchDirection.Top:
+                            return -x.Location.Bottom;
+                        case SearchDirection.Bottom:
+                            return x.Location.Top;
+                        case SearchDirection.Right:
+                            return x.Location.Left;
+                        default:
+                            throw new ArgumentException();
 
-                }
-            })
+                    }
+                })
             .Where(c =>
             {
                 switch (direction)

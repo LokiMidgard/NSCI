@@ -370,7 +370,7 @@ namespace NSCI.UI
             for (var current = this; current != commoneAcestor; current = current.VisualParent)
                 negativeTranslation += (Size)current.ArrangedPosition.Location;
             var positiveTranslation = Point.Empty;
-            for (var current = uIElement; current != commoneAcestor; current = current.VisualParent)
+            for (var current = uIElement.VisualParent; current != null && current != commoneAcestor; current = current.VisualParent)
                 positiveTranslation += (Size)current.ArrangedPosition.Location;
 
             var translation = positiveTranslation - (Size)negativeTranslation;
