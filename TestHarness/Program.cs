@@ -11,29 +11,55 @@ using NDProperty.Providers.Binding;
 
 namespace TestHarness
 {
+    partial class MyClass
+    {
+
+        static MyClass()
+        {
+            Template.SetDefaultDataTemplate(Template.CreateDataTemplate((MyClass obj) =>
+            {
+                var txt = new TextBlock();
+
+                TextBlock.TextProperty.Bind(txt, MyClass.TextProperty.Of(obj).ConvertOneWay(x => x));
+
+                return txt;
+            }));
+        }
+
+        [NDProperty.NDP]
+        private void OnTextChanging(global::NDProperty.Propertys.OnChangingArg<NSCI.Propertys.NDPConfiguration, string> arg)
+        {
+        }
+
+    }
     class Program
     {
+
+
         static void Main(string[] args)
         {
-          
+
+
 
             var root = new NSCI.UI.RootWindow();
 
 
-            var list = new SingelSelectionItemsControl<string>();
+            var list = new SingelSelectionItemsControl<MyClass>();
 
-            list.Items = new String[] {
-                "Test 1",
-                "Test 2"
+
+            list.Items = new MyClass[] {
+                new MyClass(){Text="Test 1" },
+                new MyClass(){Text="Test 2"}
             };
 
             var border2 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.Yellow };
             border2.Child = list;
 
-            var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!1", Height = 3 };
+            var text = new NSCI.UI.Controls.TextBox() { Height = 3 };
             var border1 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.DarkYellow };
             border1.Child = text;
-            
+
+            TextBox.TextProperty.Bind(text, SingelSelectionItemsControl<MyClass>.SelectedItemProperty.Of(list).Over(MyClass.TextProperty).TwoWay());
 
             var grid = new Grid();
 
@@ -64,9 +90,9 @@ namespace TestHarness
             //Grid.ColumnSpan[scroll].Value = 2;
             //Grid.Row[scroll].Value = 0;
 
-            
 
-            
+
+
 
 
 

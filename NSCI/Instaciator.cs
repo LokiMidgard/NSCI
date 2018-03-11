@@ -96,8 +96,8 @@ namespace NSCI
             var currentType = typeof(TTEmplatedObject);
             while (currentType != null)
             {
-                if (controlTemplates.ContainsKey(currentType))
-                    return (IDataTemplate<UI.UIElement, TTEmplatedObject>)controlTemplates[currentType];
+                if (dataTemplates.ContainsKey(currentType))
+                    return (IDataTemplate<UI.UIElement, TTEmplatedObject>)dataTemplates[currentType];
 
                 currentType = currentType.BaseType;
 
