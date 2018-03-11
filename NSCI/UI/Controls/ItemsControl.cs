@@ -10,9 +10,31 @@ using NSCI.UI.Controls.Layout;
 
 namespace NSCI.UI.Controls
 {
+    public partial class ItemsControl
+    {
+        [NDPAttach(Settings = NDPropertySettings.ReadOnly)]
+        protected static void OnIsSelectedChanging(global::NDProperty.Propertys.OnChangingArg<Propertys.NDPConfiguration, object, bool> arg)
+        {
+
+        }
+
+        internal static global::NDProperty.Utils.AttachedHelper<Propertys.NDPConfiguration, object, bool> IsSelectedInternal => IsSelected;
+
+
+    }
     public partial class ItemsControl<T> : Control
     {
+        static ItemsControl()
+        {
+            Template.SetDefaultControlTemplate(Template.CreateControlTemplate((ItemsControl<T> c) =>
+            {
+                return new ItemsPresenter();
+            }));
 
+        }
+
+
+        private readonly Dictionary<T, UIElement> displayLookup = new Dictionary<T, UIElement>();
         public ItemsControl()
         {
             DisplayContentChanged += ContentControl_DisplayContentChanged;
@@ -47,16 +69,24 @@ namespace NSCI.UI.Controls
             if (arg.Property.IsObjectValueChanging)
             {
                 if (arg.Property.NewValue != null)
-                    arg.Property.NewValue.Panel = PanelTemplate.InstanciateObject(this);
+                {
+                    var template = PanelTemplate ?? Template.CreateControlTemplate((ItemsControl<T> parent) =>
+                    {
+                        return new StackPanel();
+                    });
+
+                    arg.Property.NewValue.Panel = template.InstanciateObject(this);
+                }
                 arg.ExecuteAfterChange += (sender, args) => UpdateItemsPresenter();
             }
         }
 
-        private void UpdateItemsPresenter()
+        protected virtual void UpdateItemsPresenter()
         {
             if (ItemsPresenter != null)
             {
                 ItemsPresenter.Clear();
+                this.displayLookup.Clear();
                 if (Items != null)
                     foreach (var item in Items)
                     {
@@ -64,7 +94,7 @@ namespace NSCI.UI.Controls
 
                         if (ItemsTemplate == null)
                         {
-                            displayItem = new ContentPresenter
+                            displayItem = new ListItem
                             {
                                 Content = item
                             };
@@ -73,11 +103,35 @@ namespace NSCI.UI.Controls
                         {
                             displayItem = ItemsTemplate.InstanciateObject(item);
                         }
-
+                        this.displayLookup.Add(item, displayItem);
                         ItemsPresenter.Add(displayItem);
                     }
             }
 
+        }
+
+        protected UIElement GetViewOfItem(T item)
+        {
+            if (this.displayLookup.TryGetValue(item, out var element))
+                return element;
+            return null;
+        }
+
+        protected void SetItemSelected(T item, bool isSelected)
+        {
+            var view = GetViewOfItem(item);
+            if (view == null)
+                throw new ArgumentException("View of item not found", nameof(item));
+            ItemsControl.IsSelectedInternal[view].Value = isSelected;
+
+        }
+
+        protected bool GetItemSelected(T item)
+        {
+            var view = GetViewOfItem(item);
+            if (view == null)
+                throw new ArgumentException("View of item not found", nameof(item));
+            return ItemsControl.IsSelectedInternal[view].Value;
         }
 
         [NDP]
@@ -116,30 +170,7 @@ namespace NSCI.UI.Controls
 
         private void Cc_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            // we don't have animations so visualy it is no difference if we clear the collection and rebuild it from scrap
-            // or if we actually insert an item.
-
-            // of course Performance could be a problem with big collections. But we can fix this later ;)
-
-
             UpdateItemsPresenter();
-
-
-            //switch (e.Action)
-            //{
-            //    case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-            //        break;
-            //    case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
-            //        break;
-            //    case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-            //        break;
-            //    case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
-            //        break;
-            //    case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-            //        break;
-            //    default:
-            //        break;
-            //}
         }
     }
 }

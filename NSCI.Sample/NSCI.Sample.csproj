@@ -7,8 +7,12 @@
     <StartupObject />
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="NDProperty" Version="0.13.3" />
+    <PackageReference Include="NDProperty" Version="0.13.6" />
   </ItemGroup>
 
   <ItemGroup>

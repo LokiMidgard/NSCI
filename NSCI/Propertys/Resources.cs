@@ -7,7 +7,7 @@ namespace NSCI.Propertys
 {
     public static partial class X
     {
-        [NDProperty.NDPAttach]
+        [NDProperty.NDPAttach] 
         private static void OnResourcesChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, object, Resources> arg) { }
 
         [NDProperty.NDPAttach]

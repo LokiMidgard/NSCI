@@ -12,7 +12,7 @@ namespace NSCI.UI.Controls.Layout
 {
     public partial class Grid : Panel
     {
-        [NDPAttach]
+        [NDPAttach] 
         private static void OnRowChanging(OnChangingArg<NDPConfiguration, UIElement, int> arg) { }
         [NDPAttach]
         private static void OnColumnChanging(OnChangingArg<NDPConfiguration, UIElement, int> arg) { }

@@ -15,121 +15,62 @@ namespace TestHarness
     {
         static void Main(string[] args)
         {
-            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            //Console.OutputEncoding = Encoding.UTF8;
-
-            //Console.ForegroundColor = ConsoleColor.White;
-            //Console.BackgroundColor = ConsoleColor.Black;
-            //var t = typeof(NSCI.Characters.Box);
-            //var fileds = t.GetFields().Where(x => x.FieldType == typeof(char)).OrderBy(x => x.Name).ToArray();
-            //Console.BufferHeight = fileds.Length + 1;
-            //int i=0;
-            //foreach (var field in fileds)
-            //{
-            //    i++;
-            //    var c = (char)field.GetRawConstantValue();
-
-            //    Console.WriteLine($"{field.Name,-80}{c}");
-            //    //System.Threading.Thread.Sleep(15);
-            //    Console.BackgroundColor = i % 2 == 0 ? ConsoleColor.Black : ConsoleColor.DarkBlue;
-
-            //}
-            //Console.ReadKey(true);
-
-            //foreach (SpecialChars item in Enum.GetValues(typeof(SpecialChars)))
-            //{
-            //    Console.WriteLine($"{Enum.GetName(typeof(SpecialChars), item),-40}: {(char)item}");
-            //    System.Threading.Thread.Sleep(300);
-            //}
-            //Console.ReadKey(true);
-
-
+          
 
             var root = new NSCI.UI.RootWindow();
 
 
+            var list = new SingelSelectionItemsControl<string>();
+
+            list.Items = new String[] {
+                "Test 1",
+                "Test 2"
+            };
+
+            var border2 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.Yellow };
+            border2.Child = list;
 
             var text = new NSCI.UI.Controls.TextBlock() { Text = "Hallo Welt!1", Height = 3 };
-            var border = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.Block, Foreground = ConsoleColor.Black };
-            border.Child = text;
-            //var text2 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World!2" };
-
-            ////TextBlock.TextProperty.Bind(text2,
-            ////    ContentControl.ContentProperty
-            ////    .Of(root)
-            ////    .Over(UIElement.DepthReadOnlyProperty)
-            ////    .ConvertOneWay(x => x.ToString())
-            ////    );
-            ////TextBlock.TextProperty.Bind(text,
-            ////    ContentControl.ContentProperty
-            ////    .Of(root)
-            ////    .Over(UIElement.IsVisibleProperty)
-            ////    .ConvertTwoWay(x => x.ToString(), x => bool.Parse(x))
-            ////    );
-
-            var button1 = new Button() { Width = 40, HorizontalAlignment = HorizontalAlignment.Left };
-            var button2 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
-            var button3 = new Button() { HorizontalAlignment = HorizontalAlignment.Center };
-
-            button1.Content = "Button 1";
-            button2.Content = "Button 2";
-            button3.Content = "Button 3";
-
-            ////var scroll = new ScrollView();
-            ////var text3 = new NSCI.UI.Controls.TextBlock() { Text = "Hello World! Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n\nDuis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.Lorem ipsum dolor sit amet,\nconsectetuer adipiscing elit,\nsed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.\n\nUt wisi enim ad minim veniam,\nquis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,\nvel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\n\nNam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer" };
-            ////scroll.Content = text3;
+            var border1 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.DarkYellow };
+            border1.Child = text;
+            
 
             var grid = new Grid();
 
             grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
-            grid.ColumnDefinitions.Add(new FixSizeDefinition() { Size = 20 });
-            grid.ColumnDefinitions.Add(new AutoSizeDefinition());
+            //grid.ColumnDefinitions.Add(new FixSizeDefinition() { Size = 20 });
+            //grid.ColumnDefinitions.Add(new AutoSizeDefinition());
             grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
 
-            grid.RowDefinitions.Add(new FixSizeDefinition() { Size = 5 });
-            grid.RowDefinitions.Add(new AutoSizeDefinition());
-            grid.RowDefinitions.Add(new AutoSizeDefinition());
+            //grid.RowDefinitions.Add(new FixSizeDefinition() { Size = 5 });
+            //grid.RowDefinitions.Add(new AutoSizeDefinition());
+            //grid.RowDefinitions.Add(new AutoSizeDefinition());
 
-            grid.Children.Add(button1);
-            grid.Children.Add(button2);
-            grid.Children.Add(button3);
-            //grid.Children.Add(scroll);
+            //grid.Children.Add(button1);
+            //grid.Children.Add(button2);
+            //grid.Children.Add(button3);
+            grid.Children.Add(border1);
+            grid.Children.Add(border2);
 
-            Grid.Column[button1].Value = 0;
-            Grid.Column[button2].Value = 1;
+            Grid.Column[border2].Value = 0;
+            Grid.Column[border1].Value = 1;
 
-            Grid.Column[button3].Value = 0;
-            Grid.ColumnSpan[button3].Value = 2;
-            Grid.Row[button3].Value = 2;
-            Grid.Row[button1].Value = 1;
-            Grid.Row[button2].Value = 1;
+            //Grid.Column[button3].Value = 0;
+            //Grid.ColumnSpan[button3].Value = 2;
+            //Grid.Row[button3].Value = 2;
+            //Grid.Row[button1].Value = 1;
+            //Grid.Row[button2].Value = 1;
 
             //Grid.ColumnSpan[scroll].Value = 2;
             //Grid.Row[scroll].Value = 0;
 
-            var checkbox = new CheckBox();
+            
 
-            checkbox.Content = new TextBlock() { Text = "Test Slection" };
-
-            var stack = new StackPanel();
-
-            stack.Children.Add(checkbox);
-            stack.Children.Add(border);
-            stack.Children.Add(grid);
-
-            var textblock = new TextBlock() { Background = ConsoleColor.DarkRed, Width = 40, Height = 1 , Text = "HEY"};
-            var textbox = new TextBox() { Background = ConsoleColor.DarkRed, Width = 40, Height = 1 };
-
-            stack.Children.Add(textbox);
-            stack.Children.Add(textblock);
-            //stack.Items.Add(/*grid*/);
-            //stack.Items.Add(button1);
-            //stack.Items.Add(button2);
+            
 
 
 
-
-            root.Content = stack;
+            root.Content = grid;
 
             //root.BeforeStart += async () =>
             //  {
