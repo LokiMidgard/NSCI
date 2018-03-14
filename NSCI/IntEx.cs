@@ -439,7 +439,7 @@ namespace NSCI
         }
         public static T Clamp<T>(T min, T max, T value) where T : IComparable
         {
-            if (min.CompareTo(max) < 0)
+            if (min.CompareTo(max) > 0)
                 throw new ArgumentException("min must be less or equals to max");
 
             return Min(Max(min, value), max);

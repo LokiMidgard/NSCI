@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using Console = System.Console;
@@ -88,6 +89,7 @@ namespace NSCI.UI
             /// <returns></returns>
             public IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?))
             {
+                clip = clip ?? this.Clip;
                 if (clip.HasValue && translation.HasValue)
                     clip = clip.Value.Translate(new Size(-translation.Value.X, -translation.Value.Y));// new Rect(clip.Value.Left + translation.Value.Left, clip.Value.Top + translation.Value.Top, clip.Value.Width - translation.Value.Left, clip.Value.Height - translation.Value.Top);
                 //clip = new Rect(clip.Value.Left + translation.Value.Left, clip.Value.Top + translation.Value.Top, clip.Value.Width - translation.Value.Left, clip.Value.Height - translation.Value.Top);
@@ -96,6 +98,7 @@ namespace NSCI.UI
 
         }
 
+        [System.Diagnostics.DebuggerDisplay("{Debug}")]
         private class Buffer : IRenderFrame
         {
             public Buffer(int width, int height)
@@ -159,6 +162,20 @@ namespace NSCI.UI
                 Array.Resize(ref this.background, size);
                 Array.Resize(ref this.forground, size);
             }
+
+            public String Debug
+            {
+                get
+                {
+                    var builder = new StringBuilder();
+                    for (int i = 0; i < Height; i++)
+                    {
+                        builder.AppendLine(new string(this.buffer, Width * i, Width));
+                    }
+                    return builder.ToString();
+                }
+            }
+
         }
 
 
@@ -238,7 +255,7 @@ namespace NSCI.UI
                                     break;
                                 }
                             }
-                            System.Diagnostics.Debug.Assert(i + j < this.currentBuffer.Length, "We try to write over our buffer :(");
+                            System.Diagnostics.Debug.Assert(i + j < this.currentBuffer.CharacterBuffer.Length, "We try to write over our buffer :(");
 
                             var (left, top) = GetXYFromIndex(i);
                             Console.SetCursorPosition(left, top);

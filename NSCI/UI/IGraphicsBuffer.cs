@@ -12,6 +12,12 @@ namespace NSCI.UI
 
         Rect? Clip { get; }
 
+        /// <summary>
+        /// Returns a Reduced Renderframe
+        /// </summary>
+        /// <param name="translation">the Translation in Parentscordiants.</param>
+        /// <param name="clip">The Clip in Parents coordinates</param>
+        /// <returns></returns>
         IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?));
     }
     public struct ColoredKey
