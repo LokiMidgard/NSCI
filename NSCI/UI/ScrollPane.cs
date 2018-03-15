@@ -15,7 +15,12 @@ namespace NSCI.UI
                 var newValue = arg.Property.NewValue;
 
                 if (oldValue != null)
+                    oldValue.LogicalParent = null;
+                if (oldValue != null)
                     oldValue.VisualParent = null;
+
+                if (newValue != null)
+                    newValue.LogicalParent = this;
                 if (newValue != null)
                     newValue.VisualParent = this;
             }
