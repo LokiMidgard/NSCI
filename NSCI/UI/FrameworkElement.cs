@@ -431,16 +431,6 @@ namespace NSCI.UI
         /// <returns><c>true</c>> if this control handled the input.</c></returns>
         public virtual bool PreviewHandleInput(FrameworkElement originalTarget, ConsoleKeyInfo keyInfo) => false;
 
-        internal IEnumerable<FrameworkElement> GetPathToRoot()
-        {
-            UIElement current = this;
-            while (current != null)
-            {
-                if (current is FrameworkElement c)
-                    yield return c;
-                current = current.VisualParent;
-            }
-        }
 
 
         //

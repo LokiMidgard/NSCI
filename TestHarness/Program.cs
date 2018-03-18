@@ -50,9 +50,22 @@ namespace TestHarness
                 VerticalScrollEnabled = true
             };
             root.Content = s;
-            var text = new TextBlock();
-            text.Text = c.Replace("\r\n", "\\n");
-            s.Content = text;
+            //var text = new TextBlock();
+            //text.Text = c.Replace("\r\n", "\\n");
+            //s.Content = text;
+
+            var stackpanel = new StackPanel();
+            s.Content = stackpanel;
+            for (int i = 0; i < 100; i++)
+            {
+                var button = new Button()
+                {
+                    Content = i,
+                    Margin = new Thickness(1)
+                };
+
+                stackpanel.Children.Add(button);
+            }
 
 
 

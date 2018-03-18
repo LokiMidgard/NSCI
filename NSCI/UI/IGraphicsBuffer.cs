@@ -10,7 +10,7 @@ namespace NSCI.UI
         int Width { get; }
         int Height { get; }
 
-        Rect? Clip { get; }
+        Rect Clip { get; }
 
         /// <summary>
         /// Returns a Reduced Renderframe
@@ -18,7 +18,7 @@ namespace NSCI.UI
         /// <param name="translation">the Translation in Parentscordiants.</param>
         /// <param name="clip">The Clip in Parents coordinates</param>
         /// <returns></returns>
-        IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?));
+        IRenderFrame GetGraphicsBuffer(Rect? translation = default, Rect? clip = default);
     }
     public struct ColoredKey
     {

@@ -83,6 +83,11 @@ namespace NSCI.UI.Controls.Layout
             for (int i = 0; i < Children.Count; i++)
             {
                 var location = GetLocation(Children[i]);
+                if (!location.IntersectsWith(frame.Clip))
+                {
+                    Children[i].Render(null);
+                    continue;
+                }
                 Children[i].Render(frame.GetGraphicsBuffer(location));
                 if (location.Left > 0)
                     frame.FillRect(0, (int)location.Top, (int)location.Left, (int)location.Height, Foreground, Background, (char)SpecialChars.Fill);

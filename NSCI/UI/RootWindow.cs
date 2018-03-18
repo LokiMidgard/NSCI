@@ -31,7 +31,7 @@ namespace NSCI.UI
 
         public event Action BeforeStart;
 
-        [NDP(Settings = NDPropertySettings.ReadOnly|  NDPropertySettings.CallOnChangedHandlerOnEquals)]
+        [NDP(Settings = NDPropertySettings.ReadOnly | NDPropertySettings.CallOnChangedHandlerOnEquals)]
         protected virtual void OnRootCurserPositionChanging(NDProperty.Propertys.OnChangingArg<NDPConfiguration, Point?> arg)
         {
             //if (arg.Property.IsObjectValueChanging)
@@ -70,7 +70,8 @@ namespace NSCI.UI
                 arg.ExecuteAfterChange += (sender, args) =>
                 {
                     var newindex = this.tabList.IndexOf(arg.Provider.NewValue);
-                    if (newindex == -1 && args.Property.NewValue != null)
+                    var newValue = args.Property.NewValue;
+                    if (newindex == -1 && newValue != null)
                         throw new ArgumentException("No valid ActiveControl");
 
 
@@ -78,8 +79,14 @@ namespace NSCI.UI
                         args.Property.OldValue.HasFocus = false;
 
                     this.tabSelectedIndex = newindex;
-                    if (args.Property.NewValue != null)
-                        args.Property.NewValue.HasFocus = true;
+                    if (newValue != null)
+                    {
+                        newValue.HasFocus = true;
+                        foreach (var scrollPane in arg.Property.NewValue.GetPathToRoot().OfType<ScrollPane>())
+                        {
+                            scrollPane.BrinIntoView(newValue);
+                        }
+                    }
                 };
         }
 
@@ -112,6 +119,7 @@ namespace NSCI.UI
             var queue = new System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo>();
             Task.Factory.StartNew(() =>
             {
+                System.Threading.Thread.CurrentThread.Name = "Input Thread";
                 while (true)
                     queue.Enqueue(Console.ReadKey(true));
             }, TaskCreationOptions.LongRunning);
@@ -127,7 +135,6 @@ namespace NSCI.UI
 
         private async Task Loop(System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo> inputQueue)
         {
-
             BeforeStart?.Invoke();
 
             var g = new UI.Graphics(this);
@@ -173,12 +180,10 @@ namespace NSCI.UI
                 await Task.Delay(100);
                 while (this.running && inputQueue.TryDequeue(out var k))
                 {
-
-
                     var active = ActiveControl;
                     if (active != null)
                     {
-                        var path = active.GetPathToRoot().ToArray();
+                        var path = active.GetPathToRoot().OfType<FrameworkElement>().ToArray();
                         bool handled = false;
                         for (int i = path.Length - 1; i >= 0 && !handled; i--)
                             if (path[i].PreviewHandleInput(active, k))
@@ -193,10 +198,7 @@ namespace NSCI.UI
                         if (!PreviewHandleInput(this, k))
                             HandleInput(this, k);
                     }
-
                 }
-
-
             }
         }
 

@@ -34,13 +34,23 @@ namespace NSCI.UI
         {
             private readonly IRenderFrame parent;
             private readonly Rect translation;
-            public Rect? Clip { get; }
+            public Rect Clip { get; }
 
-            public BufferWraper(IRenderFrame parent, Rect? translation = default(Rect?), Rect? clip = default(Rect?))
+            public BufferWraper(IRenderFrame parent, Rect? translation = default, Rect? clip = default)
             {
                 this.parent = parent;
                 this.translation = translation ?? new Rect(0, 0, parent.Width, parent.Height);
-                Clip = clip;
+                Clip = clip ?? parent.Clip.Translate(new Size(-this.translation.Location.X, -this.translation.Location.Y));
+
+                Clip = new Rect(
+                    x: MathEx.Clamp(0, this.translation.Width, Clip.X),
+                    y: MathEx.Clamp(0, this.translation.Height, Clip.Y),
+                    width: MathEx.Clamp(0, this.translation.Width - MathEx.Clamp(0, this.translation.Width, Clip.X), Clip.Width),
+                    height: MathEx.Clamp(0, this.translation.Height - MathEx.Clamp(0, this.translation.Height, Clip.Y), Clip.Height));
+
+                if (Clip.Width == 0 || Clip.Height == 0)
+                    Clip = Rect.Empty;
+
                 var test = clip?.Translate((Size)this.translation.Location) ?? this.translation;
                 if (test.Right > parent.Width || test.Bottom > parent.Height || test.Left < 0 || test.Top < 0)
                     throw new ArgumentOutOfRangeException(nameof(translation), $"Translation must be insied the width and height of the parent. Width={parent.Width},Height={parent.Height}. Translation={this.translation}");
@@ -61,7 +71,7 @@ namespace NSCI.UI
                 }
                 set
                 {
-                    if (Clip.HasValue && (x < Clip.Value.Left || x >= Clip.Value.Right || y < Clip.Value.Top || y >= Clip.Value.Bottom))
+                    if (x < Clip.Left || x >= Clip.Right || y < Clip.Top || y >= Clip.Bottom)
                         return; // we doe nothing out of clipping
 
                     if (x < 0 || x > this.translation.Width)
@@ -87,9 +97,8 @@ namespace NSCI.UI
             /// <param name="translation">the Translation in Parentscordiants.</param>
             /// <param name="clip">The Clip in Parents coordinates</param>
             /// <returns></returns>
-            public IRenderFrame GetGraphicsBuffer(Rect? translation = default(Rect?), Rect? clip = default(Rect?))
+            public IRenderFrame GetGraphicsBuffer(Rect? translation = default, Rect? clip = default)
             {
-                clip = clip ?? this.Clip;
                 if (clip.HasValue && translation.HasValue)
                     clip = clip.Value.Translate(new Size(-translation.Value.X, -translation.Value.Y));// new Rect(clip.Value.Left + translation.Value.Left, clip.Value.Top + translation.Value.Top, clip.Value.Width - translation.Value.Left, clip.Value.Height - translation.Value.Top);
                 //clip = new Rect(clip.Value.Left + translation.Value.Left, clip.Value.Top + translation.Value.Top, clip.Value.Width - translation.Value.Left, clip.Value.Height - translation.Value.Top);
@@ -139,7 +148,7 @@ namespace NSCI.UI
 
             public int Height { get; private set; }
 
-            public Rect? Clip => null;
+            public Rect Clip => new Rect(0, 0, Width, Height);
 
             public ColoredKey this[int x, int y] { get => this[GetBufferIndex(x, y)]; set => this[GetBufferIndex(x, y)] = value; }
 

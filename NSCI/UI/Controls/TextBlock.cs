@@ -81,7 +81,7 @@ namespace NSCI.UI.Controls
 
         protected override void RenderOverride(IRenderFrame frame)
         {
-            var clip = frame.Clip ?? new Rect(0, 0, frame.Width, frame.Height);
+            var clip = frame.Clip;
             for (int y = (int)clip.Top; y < clip.Bottom; y++)
                 for (int x = (int)clip.Left; x < clip.Right; x++)
                     frame[x, y] = new ColoredKey(y < this.renderLines.Length && x < this.renderLines[y].Length ? this.renderLines[y][x] : ' ', Foreground, Background);

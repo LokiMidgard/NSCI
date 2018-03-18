@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using NDProperty;
 using NDProperty.Propertys;
+using NDProperty.Providers.Binding;
 using NSCI.Propertys;
 
 namespace NSCI.UI
@@ -26,6 +27,7 @@ namespace NSCI.UI
             if (this is RootWindow)
                 RootWindow = this as RootWindow;
 
+            DepthProperty.Bind(this, VisualParentProperty.Of(this).Over(DepthProperty).ConvertOneWay(toConvert => toConvert + 1));
         }
 
 
@@ -47,7 +49,7 @@ namespace NSCI.UI
                         args.Property.OldValue.RootWindowChanged -= ParentRootChanged;
                         args.Property.OldValue.visualChildrean.Remove(this);
                     }
-                    Depth = args.Property.NewValue?.Depth + 1 ?? 0;
+                    //Depth = args.Property.NewValue?.Depth + 1 ?? 0;
 
                     if (args.Property.NewValue is RootWindow r)
                         RootWindow = r;
@@ -271,9 +273,24 @@ namespace NSCI.UI
             {
                 RenderInProgress = true;
                 RootWindow.RequestDraw();
-                RootWindow.UnRegisterRenderDirty(this);
                 this.lastFrame = frame;
-                RenderCore(frame);
+                if (frame != null && frame.Clip != Rect.Empty)
+                {
+                    RootWindow.UnRegisterRenderDirty(this);
+                    RenderCore(frame);
+                }
+                else
+                {
+                    var queue = new Queue<UIElement>();
+                    queue.Enqueue(this);
+                    while (queue.Count > 0)
+                    {
+                        var e = queue.Dequeue();
+                        RootWindow.UnRegisterRenderDirty(e);
+                        foreach (var child in e.VisualChildrean)
+                            queue.Enqueue(child);
+                    }
+                }
             }
             finally
             {
@@ -319,6 +336,29 @@ namespace NSCI.UI
 
             return uIElement.ArrangedPosition.Translate(translation);
         }
+
+        public IEnumerable<UIElement> GetPathToRoot()
+        {
+            var current = this;
+            while (current != null)
+            {
+                yield return current;
+                current = current.VisualParent;
+            }
+        }
+
+        public T GetAncestorOf<T>() where T : UIElement
+        {
+            var current = this;
+            while (current != null)
+            {
+                if (current is T t)
+                    return t;
+                current = current.VisualParent;
+            }
+            return null;
+        }
+
 
         public Point TranslateToOtherUICordinates(UIElement uIElement, Point p) => p + GetTranslation(uIElement);
 
@@ -388,13 +428,15 @@ namespace NSCI.UI
             while (currentThis.Depth > currentOther.Depth)
                 currentThis = currentThis.VisualParent;
 
-            while (currentThis != currentOther)
+            while (currentThis != currentOther && currentOther != null && currentThis != null)
             {
                 currentThis = currentThis.VisualParent;
                 currentOther = currentOther.VisualParent;
             }
 
-            return currentOther ?? throw new ArgumentException("No Common Acestor found.");
+            if (currentThis != currentOther)
+                throw new ArgumentException("No Common Acestor found.");
+            return currentOther;
         }
 
 
