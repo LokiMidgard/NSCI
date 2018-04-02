@@ -44,10 +44,13 @@ namespace TestHarness
             var root = new NSCI.UI.RootWindow();
 
 
-            var s = new ScrollPane()
+            var s = new ScrollControl()
             {
-                HorizontalScrollEnabled = false,
-                VerticalScrollEnabled = true
+                VerticalScrollEnabled =true,
+                Padding= new Thickness(0, 0, 0, 1)
+                
+                //HorizontalScrollEnabled = false,
+                //VerticalScrollEnabled = true
             };
             root.Content = s;
             //var text = new TextBlock();

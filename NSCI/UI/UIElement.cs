@@ -228,7 +228,9 @@ namespace NSCI.UI
             {
                 MeasureInProgress = false;
             }
+            Meassured();
         }
+        protected virtual void Meassured() { }
 
         //
         // Zusammenfassung:
@@ -265,7 +267,10 @@ namespace NSCI.UI
             {
                 ArrangeInProgress = false;
             }
+            Arranged();
         }
+
+        protected virtual void Arranged() { }
 
         public void Render(IRenderFrame frame)
         {
@@ -296,7 +301,9 @@ namespace NSCI.UI
             {
                 RenderInProgress = false;
             }
+            Rendered();
         }
+        protected virtual void Rendered() { }
 
         //
         // Zusammenfassung:
