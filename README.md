@@ -34,7 +34,7 @@ It is planed to support following controls:
 - [x] Checkbox
 - [ ] Slider
 - [x] Listbox (*SingelSelctionItemsControl*)
-- [ ] Scrollview 
+- [x] Scrollview 
 - [ ] Horizontal and vertical lines
 - [x] Borders
 - [ ] Progress bar

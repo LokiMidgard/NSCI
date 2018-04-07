@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
+    <Authors>Patrick Kranz</Authors>
+    <Copyright>Patrick Kranz</Copyright>
+    <Description>A collection of Character constants</Description>
+    <PackageLicenseUrl>https://github.com/LokiMidgard/NSCI/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/LokiMidgard/NSCI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/LokiMidgard/NSCI.git</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
