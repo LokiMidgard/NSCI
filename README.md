@@ -1,3 +1,6 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/be6s6rcovqipawrv?svg=true)](https://ci.appveyor.com/project/LokiMidgard/nsci)
+[![NuGet](https://img.shields.io/nuget/v/NSCI.svg?style=flat-square)](https://www.nuget.org/packages/NSCI/)
+
 # NSCI
 NSCI (Net Standard Console Interface) is an window system for .NetStandard console applications.
 It aim's to provide a platform-agnostic graphical user interface .NetStandard (as long as the platform supports a console).
