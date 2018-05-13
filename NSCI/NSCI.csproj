@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Product>Net Standard Console Interface</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0-beta</Version>
+    <Version>0.1.1-beta</Version>
     <Authors>Patrick Kranz</Authors>
     <Copyright>Patrick Kranz</Copyright>
     <Description>NSCI (Net Standard Console Interface) is an window system for .NetStandard console applications. It aim's to provide a platform-agnostic graphical user interface .NetStandard (as long as the platform supports a console).</Description>
