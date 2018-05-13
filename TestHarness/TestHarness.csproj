@@ -2,11 +2,18 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.0;net47</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
 
+
+  <!--To enable Code generation-->
   <ItemGroup>
-    <PackageReference Include="NDProperty" Version="0.13.7" />
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.42" />
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.42" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="NDProperty" Version="0.13.9" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.4.0" />
   </ItemGroup>
 

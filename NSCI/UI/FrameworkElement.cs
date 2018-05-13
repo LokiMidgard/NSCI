@@ -8,8 +8,7 @@ using NSCI.Propertys;
 
 namespace NSCI.UI
 {
-    public abstract partial class
-        FrameworkElement : UIElement
+    public abstract partial class FrameworkElement : UIElement
     {
 
         public FrameworkElement()

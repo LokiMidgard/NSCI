@@ -11,6 +11,12 @@ namespace NSCI.Sample
     {
         public static void Main(string[] args)
         {
+            //  You need to include this in .csproj if you want source code generation
+            // <ItemGroup>
+            //  <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.42" />
+            //  <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.42" />
+            // </ItemGroup>
+
 
             // the Root window is the root for our drawing. It will later start the ui thread.
             var root = new NSCI.UI.RootWindow();
