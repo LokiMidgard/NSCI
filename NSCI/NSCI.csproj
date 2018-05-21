@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageTargetFallback>portable-net45+win8+wp8+wpa81</PackageTargetFallback>
     <Product>Net Standard Console Interface</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.1.1-beta</Version>
