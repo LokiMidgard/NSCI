@@ -13,13 +13,13 @@
 
   <!--To enable Code generation-->
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.42" />
-    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.42" />
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.49" />
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.49" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="NDProperty" Version="0.13.9" />
+    <PackageReference Include="NDProperty" Version="0.13.11" />
   </ItemGroup>
 
   <ItemGroup>
