@@ -8,6 +8,7 @@ using NSCI.UI.Controls.Layout;
 using System.Reflection;
 using System.Linq;
 using NDProperty.Providers.Binding;
+using System.Collections.Generic;
 
 namespace TestHarness
 {
@@ -27,11 +28,16 @@ namespace TestHarness
         }
 
         [NDProperty.NDP]
-        private void OnTextChanging(global::NDProperty.Propertys.OnChangingArg<NSCI.Propertys.NDPConfiguration, string> arg)
-        {
-        }
+        private void OnTextChanging(global::NDProperty.Propertys.OnChangingArg<NSCI.Propertys.NDPConfiguration, string> arg) { }
 
     }
+
+    partial class ItemHolder
+    {
+        [NDProperty.NDP]
+        private void OnItemsChanging(global::NDProperty.Propertys.OnChangingArg<NSCI.Propertys.NDPConfiguration, IEnumerable<MyClass>> arg) { }
+    }
+
     class Program
     {
 
@@ -44,72 +50,91 @@ namespace TestHarness
             var root = new NSCI.UI.RootWindow();
 
 
-            var s = new ScrollControl()
+            //var s = new ScrollControl()
+            //{
+            //    VerticalScrollEnabled =true,
+            //    Padding= new Thickness(0, 0, 0, 1)
+
+            //    //HorizontalScrollEnabled = false,
+            //    //VerticalScrollEnabled = true
+            //};
+            //root.Content = s;
+            ////var text = new TextBlock();
+            ////text.Text = c.Replace("\r\n", "\\n");
+            ////s.Content = text;
+
+            //var stackpanel = new StackPanel();
+            //s.Content = stackpanel;
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    var button = new Button()
+            //    {
+            //        Content = i,
+            //        Margin = new Thickness(1)
+            //    };
+
+            //    stackpanel.Children.Add(button);
+            //}
+
+
+
+
+            var list = new SingelSelectionItemsControl<MyClass>
             {
-                VerticalScrollEnabled =true,
-                Padding= new Thickness(0, 0, 0, 1)
-                
-                //HorizontalScrollEnabled = false,
-                //VerticalScrollEnabled = true
+                //Items = new MyClass[] {
+                //            new MyClass(){Text="Test 1" },
+                //            new MyClass(){Text="Test 2"}
+                //        }
             };
-            root.Content = s;
-            //var text = new TextBlock();
-            //text.Text = c.Replace("\r\n", "\\n");
-            //s.Content = text;
+            var holder = new ItemHolder();
+            SingelSelectionItemsControl<MyClass>.ItemsProperty.Bind(list, ItemHolder.ItemsProperty.Of(holder).OneWay());
 
-            var stackpanel = new StackPanel();
-            s.Content = stackpanel;
-            for (int i = 0; i < 100; i++)
+            var border2 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.Yellow };
+            border2.Child = list;
+
+            var text = new NSCI.UI.Controls.TextBox() { Height = 3 };
+            var border1 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.DarkYellow };
+            border1.Child = text;
+
+            TextBox.TextProperty.Bind(text, SingelSelectionItemsControl<MyClass>.SelectedItemProperty.Of(list).Over(MyClass.TextProperty).TwoWay());
+
+            var button = new Button()
             {
-                var button = new Button()
-                {
-                    Content = i,
-                    Margin = new Thickness(1)
-                };
+                Content = "Add"
+            };
 
-                stackpanel.Children.Add(button);
-            }
-
+            button.ButtonPressed += (sender, e) =>
+            {
+                holder.Items = (holder.Items ?? Enumerable.Empty<MyClass>()).Concat(new[] { new MyClass() { Text = ((holder?.Items?.Count()) ?? 0).ToString() } });
+            };
 
 
+            var grid = new Grid();
 
-            //            var list = new SingelSelectionItemsControl<MyClass>();
+            grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
+            grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
+            grid.RowDefinitions.Add(new AutoSizeDefinition());
+            grid.RowDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
+            grid.Children.Add(border1);
+            grid.Children.Add(border2);
+            grid.Children.Add(button);
 
+            Grid.Column[border2].Value = 0;
+            Grid.Column[border1].Value = 1;
+            Grid.Row[border2].Value = 1;
+            Grid.Row[border1].Value = 1;
 
-            //            list.Items = new MyClass[] {
-            //                new MyClass(){Text="Test 1" },
-            //                new MyClass(){Text="Test 2"}
-            //            };
-
-            //            var border2 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.Yellow };
-            //            border2.Child = list;
-
-            //            var text = new NSCI.UI.Controls.TextBox() { Height = 3 };
-            //            var border1 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.DarkYellow };
-            //            border1.Child = text;
-
-            //            TextBox.TextProperty.Bind(text, SingelSelectionItemsControl<MyClass>.SelectedItemProperty.Of(list).Over(MyClass.TextProperty).TwoWay());
-
-            //            var grid = new Grid();
-
-            //            grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
-            //            //grid.ColumnDefinitions.Add(new FixSizeDefinition() { Size = 20 });
-            //            //grid.ColumnDefinitions.Add(new AutoSizeDefinition());
-            //            grid.ColumnDefinitions.Add(new RelativSizeDefinition() { Size = 1 });
-            //grid.Children.Add(border1);
-            //            grid.Children.Add(border2);
-
-            //            Grid.Column[border2].Value = 0;
-            //            Grid.Column[border1].Value = 1;
+            Grid.ColumnSpan[button].Value = 2;
 
 
-            //            root.Content = grid;
-
-
-
-
+            root.Content = grid;
             root.Run();
         }
+
+
+
+
+
 
         const string c = @"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
 

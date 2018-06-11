@@ -154,17 +154,22 @@ namespace NSCI.UI.Controls
         [NDP]
         protected void OnItemsChanging(NDProperty.Propertys.OnChangingArg<Propertys.NDPConfiguration, IEnumerable<T>> arg)
         {
+
             if (arg.Property.IsObjectValueChanging)
             {
+
                 if (arg.Property.OldValue is System.Collections.Specialized.INotifyCollectionChanged occ)
                 {
                     occ.CollectionChanged -= Cc_CollectionChanged;
                 }
-                UpdateItemsPresenter();
-                if (arg.Property.NewValue is System.Collections.Specialized.INotifyCollectionChanged ncc)
+                arg.ExecuteAfterChange += (sender, e) =>
                 {
-                    ncc.CollectionChanged += Cc_CollectionChanged;
-                }
+                    UpdateItemsPresenter();
+                    if (arg.Property.NewValue is System.Collections.Specialized.INotifyCollectionChanged ncc)
+                    {
+                        ncc.CollectionChanged += Cc_CollectionChanged;
+                    }
+                };
             }
         }
 

@@ -44,7 +44,7 @@ namespace NSCI.UI.Controls.Layout
                     elementHeights[i]--;
                 }
             }
-            if (sumHight < finalSize.Height)
+            if (sumHight < finalSize.Height && elementHeights.Any())
                 elementHeights[elementHeights.Length - 1] += finalSize.Height - sumHight;
 
             for (int i = 0; i < Children.Count; i++)

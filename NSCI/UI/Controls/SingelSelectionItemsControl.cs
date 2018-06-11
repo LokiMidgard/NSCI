@@ -12,7 +12,7 @@ namespace NSCI.UI.Controls
 
         public override bool HandleInput(FrameworkElement originalTarget, ConsoleKeyInfo keyInfo)
         {
-            if (this.Items.Count() > 0)
+            if ((this.Items?.Count() ?? 0) > 0)
             {
                 if (this.SelectedItem == null)
                 {
