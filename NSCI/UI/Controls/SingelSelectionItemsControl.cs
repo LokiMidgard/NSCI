@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NSCI.UI.Controls
 {
-    public partial class SingelSelectionItemsControl<T> : ItemsControl<T>
+    public partial class SingleSelectionItemsControl<T> : ItemsControl<T>
     {
 
         public override bool SupportSelection => true;

@@ -79,7 +79,7 @@ namespace TestHarness
 
 
 
-            var list = new SingelSelectionItemsControl<MyClass>
+            var list = new SingleSelectionItemsControl<MyClass>
             {
                 //Items = new MyClass[] {
                 //            new MyClass(){Text="Test 1" },
@@ -87,7 +87,7 @@ namespace TestHarness
                 //        }
             };
             var holder = new ItemHolder();
-            SingelSelectionItemsControl<MyClass>.ItemsProperty.Bind(list, ItemHolder.ItemsProperty.Of(holder).OneWay());
+            SingleSelectionItemsControl<MyClass>.ItemsProperty.Bind(list, ItemHolder.ItemsProperty.Of(holder).OneWay());
 
             var border2 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.Yellow };
             border2.Child = list;
@@ -96,7 +96,7 @@ namespace TestHarness
             var border1 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.DarkYellow };
             border1.Child = text;
 
-            TextBox.TextProperty.Bind(text, SingelSelectionItemsControl<MyClass>.SelectedItemProperty.Of(list).Over(MyClass.TextProperty).TwoWay());
+            TextBox.TextProperty.Bind(text, SingleSelectionItemsControl<MyClass>.SelectedItemProperty.Of(list).Over(MyClass.TextProperty).TwoWay());
 
             var button = new Button()
             {
