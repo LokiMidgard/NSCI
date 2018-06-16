@@ -68,7 +68,7 @@ namespace NSCI.UI.Controls
                 var oldValue = arg.Property.OldValue;
                 var newValue = arg.Property.NewValue;
 
-                if (oldValue != null)
+                if (oldValue != null && GetViewOfItem(oldValue) != null) // HACK: We need SelectedIndex and should track the selected items when items before the index get deleted.
                     SetItemSelected(oldValue, false);
 
                 if (newValue != null)
@@ -76,5 +76,6 @@ namespace NSCI.UI.Controls
 
             }
         }
+
     }
 }

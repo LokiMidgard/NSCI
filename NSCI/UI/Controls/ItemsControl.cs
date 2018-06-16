@@ -134,6 +134,26 @@ namespace NSCI.UI.Controls
             return ItemsControl.IsSelectedInternal[view].Value;
         }
 
+        protected virtual int GetIndexOf(T item)
+        {
+            if (Items is IList<T> list)
+            {
+                list.IndexOf(item);
+            }
+            return Items.Select<T,(T value, int index)?>((value, index) => (value, index)).FirstOrDefault(x => Equals(x.Value.value, item))?.index ?? -1;
+        }
+
+        protected virtual T GetItemAt(int index)
+        {
+            if (Items is IList<T> list)
+            {
+                return list[index];
+            }
+            return Items.Skip(index).First();
+        }
+
+
+
         [NDP]
         protected void OnPanelTemplateChanging(NDProperty.Propertys.OnChangingArg<Propertys.NDPConfiguration, IControlTemplate<Panel, ItemsControl<T>>> arg)
         {
