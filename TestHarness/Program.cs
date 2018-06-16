@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Linq;
 using NDProperty.Providers.Binding;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace TestHarness
 {
@@ -79,7 +80,7 @@ namespace TestHarness
 
 
 
-            var list = new SingleSelectionItemsControl<MyClass>
+            var list = new SingleSelectionItemsControl<string>
             {
                 //Items = new MyClass[] {
                 //            new MyClass(){Text="Test 1" },
@@ -87,7 +88,7 @@ namespace TestHarness
                 //        }
             };
             var holder = new ItemHolder();
-            SingleSelectionItemsControl<MyClass>.ItemsProperty.Bind(list, ItemHolder.ItemsProperty.Of(holder).OneWay());
+            //SingleSelectionItemsControl<MyClass>.ItemsProperty.Bind(list, ItemHolder.ItemsProperty.Of(holder).OneWay());
 
             var border2 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.Yellow };
             border2.Child = list;
@@ -96,7 +97,17 @@ namespace TestHarness
             var border1 = new Border() { BorderStyle = NSCI.UI.Controls.BorderStyle.DoubleLined, Foreground = ConsoleColor.DarkYellow };
             border1.Child = text;
 
-            TextBox.TextProperty.Bind(text, SingleSelectionItemsControl<MyClass>.SelectedItemProperty.Of(list).Over(MyClass.TextProperty).TwoWay());
+            TextBox.TextProperty.Bind(text, SingleSelectionItemsControl<string>.SelectedItemProperty.Of(list).OneWay());
+
+            var back = new ObservableCollection<String>() {
+                "First ",
+                "Seccond ",
+                "Third ",
+            };
+            list.Items = back;
+
+
+
 
             var button = new Button()
             {
@@ -105,7 +116,12 @@ namespace TestHarness
 
             button.ButtonPressed += (sender, e) =>
             {
-                holder.Items = (holder.Items ?? Enumerable.Empty<MyClass>()).Concat(new[] { new MyClass() { Text = ((holder?.Items?.Count()) ?? 0).ToString() } });
+
+                var item = list.SelectedItem;
+                var index = back.IndexOf(item);
+                var newString = back[index] + "*";
+                back[index] = newString;
+                list.SelectedItem = newString;
             };
 
 

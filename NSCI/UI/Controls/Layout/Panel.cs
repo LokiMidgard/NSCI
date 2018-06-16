@@ -15,7 +15,7 @@ namespace NSCI.UI.Controls.Layout
         {
             Children.CollectionChanged += (s, e) =>
             {
-                InvalidateArrange();
+                InvalidateMeasure();
                 if (e.NewItems != null)
                     foreach (UIElement uielement in e.NewItems)
                     {
