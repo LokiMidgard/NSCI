@@ -143,11 +143,14 @@ namespace NSCI.UI
         {
             this.running = true;
 
+            var oldBufferHeight = Console.BufferHeight;
+            var oldBufferWidth = Console.BufferWidth;
 
+            var curserVisible = Console.CursorVisible;
+            
 
             Console.CancelKeyPress += Console_CancelKeyPress;
             Console.TreatControlCAsInput = options.TreatControlCAsInput;
-
 
             Console.CursorVisible = false;
 
@@ -168,8 +171,12 @@ namespace NSCI.UI
             //var uiThread = new Nito.AsyncEx.AsyncContextThread();
             //uiThread.Factory.StartNew(Loop, inputQueue, TaskCreationOptions.LongRunning).Wait();
             //uiThread.Join();
-            Console.Clear();
+            //Console.Clear();
             Console.ResetColor(); // We do not want to have spooky colors
+
+            Console.CursorVisible = curserVisible;
+            Console.BufferWidth = oldBufferWidth;
+            Console.BufferHeight = oldBufferHeight;
         }
 
         private Task Loop(object inputQueue) => Loop((System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo>)inputQueue);
