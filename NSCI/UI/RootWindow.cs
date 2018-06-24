@@ -176,8 +176,11 @@ namespace NSCI.UI
 
         private async Task Loop(System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo> inputQueue)
         {
-            System.Threading.Thread.CurrentThread.Name = "UI Thread";
-
+            // Running in PS Core the thread has already the name of `Pipeline Execution Thread`
+            if (System.Threading.Thread.CurrentThread.Name == null)
+                System.Threading.Thread.CurrentThread.Name = "UI Thread";
+            
+            
             BeforeStart?.Invoke();
 
             var g = new UI.Graphics(this);
