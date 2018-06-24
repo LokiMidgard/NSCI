@@ -29,7 +29,7 @@
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.49" />
     <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.49" />
-    <PackageReference Include="NDProperty" Version="0.13.11" />
+    <PackageReference Include="NDProperty" Version="0.13.12" />
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.0.0-pre-03" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.4.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
