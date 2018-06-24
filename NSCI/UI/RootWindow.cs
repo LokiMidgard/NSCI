@@ -158,7 +158,7 @@ namespace NSCI.UI
             Task.Factory.StartNew(() =>
             {
                 System.Threading.Thread.CurrentThread.Name = "Input Thread";
-                while (true)
+                while (this.running)
                     inputQueue.Enqueue(Console.ReadKey(true));
             }, TaskCreationOptions.LongRunning);
 
