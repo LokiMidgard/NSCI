@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;net47</TargetFrameworks>
+    <RuntimeIdentifiers>win7-x64;win-7x86</RuntimeIdentifiers>
   </PropertyGroup>
 
 

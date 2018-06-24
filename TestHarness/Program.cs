@@ -48,8 +48,12 @@ namespace TestHarness
 
 
 
-            var root = new NSCI.UI.RootWindow();
-
+            var root = new NSCI.UI.RootWindow(new NsciOptions()
+            {
+                OnCancelPressed = caller => caller.Detach(),
+                TreatControlCAsInput = false,
+            });
+            //System.Diagnostics.Debugger.Launch();
 
             //var s = new ScrollControl()
             //{

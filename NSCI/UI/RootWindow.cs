@@ -19,13 +19,46 @@ namespace NSCI.UI
     {
 
         internal readonly OrderedList<FrameworkElement> tabList = new OrderedList<FrameworkElement>(TabComparer.Instance);
+        private readonly System.Collections.Concurrent.ConcurrentQueue<PostAction> postQueue = new System.Collections.Concurrent.ConcurrentQueue<PostAction>();
+        private readonly NsciOptions options;
 
-        public RootWindow()
+        public RootWindow() : this(null) { }
+        public RootWindow(NsciOptions options)
         {
+            if (options == null)
+                options = new NsciOptions();
+            this.options = options;
+
             Width = Console.WindowWidth;
             Height = Console.WindowHeight;
 
             RootCurserPositionProperty.Bind(this, ActiveControlProperty.Of(this).Over(FrameworkElement.CurserPositionReadOnlyProperty).ConvertOneWay(p => p));
+
+        }
+
+        public Task RunOnUIThread(Action action)
+        {
+            var wrapper = new PostAction()
+            {
+                Action = action,
+                TaskSource = new TaskCompletionSource<bool>()
+            };
+            this.postQueue.Enqueue(wrapper);
+            return wrapper.TaskSource.Task;
+
+        }
+
+        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            if (this.options.OnCancelPressed == null)
+            {
+                e.Cancel = false; // terminate process
+            }
+            else
+            {
+                e.Cancel = true; // Do not cancel. User will handle it.
+                RunOnUIThread(() => this.options.OnCancelPressed(this));
+            }
 
         }
 
@@ -101,7 +134,6 @@ namespace NSCI.UI
         {
             Console.CursorVisible = true;
             this.running = false;
-            Console.Clear();
         }
 
         /// <summary>
@@ -110,24 +142,33 @@ namespace NSCI.UI
         public void Run()
         {
             this.running = true;
+
+
+
+            Console.CancelKeyPress += Console_CancelKeyPress;
+            Console.TreatControlCAsInput = options.TreatControlCAsInput;
+
+
             Console.CursorVisible = false;
-            Console.TreatControlCAsInput = true;
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Console.OutputEncoding = Encoding.UTF8;
 
-            var queue = new System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo>();
+            var inputQueue = new System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo>();
             Task.Factory.StartNew(() =>
             {
                 System.Threading.Thread.CurrentThread.Name = "Input Thread";
                 while (true)
-                    queue.Enqueue(Console.ReadKey(true));
+                    inputQueue.Enqueue(Console.ReadKey(true));
             }, TaskCreationOptions.LongRunning);
+
+
             //g.DrawRect(3, 3, 3, 3, ConsoleColor.Red, ConsoleColor.Red, UI.SpecialChars.Shade);
-            Nito.AsyncEx.AsyncContext.Run(() => Loop(queue));
-            var uiThread = new Nito.AsyncEx.AsyncContextThread();
-            uiThread.Factory.StartNew(Loop, queue, TaskCreationOptions.LongRunning);
-            uiThread.Join();
+            Nito.AsyncEx.AsyncContext.Run(() => Loop(inputQueue));
+            //var uiThread = new Nito.AsyncEx.AsyncContextThread();
+            //uiThread.Factory.StartNew(Loop, inputQueue, TaskCreationOptions.LongRunning).Wait();
+            //uiThread.Join();
+            Console.Clear();
             Console.ResetColor(); // We do not want to have spooky colors
         }
 
@@ -135,6 +176,8 @@ namespace NSCI.UI
 
         private async Task Loop(System.Collections.Concurrent.ConcurrentQueue<ConsoleKeyInfo> inputQueue)
         {
+            System.Threading.Thread.CurrentThread.Name = "UI Thread";
+
             BeforeStart?.Invoke();
 
             var g = new UI.Graphics(this);
@@ -198,6 +241,11 @@ namespace NSCI.UI
                         if (!PreviewHandleInput(this, k))
                             HandleInput(this, k);
                     }
+                }
+                while (this.running && postQueue.TryDequeue(out var action))
+                {
+                    action.Action();
+                    action.TaskSource.SetResult(true);
                 }
             }
         }
